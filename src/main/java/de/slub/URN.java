@@ -19,17 +19,19 @@ package de.slub;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class URN {
+
+    static final private Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{1,31}$");
 
     final private String namespaceIdentifier;
     final private String namespaceSpecificString;
 
     public URN(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
-        assertNotNullNotEmpty("Namespace Identifier", namespaceIdentifier);
-        assertNotNullNotEmpty("Namespace Specific String", namespaceSpecificString);
-
         assertValidNID(namespaceIdentifier);
+        assertValidNISS(namespaceSpecificString);
 
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
@@ -48,9 +50,20 @@ public class URN {
     }
 
     private void assertValidNID(String namespaceIdentifier) throws URNSyntaxException {
+        assertNotNullNotEmpty("Namespace Identifier", namespaceIdentifier);
+
         if ("urn".equalsIgnoreCase(namespaceIdentifier)) {
             throw new URNSyntaxException("Namespace identifier can not be 'urn'");
         }
+
+        if (!allowedNID.matcher(namespaceIdentifier).matches()) {
+            throw new URNSyntaxException(
+                    String.format("Not allowed characters in Namespace Identifier '%s'", namespaceIdentifier));
+        }
+    }
+
+    private void assertValidNISS(String namespaceSpecificString) throws URNSyntaxException {
+        assertNotNullNotEmpty("Namespace Specific String", namespaceSpecificString);
     }
 
     private void assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {

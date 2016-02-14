@@ -47,6 +47,11 @@ public class URNTest {
         new URN("urn", "test");
     }
 
+    @Test(expected = URNSyntaxException.class)
+    public void invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxException {
+        new URN("-is!bn", "test");
+    }
+
     @Test
     public void returns_namespace_specific_string() throws URNSyntaxException {
         final String nid = new URN("isbn", "0451450523").getNamespaceSpecificString();
@@ -58,4 +63,5 @@ public class URNTest {
         URI uri = new URN("isbn", "0451450523").toURI();
         assertEquals("urn:isbn:0451450523", uri.toASCIIString());
     }
+
 }
