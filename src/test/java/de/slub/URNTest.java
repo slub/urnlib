@@ -65,9 +65,21 @@ public class URNTest {
     }
 
     @Test
-    public void reserved_chars_in_URI_are_properly_escaped() throws URNSyntaxException, URISyntaxException {
+    public void reserved_chars_in_URI_are_escaped() throws URNSyntaxException, URISyntaxException {
         URI uri = new URN("reserved", "%/?#").toURI();
         assertEquals("urn:reserved:%25%2F%3F%23", uri.toASCIIString());
+    }
+
+    @Test
+    public void non_URN_chars_in_URI_are_escaped() throws URNSyntaxException, URISyntaxException {
+        URI uri = new URN("non-urn", "[]&<>^`{|}").toURI();
+        assertEquals("urn:non-urn:%5B%5D%26%3C%3E%5E%60%7B%7C%7D", uri.toASCIIString());
+    }
+
+    @Test
+    public void special_UTF8_chars_are_escaped() throws URNSyntaxException, URISyntaxException {
+        URI uri = new URN("non-urn", "ÄÜÖ").toURI();
+        assertEquals("urn:non-urn:%C3%84%C3%9C%C3%96", uri.toASCIIString());
     }
 
 }

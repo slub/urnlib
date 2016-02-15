@@ -19,8 +19,11 @@ package de.slub;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.Normalizer;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
+
+import static java.lang.Character.forDigit;
+import static java.lang.Character.toUpperCase;
 
 public class URN {
 
@@ -37,9 +40,9 @@ public class URN {
         this.namespaceSpecificString = namespaceSpecificString;
     }
 
-    public URI toURI() throws URISyntaxException {
+    public URI toURI() throws URISyntaxException, URNSyntaxException {
         return new URI(String.format("urn:%s:%s",
-                namespaceIdentifier, encodeNSSReservedChars(namespaceSpecificString)));
+                namespaceIdentifier, utf8encoding(namespaceSpecificString)));
     }
 
     public String getNamespaceIdentifier() {
@@ -73,28 +76,55 @@ public class URN {
         }
     }
 
-    private String encodeNSSReservedChars(String namespaceSpecificString) {
+    // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
+    // http://www.utf8-chartable.de/
+    private String utf8encoding(String s) throws URNSyntaxException {
         StringBuilder sb = new StringBuilder();
-        for (char c : namespaceSpecificString.toCharArray()) {
+        for (char c : s.toCharArray()) {
             switch (c) {
-                case '%':
-                    sb.append("%25");
-                    break;
+                // Characters here are in Unicode so we can easily switch-case them
+                case 0:
+                    throw new URNSyntaxException("Illegal character `0` found");
+                case '%':   // Encode reserved character set (RFC 2141, 2.3)
                 case '/':
-                    sb.append("%2F");
-                    break;
                 case '?':
-                    sb.append("%3F");
-                    break;
                 case '#':
-                    sb.append("%23");
+                case '\\':   // Encode explicitly excluded characters (RFC 2141, 2.4)
+                case '"':
+                case '&':
+                case '<':
+                case '>':
+                case '[':
+                case ']':
+                case '^':
+                case '`':
+                case '{':
+                case '|':
+                case '}':
+                case '~':
+                    appendEncoded(sb, c);
                     break;
                 default:
-                    sb.append(c);
-                    break;
+                    // URN encoding requires UTF-8, so transform Unicode character to UTF-8 bytes and encode them
+                    for (byte b : String.valueOf(c).getBytes(StandardCharsets.UTF_8)) {
+                        if ((b >= 0x01) && (b <= 0x20) || ((b >= 0x7F))) {
+                            // Encode range 0x1 to 0x20 hex and 0x7f to 0xff (RFC 2141, 2.4)
+                            appendEncoded(sb, c);
+                        } else {
+                            // no need for encoding, just append and skip to next character
+                            sb.append(c);
+                            break;
+                        }
+                    }
             }
         }
         return sb.toString();
+    }
+
+    private void appendEncoded(StringBuilder sb, char c) {
+        sb.append('%');
+        sb.append(toUpperCase(forDigit((c >> 4) & 0xF, 16)));
+        sb.append(toUpperCase(forDigit((c & 0xF), 16)));
     }
 
 }
