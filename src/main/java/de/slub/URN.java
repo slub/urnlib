@@ -19,7 +19,7 @@ package de.slub;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.regex.Matcher;
+import java.text.Normalizer;
 import java.util.regex.Pattern;
 
 public class URN {
@@ -38,7 +38,8 @@ public class URN {
     }
 
     public URI toURI() throws URISyntaxException {
-        return new URI(String.format("urn:%s:%s", namespaceIdentifier, namespaceSpecificString));
+        return new URI(String.format("urn:%s:%s",
+                namespaceIdentifier, encodeNSSReservedChars(namespaceSpecificString)));
     }
 
     public String getNamespaceIdentifier() {
@@ -71,4 +72,29 @@ public class URN {
             throw new URNSyntaxException(part + " cannot be null or empty.");
         }
     }
+
+    private String encodeNSSReservedChars(String namespaceSpecificString) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : namespaceSpecificString.toCharArray()) {
+            switch (c) {
+                case '%':
+                    sb.append("%25");
+                    break;
+                case '/':
+                    sb.append("%2F");
+                    break;
+                case '?':
+                    sb.append("%3F");
+                    break;
+                case '#':
+                    sb.append("%23");
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
+        return sb.toString();
+    }
+
 }

@@ -64,4 +64,10 @@ public class URNTest {
         assertEquals("urn:isbn:0451450523", uri.toASCIIString());
     }
 
+    @Test
+    public void reserved_chars_in_URI_are_properly_escaped() throws URNSyntaxException, URISyntaxException {
+        URI uri = new URN("reserved", "%/?#").toURI();
+        assertEquals("urn:reserved:%25%2F%3F%23", uri.toASCIIString());
+    }
+
 }
