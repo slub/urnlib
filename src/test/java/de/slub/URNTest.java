@@ -114,25 +114,36 @@ public class URNTest {
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Convenient_constructor_throws_exception_when_parsing_empty_string() throws URNSyntaxException  {
+    public void Convenient_constructor_throws_exception_when_parsing_empty_string() throws URNSyntaxException {
         new URN("");
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Convenient_constructor_throws_exception_when_parsing_non_URN() throws URNSyntaxException  {
+    public void Convenient_constructor_throws_exception_when_parsing_non_URN() throws URNSyntaxException {
         new URN("http://foo");
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Convenient_constructor_throws_exception_when_parsing_misstructured_string() throws URNSyntaxException  {
+    public void Convenient_constructor_throws_exception_when_parsing_misstructured_string() throws URNSyntaxException {
         new URN("urn:foo");
     }
 
     @Test
     public void Convenient_constructor_can_parse_URN_from_string() throws Exception {
-        URN urn = new URN("urn:isbn:0451450523");
+        final URN urn = new URN("urn:isbn:0451450523");
         assertEquals("Wrong NID ", "isbn", urn.getNamespaceIdentifier());
         assertEquals("Wrong NSS", "0451450523", urn.getNamespaceSpecificString());
     }
 
+    @Test
+    public void Identical_URNs_have_the_same_hash_code() throws Exception {
+        assertEquals("Hashcode of identical URNs should be equal",
+                new URN("urn:foo:bar").hashCode(), new URN("urn:foo:bar").hashCode());
+    }
+
+    @Test
+    public void Identical_URNs_are_equal() throws Exception {
+        assertEquals("URNs should be equal",
+                new URN("urn:foo:bar"), new URN("urn:foo:bar"));
+    }
 }

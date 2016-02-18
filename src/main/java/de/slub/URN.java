@@ -28,7 +28,7 @@ import static java.lang.Character.toUpperCase;
 public class URN {
 
     static final private Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{1,31}$");
-
+    private String encodedNamespaceSpecificString;
     private String namespaceIdentifier;
     private String namespaceSpecificString;
 
@@ -49,11 +49,6 @@ public class URN {
         }
     }
 
-    public URI toURI() throws URISyntaxException, URNSyntaxException {
-        return new URI(String.format("urn:%s:%s",
-                namespaceIdentifier, utf8encode(namespaceSpecificString)));
-    }
-
     public String getNamespaceIdentifier() {
         return namespaceIdentifier;
     }
@@ -62,9 +57,32 @@ public class URN {
         return namespaceSpecificString;
     }
 
+    public URI toURI() throws URISyntaxException, URNSyntaxException {
+        return new URI(this.toString());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("urn:%s:%s", namespaceIdentifier, encodedNamespaceSpecificString);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof URN) {
+            return this.toString().equals(obj.toString());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
     private void init(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
         this.namespaceIdentifier = assertValidNID(namespaceIdentifier);
         this.namespaceSpecificString = assertValidNSS(namespaceSpecificString);
+        this.encodedNamespaceSpecificString = utf8encode(namespaceSpecificString);
     }
 
     private void init(URI uri) throws URNSyntaxException {
