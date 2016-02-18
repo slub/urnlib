@@ -65,21 +65,46 @@ public class URNTest {
     }
 
     @Test
-    public void reserved_chars_in_URI_are_escaped() throws URNSyntaxException, URISyntaxException {
+    public void reserved_chars_in_URI_are_escaped() throws Exception {
         URI uri = new URN("reserved", "%/?#").toURI();
         assertEquals("urn:reserved:%25%2F%3F%23", uri.toASCIIString());
     }
 
     @Test
-    public void non_URN_chars_in_URI_are_escaped() throws URNSyntaxException, URISyntaxException {
+    public void non_URN_chars_in_URI_are_escaped() throws Exception {
         URI uri = new URN("non-urn", "[]&<>^`{|}").toURI();
         assertEquals("urn:non-urn:%5B%5D%26%3C%3E%5E%60%7B%7C%7D", uri.toASCIIString());
     }
 
     @Test
-    public void special_UTF8_chars_are_escaped() throws URNSyntaxException, URISyntaxException {
+    public void special_UTF8_chars_are_escaped() throws Exception {
         URI uri = new URN("non-urn", "ÄÜÖ").toURI();
         assertEquals("urn:non-urn:%C3%84%C3%9C%C3%96", uri.toASCIIString());
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void Non_URN_URI_cannot_be_parsed() throws Exception {
+        new URN(new URI("http://foo"));
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void Invalid_NID_part_in_URI_cannot_be_parsed() throws Exception {
+        new URN(new URI("urn:!?:1234"));
+    }
+
+    @Test
+    public void URN_string_can_be_parsed_into_its_components() throws Exception {
+        URI uri = new URI("urn:isbn:0451450523");
+        URN urn = new URN(uri);
+        assertEquals("Wrong NID ", "isbn", urn.getNamespaceIdentifier());
+        assertEquals("Wrong NSS", "0451450523", urn.getNamespaceSpecificString());
+    }
+
+    @Test
+    public void URN_parsed_namespace_specific_string_gets_decoded() throws Exception {
+        URI uri = new URI("urn:non-urn:%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D");
+        URN urn = new URN(uri);
+        assertEquals("Wrong NSS", "ÄÜÖ[]&<>^`{|}", urn.getNamespaceSpecificString());
     }
 
 }
