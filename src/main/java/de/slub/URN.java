@@ -29,34 +29,24 @@ public class URN {
 
     static final private Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{1,31}$");
 
-    final private String namespaceIdentifier;
-    final private String namespaceSpecificString;
+    private String namespaceIdentifier;
+    private String namespaceSpecificString;
 
     public URN(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
-        assertValidNID(namespaceIdentifier);
-        assertValidNISS(namespaceSpecificString);
-
-        this.namespaceIdentifier = namespaceIdentifier;
-        this.namespaceSpecificString = namespaceSpecificString;
+        init(namespaceIdentifier, namespaceSpecificString);
     }
 
     public URN(URI uri) throws URNSyntaxException {
-        final String scheme = uri.getScheme();
-        if (!"urn".equals(scheme)) {
+        init(uri);
+    }
+
+    public URN(String urn) throws URNSyntaxException {
+        try {
+            init(new URI(assertNotNullNotEmpty("URN", urn)));
+        } catch (URISyntaxException e) {
             throw new URNSyntaxException(
-                    String.format("Invalid scheme `%s` Given URI is not a URN.", scheme));
+                    String.format("Invalid format `%s` is probably not a URN", urn));
         }
-
-        final String schemeSpecificPart = uri.getSchemeSpecificPart();
-        int colonPos = schemeSpecificPart.indexOf(':');
-        final String nid = schemeSpecificPart.substring(0, colonPos);
-        final String nss = schemeSpecificPart.substring(colonPos + 1);
-
-        assertValidNID(nid);
-        assertValidNISS(nss);
-
-        this.namespaceIdentifier = nid;
-        this.namespaceSpecificString = nss;
     }
 
     public URI toURI() throws URISyntaxException, URNSyntaxException {
@@ -72,7 +62,31 @@ public class URN {
         return namespaceSpecificString;
     }
 
-    private void assertValidNID(String namespaceIdentifier) throws URNSyntaxException {
+    private void init(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
+        this.namespaceIdentifier = assertValidNID(namespaceIdentifier);
+        this.namespaceSpecificString = assertValidNSS(namespaceSpecificString);
+    }
+
+    private void init(URI uri) throws URNSyntaxException {
+        final String scheme = uri.getScheme();
+        if (!"urn".equals(scheme)) {
+            throw new URNSyntaxException(
+                    String.format("Invalid scheme `%s` Given URI is not a URN", scheme));
+        }
+
+        final String schemeSpecificPart = uri.getSchemeSpecificPart();
+        int colonPos = schemeSpecificPart.indexOf(':');
+        String nid = null;
+        String nss = null;
+        if (colonPos > -1) {
+            nid = schemeSpecificPart.substring(0, colonPos);
+            nss = schemeSpecificPart.substring(colonPos + 1);
+        }
+
+        init(nid, nss);
+    }
+
+    private String assertValidNID(String namespaceIdentifier) throws URNSyntaxException {
         assertNotNullNotEmpty("Namespace Identifier", namespaceIdentifier);
 
         if ("urn".equalsIgnoreCase(namespaceIdentifier)) {
@@ -83,16 +97,20 @@ public class URN {
             throw new URNSyntaxException(
                     String.format("Not allowed characters in Namespace Identifier '%s'", namespaceIdentifier));
         }
+
+        return namespaceIdentifier;
     }
 
-    private void assertValidNISS(String namespaceSpecificString) throws URNSyntaxException {
+    private String assertValidNSS(String namespaceSpecificString) throws URNSyntaxException {
         assertNotNullNotEmpty("Namespace Specific String", namespaceSpecificString);
+        return namespaceSpecificString;
     }
 
-    private void assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
+    private String assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
         if ((s == null) || (s.isEmpty())) {
-            throw new URNSyntaxException(part + " cannot be null or empty.");
+            throw new URNSyntaxException(part + " cannot be null or empty");
         }
+        return s;
     }
 
     // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195

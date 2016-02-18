@@ -107,4 +107,32 @@ public class URNTest {
         assertEquals("Wrong NSS", "ÄÜÖ[]&<>^`{|}", urn.getNamespaceSpecificString());
     }
 
+    @Test(expected = URNSyntaxException.class)
+    public void Convenient_constructor_throws_exception_when_parsing_null() throws URNSyntaxException {
+        final String nullString = null;
+        new URN(nullString);
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void Convenient_constructor_throws_exception_when_parsing_empty_string() throws URNSyntaxException  {
+        new URN("");
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void Convenient_constructor_throws_exception_when_parsing_non_URN() throws URNSyntaxException  {
+        new URN("http://foo");
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void Convenient_constructor_throws_exception_when_parsing_misstructured_string() throws URNSyntaxException  {
+        new URN("urn:foo");
+    }
+
+    @Test
+    public void Convenient_constructor_can_parse_URN_from_string() throws Exception {
+        URN urn = new URN("urn:isbn:0451450523");
+        assertEquals("Wrong NID ", "isbn", urn.getNamespaceIdentifier());
+        assertEquals("Wrong NSS", "0451450523", urn.getNamespaceSpecificString());
+    }
+
 }
