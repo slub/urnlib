@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class URNTest {
 
@@ -34,6 +35,11 @@ public class URNTest {
     @Test(expected = URNSyntaxException.class)
     public void empty_namespace_specific_string_throws_exception() throws URNSyntaxException {
         new URN("isbn", null);
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void Namespace_specific_string_containing_null_throws_exception() throws Exception {
+        new URN("isbn", "\u0000");
     }
 
     @Test
@@ -66,20 +72,20 @@ public class URNTest {
 
     @Test
     public void reserved_chars_in_URI_are_escaped() throws Exception {
-        URI uri = new URN("reserved", "%/?#").toURI();
-        assertEquals("urn:reserved:%25%2F%3F%23", uri.toASCIIString());
+        URI uri = new URN("reserved", "%/?#,").toURI();
+        assertEquals("urn:reserved:%25%2f%3f%23,", uri.toASCIIString());
     }
 
     @Test
     public void non_URN_chars_in_URI_are_escaped() throws Exception {
         URI uri = new URN("non-urn", "[]&<>^`{|}").toURI();
-        assertEquals("urn:non-urn:%5B%5D%26%3C%3E%5E%60%7B%7C%7D", uri.toASCIIString());
+        assertEquals("urn:non-urn:%5b%5d%26%3c%3e%5e%60%7b%7c%7d", uri.toASCIIString());
     }
 
     @Test
     public void special_UTF8_chars_are_escaped() throws Exception {
         URI uri = new URN("non-urn", "ÄÜÖ").toURI();
-        assertEquals("urn:non-urn:%C3%84%C3%9C%C3%96", uri.toASCIIString());
+        assertEquals("urn:non-urn:%c3%84%c3%9c%c3%96", uri.toASCIIString());
     }
 
     @Test(expected = URNSyntaxException.class)
@@ -105,6 +111,22 @@ public class URNTest {
         URI uri = new URI("urn:non-urn:%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D");
         URN urn = new URN(uri);
         assertEquals("Wrong NSS", "ÄÜÖ[]&<>^`{|}", urn.getNamespaceSpecificString());
+    }
+
+    @Test
+    public void Non_reserved_encoded_characters_get_decoded() throws Exception {
+        URN urn = new URN("urn:mix:%c3%84%2c");
+        assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", urn.getNamespaceSpecificString());
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void Invalid_UTF8_encoding_throws_exception() throws Exception {
+        new URN("urn:foo:a123-%C3__-456-%2c");
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void URN_String_containing_null_throws_exception() throws Exception {
+        new URN("urn:foo:a123-\u0000-456-%2c");
     }
 
     @Test(expected = URNSyntaxException.class)
@@ -146,4 +168,21 @@ public class URNTest {
         assertEquals("URNs should be equal",
                 new URN("urn:foo:bar"), new URN("urn:foo:bar"));
     }
+
+    @Test
+    public void Lexical_unequivalent_URNs_are_not_equal() throws Exception {
+        final String message = "Lexical unequivalent URNs should be not equal";
+        assertNotEquals(message, new URN("urn:foo:a123%2C456"), new URN("URN:FOO:a123,456"));
+        assertNotEquals(message, new URN("urn:foo:A123,456"), new URN("URN:FOO:a123,456"));
+    }
+
+    @Test
+    public void Lexical_equivalent_URNs_are_equal() throws Exception {
+        final String message = "Lexical equivalent URNs should be equal";
+        assertEquals(message, new URN("URN:foo:a123,456"), new URN("urn:foo:a123,456"));
+        assertEquals(message, new URN("URN:foo:a123,456"), new URN("urn:FOO:a123,456"));
+        assertEquals(message, new URN("urn:foo:a123,456"), new URN("urn:FOO:a123,456"));
+        assertEquals(message, new URN("urn:foo:a123%2C456"), new URN("URN:FOO:a123%2c456"));
+    }
+
 }

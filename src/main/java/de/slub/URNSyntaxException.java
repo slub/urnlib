@@ -21,4 +21,8 @@ public class URNSyntaxException extends Exception {
     public URNSyntaxException(String msg) {
         super(msg);
     }
+
+    public URNSyntaxException(String msg, Throwable t) {
+        super(msg, t);
+    }
 }

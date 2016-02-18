@@ -17,13 +17,15 @@
 
 package de.slub;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
+import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import static java.lang.Character.forDigit;
-import static java.lang.Character.toUpperCase;
+import static java.lang.Character.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class URN {
 
@@ -41,12 +43,7 @@ public class URN {
     }
 
     public URN(String urn) throws URNSyntaxException {
-        try {
-            init(new URI(assertNotNullNotEmpty("URN", urn)));
-        } catch (URISyntaxException e) {
-            throw new URNSyntaxException(
-                    String.format("Invalid format `%s` is probably not a URN", urn));
-        }
+        init(urn);
     }
 
     public String getNamespaceIdentifier() {
@@ -57,7 +54,7 @@ public class URN {
         return namespaceSpecificString;
     }
 
-    public URI toURI() throws URISyntaxException, URNSyntaxException {
+    public URI toURI() throws URISyntaxException {
         return new URI(this.toString());
     }
 
@@ -69,7 +66,9 @@ public class URN {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof URN) {
-            return this.toString().equals(obj.toString());
+            URN comparee = (URN) obj;
+            return namespaceIdentifier.equalsIgnoreCase(comparee.namespaceIdentifier)
+                    && encodedNamespaceSpecificString.equals(comparee.encodedNamespaceSpecificString);
         }
         return false;
     }
@@ -82,12 +81,28 @@ public class URN {
     private void init(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
         this.namespaceIdentifier = assertValidNID(namespaceIdentifier);
         this.namespaceSpecificString = assertValidNSS(namespaceSpecificString);
-        this.encodedNamespaceSpecificString = utf8encode(namespaceSpecificString);
+        this.encodedNamespaceSpecificString = utf8encode(this.namespaceSpecificString);
+    }
+
+    private void init(String urn) throws URNSyntaxException {
+        assertNotNullNotEmpty("URN", urn);
+        final String[] parts = urn.split(":");
+
+        if (parts.length < 3 || !"urn".equalsIgnoreCase(parts[0])) {
+            throw new URNSyntaxException(
+                    String.format("Invalid format `%s` is probably not a URN", urn));
+        }
+
+        int thirdPartIndex = urn.indexOf(parts[1]) + parts[1].length() + 1;
+
+        this.namespaceIdentifier = assertValidNID(parts[1]);
+        this.encodedNamespaceSpecificString = normalizeOctedPairs(assertValidNSS(urn.substring(thirdPartIndex)));
+        this.namespaceSpecificString = utf8decode(this.encodedNamespaceSpecificString);
     }
 
     private void init(URI uri) throws URNSyntaxException {
         final String scheme = uri.getScheme();
-        if (!"urn".equals(scheme)) {
+        if (!"urn".equalsIgnoreCase(scheme)) {
             throw new URNSyntaxException(
                     String.format("Invalid scheme `%s` Given URI is not a URN", scheme));
         }
@@ -124,62 +139,124 @@ public class URN {
         return namespaceSpecificString;
     }
 
-    private String assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
+    private void assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
         if ((s == null) || (s.isEmpty())) {
             throw new URNSyntaxException(part + " cannot be null or empty");
         }
-        return s;
     }
 
     // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
     // http://www.utf8-chartable.de/
+    // http://www.ascii-code.com/
     private String utf8encode(String s) throws URNSyntaxException {
         StringBuilder sb = new StringBuilder();
         for (char c : s.toCharArray()) {
-            switch (c) {
-                // Characters here are in Unicode so we can easily switch-case them
-                case 0:
-                    throw new URNSyntaxException("Illegal character `0` found");
-                case '%':   // Encode reserved character set (RFC 2141, 2.3)
-                case '/':
-                case '?':
-                case '#':
-                case '\\':   // Encode explicitly excluded characters (RFC 2141, 2.4)
-                case '"':
-                case '&':
-                case '<':
-                case '>':
-                case '[':
-                case ']':
-                case '^':
-                case '`':
-                case '{':
-                case '|':
-                case '}':
-                case '~':
-                    appendEncoded(sb, c);
-                    break;
-                default:
-                    // URN encoding requires UTF-8, so transform Unicode character to UTF-8 bytes and encode them
-                    for (byte b : String.valueOf(c).getBytes(StandardCharsets.UTF_8)) {
-                        if ((b >= 0x01) && (b <= 0x20) || ((b >= 0x7F))) {
-                            // Encode range 0x1 to 0x20 hex and 0x7f to 0xff (RFC 2141, 2.4)
-                            appendEncoded(sb, c);
-                        } else {
-                            // no need for encoding, just append and skip to next character
-                            sb.append(c);
-                            break;
-                        }
-                    }
+            if (c == 0) {
+                throw new URNSyntaxException("Illegal character `0` found");
+            }
+            if (isReservedCharacter(c)) {
+                appendEncoded(sb, c);
+            } else {
+                sb.append(c);
             }
         }
         return sb.toString();
     }
 
-    private void appendEncoded(StringBuilder sb, char c) {
-        sb.append('%');
-        sb.append(toUpperCase(forDigit((c >> 4) & 0xF, 16)));
-        sb.append(toUpperCase(forDigit((c & 0xF), 16)));
+    // Encode reserved character set (RFC 2141, 2.3) and explicitly excluded characters (RFC 2141, 2.4)
+    private boolean isReservedCharacter(char c) {
+        return (c > 0x80)
+                || ((c >= 0x01) && (c <= 0x20) || ((c >= 0x7F)) && (c <= 0xFF))
+                || c == '%' || c == '/' || c == '?' || c == '#' || c == '<' || c == '"' || c == '&' || c == '\\'
+                || c == '>' || c == '[' || c == ']' || c == '^' || c == '`' || c == '{' || c == '|'
+                || c == '}' || c == '~';
     }
 
+    private void appendEncoded(StringBuilder sb, char c) {
+        // A possible problem with this encoding is, that it only
+        // encodes UTF-8 characters of two byte length while UTF-8
+        // characters can be encoding in up to 4 bytes
+        for (byte b : String.valueOf(c).getBytes(UTF_8)) {
+            sb.append('%');
+            sb.append(toLowerCase(forDigit((b >> 4) & 0xF, 16)));
+            sb.append(toLowerCase(forDigit((b & 0xF), 16)));
+        }
+    }
+
+    private String utf8decode(String s) throws URNSyntaxException {
+        // A possible problem with this decoding is, that it only
+        // encodes UTF-8 characters of two byte length while UTF-8
+        // characters can be encoding in up to 4 bytes
+        StringBuilder sb = new StringBuilder(s.length());
+        try (StringReader sr = new StringReader(s)) {
+            int i;
+            while ((i = sr.read()) != -1) {
+                char c = (char) i;
+
+                if (c == 0) {
+                    throw new URNSyntaxException("Illegal character `0` found");
+                }
+
+                if (c == '%') {
+                    // read octed
+                    char[] charBuffer = new char[2];
+                    byte[] byteBuffer = new byte[2];
+
+                    sr.read(charBuffer);
+                    String octed = String.copyValueOf(charBuffer);
+                    byteBuffer[0] = (byte) Integer.parseInt(octed, 16);
+
+                    char decodedCharacter;
+
+                    if (isUnicodeIdentifierPart(byteBuffer[0] & 0xF)) {
+                        // if unicode read next octed and decode character
+                        if (((char) sr.read()) != '%') {
+                            throw new URNSyntaxException("Invalid encoding: Expected another `%`-encoded octed");
+                        }
+                        sr.read(charBuffer);
+                        String octed2 = String.copyValueOf(charBuffer);
+                        byteBuffer[1] = (byte) Integer.parseInt(octed2, 16);
+
+                        decodedCharacter = UTF_8.decode(ByteBuffer.wrap(byteBuffer)).get();
+                        sb.append(decodedCharacter);
+                    } else {
+                        // decode ASCII character by casting
+                        decodedCharacter = (char) byteBuffer[0];
+                        sb.append(decodedCharacter);
+                    }
+                } else {
+                    // no %-encoding started, just append the character
+                    sb.append(c);
+                }
+            }
+        } catch (IOException e) {
+            throw new URNSyntaxException("Error parsing URN", e);
+        }
+        return sb.toString();
+    }
+
+    private String normalizeOctedPairs(String s) throws URNSyntaxException {
+        StringBuilder sb = new StringBuilder(s.length());
+        try (StringReader sr = new StringReader(s)) {
+            int i;
+            while ((i = sr.read()) != -1) {
+                char c = (char) i;
+
+                if (c == 0) {
+                    throw new URNSyntaxException("Illegal character `0` found");
+                }
+
+                if (c == '%') {
+                    sb.append('%')
+                            .append(toLowerCase((char) sr.read()))
+                            .append(toLowerCase((char) sr.read()));
+                } else {
+                    sb.append(c);
+                }
+            }
+        } catch (IOException e) {
+            throw new URNSyntaxException("Error parsing URN", e);
+        }
+        return sb.toString().trim();
+    }
 }
