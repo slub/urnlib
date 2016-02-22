@@ -19,12 +19,14 @@ package de.slub;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
+import java.net.URLDecoder;
 import java.util.regex.Pattern;
 
-import static java.lang.Character.*;
+import static java.lang.Character.forDigit;
+import static java.lang.Character.toLowerCase;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class URN {
@@ -173,9 +175,6 @@ public class URN {
     }
 
     private void appendEncoded(StringBuilder sb, char c) {
-        // A possible problem with this encoding is, that it only
-        // encodes UTF-8 characters of two byte length while UTF-8
-        // characters can be encoding in up to 4 bytes
         for (byte b : String.valueOf(c).getBytes(UTF_8)) {
             sb.append('%');
             sb.append(toLowerCase(forDigit((b >> 4) & 0xF, 16)));
@@ -184,55 +183,11 @@ public class URN {
     }
 
     private String utf8decode(String s) throws URNSyntaxException {
-        // A possible problem with this decoding is, that it only
-        // encodes UTF-8 characters of two byte length while UTF-8
-        // characters can be encoding in up to 4 bytes
-        StringBuilder sb = new StringBuilder(s.length());
-        try (StringReader sr = new StringReader(s)) {
-            int i;
-            while ((i = sr.read()) != -1) {
-                char c = (char) i;
-
-                if (c == 0) {
-                    throw new URNSyntaxException("Illegal character `0` found");
-                }
-
-                if (c == '%') {
-                    // read octed
-                    char[] charBuffer = new char[2];
-                    byte[] byteBuffer = new byte[2];
-
-                    sr.read(charBuffer);
-                    String octed = String.copyValueOf(charBuffer);
-                    byteBuffer[0] = (byte) Integer.parseInt(octed, 16);
-
-                    char decodedCharacter;
-
-                    if (isUnicodeIdentifierPart(byteBuffer[0] & 0xF)) {
-                        // if unicode read next octed and decode character
-                        if (((char) sr.read()) != '%') {
-                            throw new URNSyntaxException("Invalid encoding: Expected another `%`-encoded octed");
-                        }
-                        sr.read(charBuffer);
-                        String octed2 = String.copyValueOf(charBuffer);
-                        byteBuffer[1] = (byte) Integer.parseInt(octed2, 16);
-
-                        decodedCharacter = UTF_8.decode(ByteBuffer.wrap(byteBuffer)).get();
-                        sb.append(decodedCharacter);
-                    } else {
-                        // decode ASCII character by casting
-                        decodedCharacter = (char) byteBuffer[0];
-                        sb.append(decodedCharacter);
-                    }
-                } else {
-                    // no %-encoding started, just append the character
-                    sb.append(c);
-                }
-            }
-        } catch (IOException e) {
+        try {
+            return URLDecoder.decode(s, UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
             throw new URNSyntaxException("Error parsing URN", e);
         }
-        return sb.toString();
     }
 
     private String normalizeOctedPairs(String s) throws URNSyntaxException {

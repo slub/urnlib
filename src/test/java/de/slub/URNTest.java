@@ -119,9 +119,10 @@ public class URNTest {
         assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", urn.getNamespaceSpecificString());
     }
 
-    @Test(expected = URNSyntaxException.class)
-    public void Invalid_UTF8_encoding_throws_exception() throws Exception {
-        new URN("urn:foo:a123-%C3__-456-%2c");
+    @Test
+    public void Decodes_three_byte_UTF8_encoding() throws Exception {
+        final URN urn = new URN("urn:foo:a123-%e0%a4%8b-456");
+        assertEquals("Expected decoded `DEVANAGARI LETTER VOCALIC R`", "a123-\u090b-456", urn.getNamespaceSpecificString());
     }
 
     @Test(expected = URNSyntaxException.class)
