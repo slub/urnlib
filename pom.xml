@@ -59,6 +59,20 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.5</version>
             </plugin>
+            <!-- Create code coverage reports and submit to coveralls.io -->
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>2.1.0</version>
+            </plugin>
+            <plugin>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <format>xml</format>
+                    <maxmem>256m</maxmem>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
