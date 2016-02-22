@@ -22,18 +22,17 @@ import org.junit.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 public class URNTest {
 
     @Test(expected = URNSyntaxException.class)
-    public void empty_namespace_identifier_throws_exception() throws URNSyntaxException {
+    public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
         new URN(null, "0451450523");
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void empty_namespace_specific_string_throws_exception() throws URNSyntaxException {
+    public void Empty_namespace_specific_string_throws_exception() throws URNSyntaxException {
         new URN("isbn", null);
     }
 
@@ -43,47 +42,47 @@ public class URNTest {
     }
 
     @Test
-    public void returns_namespace_identifier() throws URNSyntaxException {
+    public void Returns_namespace_identifier() throws URNSyntaxException {
         final String nid = new URN("isbn", "0451450523").getNamespaceIdentifier();
         assertEquals("isbn", nid);
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void namespace_identifier_can_not_be_urn() throws URNSyntaxException {
+    public void Namespace_identifier_can_not_be_urn() throws URNSyntaxException {
         new URN("urn", "test");
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxException {
+    public void Invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxException {
         new URN("-is!bn", "test");
     }
 
     @Test
-    public void returns_namespace_specific_string() throws URNSyntaxException {
+    public void Returns_namespace_specific_string() throws URNSyntaxException {
         final String nid = new URN("isbn", "0451450523").getNamespaceSpecificString();
         assertEquals("0451450523", nid);
     }
 
     @Test
-    public void toURI() throws URISyntaxException, URNSyntaxException {
+    public void Generates_valid_URI() throws URISyntaxException, URNSyntaxException {
         URI uri = new URN("isbn", "0451450523").toURI();
         assertEquals("urn:isbn:0451450523", uri.toASCIIString());
     }
 
     @Test
-    public void reserved_chars_in_URI_are_escaped() throws Exception {
+    public void Reserved_chars_in_URI_are_escaped() throws Exception {
         URI uri = new URN("reserved", "%/?#,").toURI();
         assertEquals("urn:reserved:%25%2f%3f%23,", uri.toASCIIString());
     }
 
     @Test
-    public void non_URN_chars_in_URI_are_escaped() throws Exception {
-        URI uri = new URN("non-urn", "[]&<>^`{|}").toURI();
-        assertEquals("urn:non-urn:%5b%5d%26%3c%3e%5e%60%7b%7c%7d", uri.toASCIIString());
+    public void Non_URN_chars_in_URI_are_escaped() throws Exception {
+        URI uri = new URN("non-urn", " []&<>^`{|}").toURI();
+        assertEquals("urn:non-urn:%20%5b%5d%26%3c%3e%5e%60%7b%7c%7d", uri.toASCIIString());
     }
 
     @Test
-    public void special_UTF8_chars_are_escaped() throws Exception {
+    public void Special_UTF8_chars_are_escaped() throws Exception {
         URI uri = new URN("non-urn", "ÄÜÖ").toURI();
         assertEquals("urn:non-urn:%c3%84%c3%9c%c3%96", uri.toASCIIString());
     }
@@ -126,8 +125,30 @@ public class URNTest {
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void URN_String_containing_null_throws_exception() throws Exception {
+    public void URN_string_containing_null_throws_exception() throws Exception {
         new URN("urn:foo:a123-\u0000-456-%2c");
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void String_containing_empty_URN_parts_throws_exception() throws Exception {
+        new URN("urn::");
+    }
+
+    @Test
+    public void String_containing_unescaped_whitespace_in_NSS_throws_exception() throws Exception {
+        // https://en.wikipedia.org/wiki/Whitespace_character
+        String[] whitespaceStrings = new String[]{
+                "\u0009", "\u000B", "\u000C", "\u0020", "\u0085", "\u00A0", "\u1680", "\u2000", "\u2001", "\u2002",
+                "\u2003", "\u2004", "\u2005", "\u2006", "\u2007", "\u2008", "\u2009", "\u200A", "\u2028", "\u2029",
+                "\u202f", "\u205f", "\u3000"
+        };
+        for (String s : whitespaceStrings)
+            try {
+                new URN("urn:whitespaces:" + s);
+                fail(String.format("Expected %s to be thrown for character \\u%04d",
+                        URNSyntaxException.class.getSimpleName(), (int) s.charAt(0)));
+            } catch (URNSyntaxException _) {
+            }
     }
 
     @Test(expected = URNSyntaxException.class)

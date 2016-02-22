@@ -32,6 +32,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class URN {
 
     static final private Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{1,31}$");
+    static final private Pattern allowedNSS = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
     private String encodedNamespaceSpecificString;
     private String namespaceIdentifier;
     private String namespaceSpecificString;
@@ -82,7 +83,7 @@ public class URN {
 
     private void init(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
         this.namespaceIdentifier = assertValidNID(namespaceIdentifier);
-        this.namespaceSpecificString = assertValidNSS(namespaceSpecificString);
+        this.namespaceSpecificString = assertValidNSS(namespaceSpecificString, false);
         this.encodedNamespaceSpecificString = utf8encode(this.namespaceSpecificString);
     }
 
@@ -95,11 +96,11 @@ public class URN {
                     String.format("Invalid format `%s` is probably not a URN", urn));
         }
 
-        int thirdPartIndex = urn.indexOf(parts[1]) + parts[1].length() + 1;
+        final String encodedNSSPart = assertValidNSS(urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1), true);
 
         this.namespaceIdentifier = assertValidNID(parts[1]);
-        this.encodedNamespaceSpecificString = normalizeOctedPairs(assertValidNSS(urn.substring(thirdPartIndex)));
-        this.namespaceSpecificString = utf8decode(this.encodedNamespaceSpecificString);
+        this.namespaceSpecificString = utf8decode(encodedNSSPart);
+        this.encodedNamespaceSpecificString = normalizeOctedPairs(encodedNSSPart);
     }
 
     private void init(URI uri) throws URNSyntaxException {
@@ -136,15 +137,22 @@ public class URN {
         return namespaceIdentifier;
     }
 
-    private String assertValidNSS(String namespaceSpecificString) throws URNSyntaxException {
+    private String assertValidNSS(String namespaceSpecificString, boolean isEncoded) throws URNSyntaxException {
         assertNotNullNotEmpty("Namespace Specific String", namespaceSpecificString);
+
+        if (isEncoded && !allowedNSS.matcher(namespaceSpecificString).matches()) {
+            throw new URNSyntaxException(
+                    String.format("Not allowed characters in Namespace Specific String '%s'", namespaceSpecificString));
+        }
+
         return namespaceSpecificString;
     }
 
-    private void assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
+    private String assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
         if ((s == null) || (s.isEmpty())) {
             throw new URNSyntaxException(part + " cannot be null or empty");
         }
+        return s;
     }
 
     // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
