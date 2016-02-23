@@ -49,6 +49,12 @@ public class URN {
         init(urn);
     }
 
+    public URN(URN urn) {
+        this.namespaceIdentifier = urn.namespaceIdentifier;
+        this.namespaceSpecificString = urn.namespaceSpecificString;
+        this.encodedNamespaceSpecificString = urn.encodedNamespaceSpecificString;
+    }
+
     public String getNamespaceIdentifier() {
         return namespaceIdentifier;
     }
@@ -79,6 +85,11 @@ public class URN {
     @Override
     public int hashCode() {
         return this.toString().hashCode();
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return new URN(this);
     }
 
     private void init(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {

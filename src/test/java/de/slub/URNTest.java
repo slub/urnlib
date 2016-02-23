@@ -207,4 +207,18 @@ public class URNTest {
         assertEquals(message, new URN("urn:foo:a123%2C456"), new URN("URN:FOO:a123%2c456"));
     }
 
+    @Test
+    public void Initializing_URN_using_another_URN_object_gives_equal_objects() throws Exception {
+        final URN urn1 = new URN("test", "1224");
+        final URN urn2 = new URN(urn1);
+        assertEquals("Both URNs should be equal", urn1, urn2);
+    }
+
+    @Test
+    public void Cloning_gives_equal_objects() throws Exception {
+        final URN urn1 = new URN("test", "1224");
+        final URN urn2 = (URN) urn1.clone();
+        assertEquals("Both URNs should be equal", urn1, urn2);
+    }
+
 }
