@@ -215,11 +215,6 @@ public class URN {
             int i;
             while ((i = sr.read()) != -1) {
                 char c = (char) i;
-
-                if (c == 0) {
-                    throw new URNSyntaxException("Illegal character `0` found");
-                }
-
                 if (c == '%') {
                     sb.append('%')
                             .append(toLowerCase((char) sr.read()))
