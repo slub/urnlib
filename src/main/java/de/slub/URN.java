@@ -29,7 +29,7 @@ import static java.lang.Character.forDigit;
 import static java.lang.Character.toLowerCase;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class URN {
+final public class URN {
 
     static final private Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{1,31}$");
     static final private Pattern allowedNSS = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
