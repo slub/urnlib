@@ -226,6 +226,6 @@ final public class URN {
         } catch (IOException e) {
             throw new URNSyntaxException("Error parsing URN", e);
         }
-        return sb.toString().trim();
+        return sb.toString();
     }
 }
