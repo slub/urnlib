@@ -47,6 +47,11 @@ public class URNTest {
         assertEquals("isbn", nid);
     }
 
+    @Test
+    public void Allows_single_letter_namespace_identfier() throws URNSyntaxException {
+        new URN("A", "B");
+    }
+
     @Test(expected = URNSyntaxException.class)
     public void Namespace_identifier_can_not_be_urn() throws URNSyntaxException {
         new URN("urn", "test");
@@ -147,7 +152,7 @@ public class URNTest {
                 new URN("urn:whitespaces:" + s);
                 fail(String.format("Expected %s to be thrown for character \\u%04d",
                         URNSyntaxException.class.getSimpleName(), (int) s.charAt(0)));
-            } catch (URNSyntaxException _) {
+            } catch (URNSyntaxException ignored) {
             }
     }
 

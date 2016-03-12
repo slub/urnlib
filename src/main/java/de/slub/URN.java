@@ -31,7 +31,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 final public class URN {
 
-    static final private Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{1,31}$");
+    static final private Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{0,31}$");
     static final private Pattern allowedNSS = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
     private String encodedNamespaceSpecificString;
     private String namespaceIdentifier;
