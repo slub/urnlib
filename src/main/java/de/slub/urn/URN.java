@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.slub;
+package de.slub.urn;
 
 import java.io.IOException;
 import java.io.StringReader;

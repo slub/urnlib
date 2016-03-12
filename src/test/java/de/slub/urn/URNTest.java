@@ -15,8 +15,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.slub;
+package de.slub.urn;
 
+import de.slub.urn.URN;
+import de.slub.urn.URNSyntaxException;
 import org.junit.Test;
 
 import java.net.URI;
