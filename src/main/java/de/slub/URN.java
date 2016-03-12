@@ -93,9 +93,11 @@ final public class URN {
     }
 
     private void init(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
-        this.namespaceIdentifier = assertValidNID(namespaceIdentifier);
-        this.namespaceSpecificString = assertValidNSS(namespaceSpecificString, false);
-        this.encodedNamespaceSpecificString = utf8encode(this.namespaceSpecificString);
+        assertNotNullNotEmpty("Namespace Identifier", namespaceIdentifier);
+        assertNotNullNotEmpty("Namespace Specific String", namespaceSpecificString);
+        this.namespaceIdentifier = validateAndReturnNID(namespaceIdentifier);
+        this.namespaceSpecificString = namespaceSpecificString;
+        this.encodedNamespaceSpecificString = utf8encode(namespaceSpecificString);
     }
 
     private void init(String urn) throws URNSyntaxException {
@@ -107,9 +109,10 @@ final public class URN {
                     String.format("Invalid format `%s` is probably not a URN", urn));
         }
 
-        final String encodedNSSPart = assertValidNSS(urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1), true);
+        final String encodedNSSPart = validateAndReturnEncodedNSS(
+                urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1));
 
-        this.namespaceIdentifier = assertValidNID(parts[1]);
+        this.namespaceIdentifier = validateAndReturnNID(parts[1]);
         this.namespaceSpecificString = utf8decode(encodedNSSPart);
         this.encodedNamespaceSpecificString = normalizeOctedPairs(encodedNSSPart);
     }
@@ -133,9 +136,7 @@ final public class URN {
         init(nid, nss);
     }
 
-    private String assertValidNID(String namespaceIdentifier) throws URNSyntaxException {
-        assertNotNullNotEmpty("Namespace Identifier", namespaceIdentifier);
-
+    private String validateAndReturnNID(String namespaceIdentifier) throws URNSyntaxException {
         if ("urn".equalsIgnoreCase(namespaceIdentifier)) {
             throw new URNSyntaxException("Namespace identifier can not be 'urn'");
         }
@@ -148,10 +149,8 @@ final public class URN {
         return namespaceIdentifier;
     }
 
-    private String assertValidNSS(String namespaceSpecificString, boolean isEncoded) throws URNSyntaxException {
-        assertNotNullNotEmpty("Namespace Specific String", namespaceSpecificString);
-
-        if (isEncoded && !allowedNSS.matcher(namespaceSpecificString).matches()) {
+    private String validateAndReturnEncodedNSS(String namespaceSpecificString) throws URNSyntaxException {
+        if (!allowedNSS.matcher(namespaceSpecificString).matches()) {
             throw new URNSyntaxException(
                     String.format("Not allowed characters in Namespace Specific String '%s'", namespaceSpecificString));
         }
