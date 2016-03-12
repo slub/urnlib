@@ -5,7 +5,9 @@
 
 Java library for representing, parsing and encoding URNs as in [RFC 2141].
 
-This library implements the class `de.slub.URN`, representing an Uniform
-Resource Name (URN) and the class `de.slub.URNSyntaxException`.
+This library implements the class `de.slub.urn.URN`, representing an Uniform
+Resource Name (URN) and the class `de.slub.urn.URNSyntaxException`.
+
+Further it defines and interface `de.slub.urn.URNResolver` for URN resolving implementations.
 
 [RFC 2141]: https://tools.ietf.org/html/rfc2141
