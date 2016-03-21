@@ -1,7 +1,7 @@
 # urnlib
 
 [![Build Status](https://travis-ci.org/slub/urnlib.png?branch=master)](https://travis-ci.org/slub/urnlib)
-[![Coverage Status](https://coveralls.io/repos/slub/urnlib/badge.png?branch=master)](https://coveralls.io/r/slub/urnlib?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/slub/urnlib/badge.svg?branch=master)](https://coveralls.io/github/slub/urnlib?branch=master)
 
 Java library for representing, parsing and encoding URNs as in [RFC 2141].
 
