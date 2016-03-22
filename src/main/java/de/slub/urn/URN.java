@@ -31,28 +31,18 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 final public class URN {
 
-    static final private Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{0,31}$");
-    static final private Pattern allowedNSS = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
-    private String encodedNamespaceSpecificString;
-    private String namespaceIdentifier;
-    private String namespaceSpecificString;
+    private static final Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{0,31}$");
+    private static final Pattern allowedNSS = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
+    private static final String URN_SCHEME = "urn";
 
-    public URN(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
-        init(namespaceIdentifier, namespaceSpecificString);
-    }
+    private final String encodedNamespaceSpecificString;
+    private final String namespaceIdentifier;
+    private final String namespaceSpecificString;
 
-    public URN(URI uri) throws URNSyntaxException {
-        init(uri);
-    }
-
-    public URN(String urn) throws URNSyntaxException {
-        init(urn);
-    }
-
-    public URN(URN urn) {
-        this.namespaceIdentifier = urn.namespaceIdentifier;
-        this.namespaceSpecificString = urn.namespaceSpecificString;
-        this.encodedNamespaceSpecificString = urn.encodedNamespaceSpecificString;
+    private URN(String namespaceIdentifier, String namespaceSpecificString, String encodedNamespaceSpecificString) {
+        this.namespaceIdentifier = namespaceIdentifier;
+        this.namespaceSpecificString = namespaceSpecificString;
+        this.encodedNamespaceSpecificString = encodedNamespaceSpecificString;
     }
 
     public String getNamespaceIdentifier() {
@@ -69,17 +59,14 @@ final public class URN {
 
     @Override
     public String toString() {
-        return String.format("urn:%s:%s", namespaceIdentifier, encodedNamespaceSpecificString);
+        return String.format("%s:%s:%s", URN_SCHEME, namespaceIdentifier, encodedNamespaceSpecificString);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof URN) {
-            URN comparee = (URN) obj;
-            return namespaceIdentifier.equalsIgnoreCase(comparee.namespaceIdentifier)
-                    && encodedNamespaceSpecificString.equals(comparee.encodedNamespaceSpecificString);
-        }
-        return false;
+        return (obj instanceof URN)
+                && namespaceIdentifier.equalsIgnoreCase(((URN) obj).namespaceIdentifier)
+                && encodedNamespaceSpecificString.equals(((URN) obj).encodedNamespaceSpecificString);
     }
 
     @Override
@@ -87,39 +74,41 @@ final public class URN {
         return this.toString().hashCode();
     }
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return new URN(this);
+    public static URN fromURN(URN urn) {
+        return new URN(urn.namespaceIdentifier, urn.namespaceSpecificString, urn.encodedNamespaceSpecificString);
     }
 
-    private void init(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
+    public static URN newInstance(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
         assertNotNullNotEmpty("Namespace Identifier", namespaceIdentifier);
         assertNotNullNotEmpty("Namespace Specific String", namespaceSpecificString);
-        this.namespaceIdentifier = validateAndReturnNID(namespaceIdentifier);
-        this.namespaceSpecificString = namespaceSpecificString;
-        this.encodedNamespaceSpecificString = utf8encode(namespaceSpecificString);
+        validateNID(namespaceIdentifier);
+        return new URN(namespaceIdentifier, namespaceSpecificString, utf8encode(namespaceSpecificString));
     }
 
-    private void init(String urn) throws URNSyntaxException {
+    public static URN fromString(String urn) throws URNSyntaxException {
         assertNotNullNotEmpty("URN", urn);
         final String[] parts = urn.split(":");
 
-        if (parts.length < 3 || !"urn".equalsIgnoreCase(parts[0])) {
+        if (parts.length < 3 || !URN_SCHEME.equalsIgnoreCase(parts[0])) {
             throw new URNSyntaxException(
                     String.format("Invalid format `%s` is probably not a URN", urn));
         }
 
-        final String encodedNSSPart = validateAndReturnEncodedNSS(
-                urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1));
+        final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
+        validateEncodedNSS(encodedNSSPart);
 
-        this.namespaceIdentifier = validateAndReturnNID(parts[1]);
-        this.namespaceSpecificString = utf8decode(encodedNSSPart);
-        this.encodedNamespaceSpecificString = normalizeOctedPairs(encodedNSSPart);
+        final String namespaceIdentifier = parts[1];
+        validateNID(namespaceIdentifier);
+
+        final String namespaceSpecificString = utf8decode(encodedNSSPart);
+        final String encodedNamespaceSpecificString = normalizeOctedPairs(encodedNSSPart);
+
+        return new URN(namespaceIdentifier, namespaceSpecificString, encodedNamespaceSpecificString);
     }
 
-    private void init(URI uri) throws URNSyntaxException {
+    public static URN fromURI(URI uri) throws URNSyntaxException {
         final String scheme = uri.getScheme();
-        if (!"urn".equalsIgnoreCase(scheme)) {
+        if (!URN_SCHEME.equalsIgnoreCase(scheme)) {
             throw new URNSyntaxException(
                     String.format("Invalid scheme `%s` Given URI is not a URN", scheme));
         }
@@ -133,42 +122,43 @@ final public class URN {
             nss = schemeSpecificPart.substring(colonPos + 1);
         }
 
-        init(nid, nss);
+        validateNID(nid);
+
+        return new URN(nid, nss, utf8encode(nss));
     }
 
-    private String validateAndReturnNID(String namespaceIdentifier) throws URNSyntaxException {
-        if ("urn".equalsIgnoreCase(namespaceIdentifier)) {
-            throw new URNSyntaxException("Namespace identifier can not be 'urn'");
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return fromURN(this);
+    }
+
+    private static void validateNID(String namespaceIdentifier) throws URNSyntaxException {
+        if (URN_SCHEME.equalsIgnoreCase(namespaceIdentifier)) {
+            throw new URNSyntaxException(
+                    String.format("Namespace identifier can not be '%s'", URN_SCHEME));
         }
 
         if (!allowedNID.matcher(namespaceIdentifier).matches()) {
             throw new URNSyntaxException(
                     String.format("Not allowed characters in Namespace Identifier '%s'", namespaceIdentifier));
         }
-
-        return namespaceIdentifier;
     }
 
-    private String validateAndReturnEncodedNSS(String namespaceSpecificString) throws URNSyntaxException {
+    static private void validateEncodedNSS(String namespaceSpecificString) throws URNSyntaxException {
         if (!allowedNSS.matcher(namespaceSpecificString).matches()) {
             throw new URNSyntaxException(
                     String.format("Not allowed characters in Namespace Specific String '%s'", namespaceSpecificString));
         }
-
-        return namespaceSpecificString;
     }
 
-    private String assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
+    private static void assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
         if ((s == null) || (s.isEmpty())) {
-            throw new URNSyntaxException(part + " cannot be null or empty");
+            throw new URNSyntaxException(
+                    String.format("%s cannot be null or empty", part));
         }
-        return s;
     }
 
-    // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
-    // http://www.utf8-chartable.de/
-    // http://www.ascii-code.com/
-    private String utf8encode(String s) throws URNSyntaxException {
+    private static String utf8encode(String s) throws URNSyntaxException {
         StringBuilder sb = new StringBuilder();
         for (char c : s.toCharArray()) {
             if (c == 0) {
@@ -184,7 +174,7 @@ final public class URN {
     }
 
     // Encode reserved character set (RFC 2141, 2.3) and explicitly excluded characters (RFC 2141, 2.4)
-    private boolean isReservedCharacter(char c) {
+    private static boolean isReservedCharacter(char c) {
         return (c > 0x80)
                 || ((c >= 0x01) && (c <= 0x20) || ((c >= 0x7F)) && (c <= 0xFF))
                 || c == '%' || c == '/' || c == '?' || c == '#' || c == '<' || c == '"' || c == '&' || c == '\\'
@@ -192,7 +182,10 @@ final public class URN {
                 || c == '}' || c == '~';
     }
 
-    private void appendEncoded(StringBuilder sb, char c) {
+    // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
+    // http://www.utf8-chartable.de/
+    // http://www.ascii-code.com/
+    private static void appendEncoded(StringBuilder sb, char c) {
         for (byte b : String.valueOf(c).getBytes(UTF_8)) {
             sb.append('%');
             sb.append(toLowerCase(forDigit((b >> 4) & 0xF, 16)));
@@ -200,7 +193,7 @@ final public class URN {
         }
     }
 
-    private String utf8decode(String s) throws URNSyntaxException {
+    private static String utf8decode(String s) throws URNSyntaxException {
         try {
             return URLDecoder.decode(s, UTF_8.name());
         } catch (UnsupportedEncodingException e) {
@@ -208,7 +201,7 @@ final public class URN {
         }
     }
 
-    private String normalizeOctedPairs(String s) throws URNSyntaxException {
+    private static String normalizeOctedPairs(String s) throws URNSyntaxException {
         StringBuilder sb = new StringBuilder(s.length());
         try (StringReader sr = new StringReader(s)) {
             int i;
