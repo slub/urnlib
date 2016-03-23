@@ -128,6 +128,7 @@ final public class URN {
     }
 
     @Override
+    @SuppressWarnings("CloneDoesntCallSuperClone")
     protected Object clone() throws CloneNotSupportedException {
         return fromURN(this);
     }
@@ -196,7 +197,13 @@ final public class URN {
     private static String utf8decode(String s) throws URNSyntaxException {
         try {
             return URLDecoder.decode(s, UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
+            // Both Exceptions cannot happen because:
+            //  1. the character set is hard-coded and always known
+            //  2. the hex encoding has been checked by pattern matching before
+            //
+            // Should something be wrong with the above mentioned check, throwing
+            // a URNSyntaxException is in order.
             throw new URNSyntaxException("Error parsing URN", e);
         }
     }
@@ -215,8 +222,7 @@ final public class URN {
                     sb.append(c);
                 }
             }
-        } catch (IOException e) {
-            throw new URNSyntaxException("Error parsing URN", e);
+        } catch (IOException ignored) {
         }
         return sb.toString();
     }
