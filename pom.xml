@@ -23,7 +23,7 @@
 
     <groupId>de.slub-dresden</groupId>
     <artifactId>urnlib</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>URN Library</name>
     <description>Java library for representing, parsing and encoding Uniform Resource Names (URNs)</description>
