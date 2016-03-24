@@ -17,6 +17,11 @@
 
 package de.slub.urn;
 
+/**
+ * An Exception which is thrown in case of unrecoverable errors in an URN resolver.
+ *
+ * @author Ralf Claussnitzer
+ */
 public class URNResolvingException extends Exception {
     public URNResolvingException(String message) {
         super(message);

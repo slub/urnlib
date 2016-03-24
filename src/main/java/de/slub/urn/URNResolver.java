@@ -20,8 +20,26 @@ package de.slub.urn;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * Defines an interface for URN resolvers.
+ *
+ * URN resolvers map a given URN to a list of URLs.
+ *
+ * @author Ralf Claussnitzer
+ * @see <a href="https://tools.ietf.org/html/rfc2141#appendix-A">Handling of URNs by URL resolvers/browsers</a>
+ */
 public interface URNResolver {
 
+    /**
+     * Resolves a given URN to a list of URLs.
+     *
+     * @param urn The URN to be resolved
+     *
+     * @return List of URLs that describe a location for the resource referenced by the given URN.
+     * It shall return an empty list, if no URLs are known.
+     *
+     * @throws URNResolvingException If some error prevents the resolving
+     */
     List<URL> resolve(URN urn) throws URNResolvingException;
 
 }
