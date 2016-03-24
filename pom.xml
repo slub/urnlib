@@ -25,6 +25,32 @@
     <artifactId>urnlib</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <name>URN Library</name>
+    <description>Java library for representing, parsing and encoding Uniform Resource Names (URNs)</description>
+    <url>https://github.com/slub/urnlib</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Ralf Claussnitzer</name>
+            <email>ralf.claussnitzer@slub-dresden.de</email>
+            <organization>Saxon State and University Library Dresden</organization>
+            <organizationUrl>http://www.slub-dresden.de/en/home/</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:slub/urnlib.git</connection>
+        <developerConnection>scm:git:git@github.com:slub/urnlib.git</developerConnection>
+        <url>git@github.com:slub/urnlib.git</url>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -104,6 +130,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>
