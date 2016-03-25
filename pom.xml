@@ -137,7 +137,7 @@
 
     <profiles>
         <profile>
-            <id>release-signed-artifacts</id>
+            <id>release</id>
             <activation>
                 <property>
                     <name>performRelease</name>
