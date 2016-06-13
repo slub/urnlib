@@ -26,98 +26,108 @@ import static org.junit.Assert.*;
 
 public class URNTest {
 
+    public static final String IRRELEVANT_NOT_EMPTY_STRING = "irrelevant";
+
     @Test(expected = URNSyntaxException.class)
     public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
-        URN.newInstance(null, "0451450523");
+        URN.newInstance(null, IRRELEVANT_NOT_EMPTY_STRING);
     }
 
     @Test(expected = URNSyntaxException.class)
     public void Empty_namespace_specific_string_throws_exception() throws URNSyntaxException {
-        URN.newInstance("isbn", null);
+        URN.newInstance(IRRELEVANT_NOT_EMPTY_STRING, null);
     }
 
     @Test(expected = URNSyntaxException.class)
     public void Namespace_specific_string_containing_null_throws_exception() throws Exception {
-        URN.newInstance("isbn", "\u0000");
+        URN.newInstance(IRRELEVANT_NOT_EMPTY_STRING, "\u0000");
     }
 
     @Test
     public void Returns_namespace_identifier() throws URNSyntaxException {
-        final String nid = URN.newInstance("isbn", "0451450523").getNamespaceIdentifier();
-        assertEquals("isbn", nid);
+        final String namespaceIdentifier = "isbn";
+        final String nid = URN.newInstance(namespaceIdentifier, IRRELEVANT_NOT_EMPTY_STRING).getNamespaceIdentifier();
+        assertEquals(namespaceIdentifier, nid);
     }
 
     @Test
-    public void Allows_single_letter_namespace_identfier() throws URNSyntaxException {
+    public void Allows_single_letter_namespace_identifier() throws URNSyntaxException {
         URN.newInstance("A", "B");
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Namespace_identifier_can_not_be_urn() throws URNSyntaxException {
-        URN.newInstance("urn", "test");
+    public void URN_as_namespace_identifier_throws_exception() throws URNSyntaxException {
+        final String badNamespaceIdentifier = "urn";
+        URN.newInstance(badNamespaceIdentifier, IRRELEVANT_NOT_EMPTY_STRING);
     }
 
     @Test(expected = URNSyntaxException.class)
     public void Invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxException {
-        URN.newInstance("-is!bn", "test");
+        final String badNamespaceIdentifier = "-is!bn";
+        URN.newInstance(badNamespaceIdentifier, IRRELEVANT_NOT_EMPTY_STRING);
     }
 
     @Test
     public void Returns_namespace_specific_string() throws URNSyntaxException {
-        final String nid = URN.newInstance("isbn", "0451450523").getNamespaceSpecificString();
-        assertEquals("0451450523", nid);
+        final String namespaceSpecificString = "0451450523";
+        final String nid = URN.newInstance(IRRELEVANT_NOT_EMPTY_STRING, namespaceSpecificString).getNamespaceSpecificString();
+        assertEquals(namespaceSpecificString, nid);
     }
 
     @Test
     public void Generates_valid_URI() throws URISyntaxException, URNSyntaxException {
-        URI uri = URN.newInstance("isbn", "0451450523").toURI();
-        assertEquals("urn:isbn:0451450523", uri.toASCIIString());
+        final String asciiString = URN.newInstance("isbn", "0451450523").toURI().toASCIIString();
+        assertEquals("urn:isbn:0451450523", asciiString);
     }
 
     @Test
     public void Reserved_chars_in_URI_are_escaped() throws Exception {
-        URI uri = URN.newInstance("reserved", "%/?#,").toURI();
-        assertEquals("urn:reserved:%25%2f%3f%23,", uri.toASCIIString());
+        final String asciiString = URN.newInstance("reserved", "%/?#,").toURI().toASCIIString();
+        assertEquals("urn:reserved:%25%2f%3f%23,", asciiString);
     }
 
     @Test
     public void Non_URN_chars_in_URI_are_escaped() throws Exception {
-        URI uri = URN.newInstance("non-urn", " []&<>^`{|}").toURI();
-        assertEquals("urn:non-urn:%20%5b%5d%26%3c%3e%5e%60%7b%7c%7d", uri.toASCIIString());
+        final String asciiString = URN.newInstance("non-urn", " []&<>^`{|}").toURI().toASCIIString();
+        assertEquals("urn:non-urn:%20%5b%5d%26%3c%3e%5e%60%7b%7c%7d", asciiString);
     }
 
     @Test
     public void Special_UTF8_chars_are_escaped() throws Exception {
-        URI uri = URN.newInstance("non-urn", "ÄÜÖ").toURI();
-        assertEquals("urn:non-urn:%c3%84%c3%9c%c3%96", uri.toASCIIString());
+        final String asciiString = URN.newInstance("non-urn", "ÄÜÖ").toURI().toASCIIString();
+        assertEquals("urn:non-urn:%c3%84%c3%9c%c3%96", asciiString);
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Non_URN_URI_cannot_be_parsed() throws Exception {
+    public void Parsing_non_URN_URIs_throws_exception() throws Exception {
         URN.fromURI(new URI("http://foo"));
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Invalid_NID_part_in_URI_cannot_be_parsed() throws Exception {
+    public void Invalid_NID_part_in_URI_throws_exception() throws Exception {
         URN.fromURI(new URI("urn:!?:1234"));
     }
 
     @Test
     public void URN_string_can_be_parsed_into_its_components() throws Exception {
-        URN urn = URN.fromURI(new URI("urn:isbn:0451450523"));
-        assertEquals("Wrong NID ", "isbn", urn.getNamespaceIdentifier());
-        assertEquals("Wrong NSS", "0451450523", urn.getNamespaceSpecificString());
+        final String nid = "isbn";
+        final String nss = "0451450523";
+        final URN urn = URN.fromURI(new URI(String.format("urn:%s:%s", nid, nss)));
+        assertEquals("Wrong NID ", nid, urn.getNamespaceIdentifier());
+        assertEquals("Wrong NSS", nss, urn.getNamespaceSpecificString());
     }
 
     @Test
-    public void URN_parsed_namespace_specific_string_gets_decoded() throws Exception {
-        URN urn = URN.fromURI(new URI("urn:non-urn:%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D"));
-        assertEquals("Wrong NSS", "ÄÜÖ[]&<>^`{|}", urn.getNamespaceSpecificString());
+    public void URN_encoded_namespace_specific_string_gets_decoded() throws Exception {
+        final String encodedNss = "%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D";
+        final String decodedNss = "ÄÜÖ[]&<>^`{|}";
+        final URN urn = URN.fromURI(new URI(String.format("urn:non-urn:%s", encodedNss)));
+        assertEquals("Wrong NSS", decodedNss, urn.getNamespaceSpecificString());
     }
 
     @Test
     public void Non_reserved_encoded_characters_get_decoded() throws Exception {
-        URN urn = URN.fromString("urn:mix:%c3%84%2c");
+        final URN urn = URN.fromString("urn:mix:%c3%84%2c");
         assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", urn.getNamespaceSpecificString());
     }
 
@@ -155,54 +165,51 @@ public class URNTest {
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Convenient_constructor_throws_exception_when_parsing_null() throws URNSyntaxException {
+    public void Factory_method_fromString_throws_exception_when_parsing_null() throws URNSyntaxException {
         URN.fromString(null);
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Convenient_constructor_throws_exception_when_parsing_empty_string() throws URNSyntaxException {
+    public void Factory_method_fromString_throws_exception_when_parsing_empty_string() throws URNSyntaxException {
         URN.fromString("");
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Convenient_constructor_throws_exception_when_parsing_non_URN() throws URNSyntaxException {
+    public void Factory_method_fromString_throws_exception_when_parsing_non_URN() throws URNSyntaxException {
         URN.fromString("http://foo");
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Convenient_constructor_throws_exception_when_parsing_misstructured_string() throws URNSyntaxException {
+    public void Factory_method_throws_exception_when_NSS_part_is_missing() throws URNSyntaxException {
         URN.fromString("urn:foo");
     }
 
     @Test
-    public void Convenient_constructor_can_parse_URN_from_string() throws Exception {
-        final URN urn = URN.fromString("urn:isbn:0451450523");
-        assertEquals("Wrong NID ", "isbn", urn.getNamespaceIdentifier());
-        assertEquals("Wrong NSS", "0451450523", urn.getNamespaceSpecificString());
+    public void Factory_method_fromString_can_parse_URN_from_string() throws Exception {
+        String nid = "isbn";
+        String nss = "0451450523";
+        final URN urn = URN.fromString(String.format("urn:%s:%s", nid, nss));
+        assertEquals("Wrong NID ", nid, urn.getNamespaceIdentifier());
+        assertEquals("Wrong NSS", nss, urn.getNamespaceSpecificString());
     }
 
     @Test
-    public void Identical_URNs_have_the_same_hash_code() throws Exception {
+    public void Equal_URNs_have_the_same_hash_code() throws Exception {
         assertEquals("Hashcode of identical URNs should be equal",
                 URN.fromString("urn:foo:bar").hashCode(), URN.fromString("urn:foo:bar").hashCode());
     }
 
     @Test
-    public void Identical_URNs_are_equal() throws Exception {
-        assertEquals("URNs should be equal",
-                URN.fromString("urn:foo:bar"), URN.fromString("urn:foo:bar"));
-    }
-
-    @Test
-    public void Lexical_unequivalent_URNs_are_not_equal() throws Exception {
+    public void Lexical_unequivalent_URNs_dont_generate_identical_representations() throws Exception {
         final String message = "Lexical unequivalent URNs should be not equal";
         assertNotEquals(message, URN.fromString("urn:foo:a123%2C456"), URN.fromString("URN:FOO:a123,456"));
         assertNotEquals(message, URN.fromString("urn:foo:A123,456"), URN.fromString("URN:FOO:a123,456"));
     }
 
     @Test
-    public void Lexical_equivalent_URNs_are_equal() throws Exception {
+    public void Lexical_equivalent_URNs_generate_identical_representations() throws Exception {
         final String message = "Lexical equivalent URNs should be equal";
+        assertEquals(message, URN.fromString("urn:foo:bar"), URN.fromString("urn:foo:bar"));
         assertEquals(message, URN.fromString("URN:foo:a123,456"), URN.fromString("urn:foo:a123,456"));
         assertEquals(message, URN.fromString("URN:foo:a123,456"), URN.fromString("urn:FOO:a123,456"));
         assertEquals(message, URN.fromString("urn:foo:a123,456"), URN.fromString("urn:FOO:a123,456"));
