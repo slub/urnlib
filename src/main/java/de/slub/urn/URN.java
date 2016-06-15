@@ -23,7 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.util.regex.Pattern;
 
 import static java.lang.Character.forDigit;
 import static java.lang.Character.toLowerCase;
@@ -60,76 +59,23 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 final public class URN {
 
-    private static final Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{0,31}$");
-    private static final Pattern allowedNSS = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
     private static final String URN_SCHEME = "urn";
 
     private final String encodedNamespaceSpecificString;
-    private final String namespaceIdentifier;
+    private final NamespaceIdentifier namespaceIdentifier;
     private final String namespaceSpecificString;
 
-    private URN(String namespaceIdentifier, String namespaceSpecificString, String encodedNamespaceSpecificString) {
+
+    private URN(NamespaceIdentifier namespaceIdentifier, String namespaceSpecificString, String encodedNamespaceSpecificString) {
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
         this.encodedNamespaceSpecificString = encodedNamespaceSpecificString;
     }
 
     /**
-     * Return the URNs Namespace Identifier part.
-     *
-     * @return The Namespace Identifier
-     */
-    public String getNamespaceIdentifier() {
-        return namespaceIdentifier;
-    }
-
-    /**
-     * Return the URNs Namespace Specific String part.
-     *
-     * @return The URL decoded Namespace Specific String
-     */
-    public String getNamespaceSpecificString() {
-        return namespaceSpecificString;
-    }
-
-    /**
-     * Return a URI instance for this URN.
-     *
-     * @return URI instance
-     *
-     * @throws URISyntaxException If a URI couldn't be constructed
-     */
-    public URI toURI() throws URISyntaxException {
-        return new URI(this.toString());
-    }
-
-    /**
-     * Return a URN serialization in URN syntax: <pre>&lt;URN&gt; ::= &quot;urn:&quot; &lt;NID&gt; &quot;:&quot; &lt;NSS&gt;</pre>
-     *
-     * @return URN serialization for this URN instance
-     */
-    @Override
-    public String toString() {
-        return String.format("%s:%s:%s", URN_SCHEME, namespaceIdentifier, encodedNamespaceSpecificString);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (obj instanceof URN)
-                && namespaceIdentifier.equalsIgnoreCase(((URN) obj).namespaceIdentifier)
-                && encodedNamespaceSpecificString.equals(((URN) obj).encodedNamespaceSpecificString);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.toString().hashCode();
-    }
-
-    /**
      * Create a new URN instance using another URN instance.
      *
      * @param urn URN to duplicate
-     *
      * @return New URN instance equal to the given URN instance
      */
     public static URN fromURN(URN urn) {
@@ -143,26 +89,21 @@ final public class URN {
      *
      * @param namespaceIdentifier     The URNs Namespace Identifier
      * @param namespaceSpecificString The URNs Namespace Specific String
-     *
      * @return A new URN instance
-     *
      * @throws URNSyntaxException If any of the syntax rules is violated or if passed parameter
      *                            strings a <pre>null</pre> or empty.
      */
     public static URN newInstance(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
-        assertNotNullNotEmpty("Namespace Identifier", namespaceIdentifier);
+        final NamespaceIdentifier nid = new NamespaceIdentifier(namespaceIdentifier);
         assertNotNullNotEmpty("Namespace Specific String", namespaceSpecificString);
-        validateNID(namespaceIdentifier);
-        return new URN(namespaceIdentifier, namespaceSpecificString, utf8encode(namespaceSpecificString));
+        return new URN(nid, namespaceSpecificString, utf8encode(namespaceSpecificString));
     }
 
     /**
      * Create a new URN instance by parsing a URN serialisation.
      *
      * @param urn String to be parsed into an URN instance with
-     *
      * @return New URN instance
-     *
      * @throws URNSyntaxException If any of the syntax rules is violated or if passed string is <pre>null</pre> or empty.
      */
     public static URN fromString(String urn) throws URNSyntaxException {
@@ -175,10 +116,9 @@ final public class URN {
         }
 
         final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
-        validateEncodedNSS(encodedNSSPart);
+        NamespaceSpecificString.validateNamespaceSpecificString(encodedNSSPart);
 
-        final String namespaceIdentifier = parts[1];
-        validateNID(namespaceIdentifier);
+        final NamespaceIdentifier namespaceIdentifier = new NamespaceIdentifier(parts[1]);
 
         final String namespaceSpecificString = utf8decode(encodedNSSPart);
         final String encodedNamespaceSpecificString = normalizeOctedPairs(encodedNSSPart);
@@ -190,9 +130,7 @@ final public class URN {
      * Constructing a new URN instance by parsing URN parts from a URI instance.
      *
      * @param uri The URI to be parsed into a URN
-     *
      * @return A new URN instance
-     *
      * @throws URNSyntaxException If the URI scheme is not <pre>urn</pre> or the scheme specific part cannot be
      *                            parsed into Namespace Identifier and Namespace Specific String.
      */
@@ -205,41 +143,14 @@ final public class URN {
 
         final String schemeSpecificPart = uri.getSchemeSpecificPart();
         int colonPos = schemeSpecificPart.indexOf(':');
-        String nid = null;
+        NamespaceIdentifier nid = null;
         String nss = null;
         if (colonPos > -1) {
-            nid = schemeSpecificPart.substring(0, colonPos);
+            nid = new NamespaceIdentifier(schemeSpecificPart.substring(0, colonPos));
             nss = schemeSpecificPart.substring(colonPos + 1);
         }
 
-        validateNID(nid);
-
         return new URN(nid, nss, utf8encode(nss));
-    }
-
-    @Override
-    @SuppressWarnings("CloneDoesntCallSuperClone")
-    protected Object clone() throws CloneNotSupportedException {
-        return fromURN(this);
-    }
-
-    private static void validateNID(String namespaceIdentifier) throws URNSyntaxException {
-        if (URN_SCHEME.equalsIgnoreCase(namespaceIdentifier)) {
-            throw new URNSyntaxException(
-                    String.format("Namespace identifier can not be '%s'", URN_SCHEME));
-        }
-
-        if (!allowedNID.matcher(namespaceIdentifier).matches()) {
-            throw new URNSyntaxException(
-                    String.format("Not allowed characters in Namespace Identifier '%s'", namespaceIdentifier));
-        }
-    }
-
-    static private void validateEncodedNSS(String namespaceSpecificString) throws URNSyntaxException {
-        if (!allowedNSS.matcher(namespaceSpecificString).matches()) {
-            throw new URNSyntaxException(
-                    String.format("Not allowed characters in Namespace Specific String '%s'", namespaceSpecificString));
-        }
     }
 
     private static void assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
@@ -315,5 +226,61 @@ final public class URN {
         } catch (IOException ignored) {
         }
         return sb.toString();
+    }
+
+    /**
+     * Return the URNs Namespace Identifier part.
+     *
+     * @return The Namespace Identifier
+     */
+    public String getNamespaceIdentifier() {
+        return namespaceIdentifier.toString();
+    }
+
+    /**
+     * Return the URNs Namespace Specific String part.
+     *
+     * @return The URL decoded Namespace Specific String
+     */
+    public String getNamespaceSpecificString() {
+        return namespaceSpecificString;
+    }
+
+    /**
+     * Return a URI instance for this URN.
+     *
+     * @return URI instance
+     * @throws URISyntaxException If a URI couldn't be constructed
+     */
+    public URI toURI() throws URISyntaxException {
+        return new URI(this.toString());
+    }
+
+    /**
+     * Return a URN serialization in URN syntax: <pre>&lt;URN&gt; ::= &quot;urn:&quot; &lt;NID&gt; &quot;:&quot; &lt;NSS&gt;</pre>
+     *
+     * @return URN serialization for this URN instance
+     */
+    @Override
+    public String toString() {
+        return String.format("%s:%s:%s", URN_SCHEME, namespaceIdentifier, encodedNamespaceSpecificString);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof URN)
+                && namespaceIdentifier.equals(((URN) obj).namespaceIdentifier)
+                && encodedNamespaceSpecificString.equals(((URN) obj).encodedNamespaceSpecificString);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
+    @Override
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    protected Object clone() throws CloneNotSupportedException {
+        return fromURN(this);
     }
 }

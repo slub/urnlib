@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 
 public class URNTest {
 
-    public static final String IRRELEVANT_NOT_EMPTY_STRING = "irrelevant";
+    private static final String IRRELEVANT_NOT_EMPTY_STRING = "irrelevant";
 
     @Test(expected = URNSyntaxException.class)
     public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
@@ -48,23 +48,6 @@ public class URNTest {
         final String namespaceIdentifier = "isbn";
         final String nid = URN.newInstance(namespaceIdentifier, IRRELEVANT_NOT_EMPTY_STRING).getNamespaceIdentifier();
         assertEquals(namespaceIdentifier, nid);
-    }
-
-    @Test
-    public void Allows_single_letter_namespace_identifier() throws URNSyntaxException {
-        URN.newInstance("A", "B");
-    }
-
-    @Test(expected = URNSyntaxException.class)
-    public void URN_as_namespace_identifier_throws_exception() throws URNSyntaxException {
-        final String badNamespaceIdentifier = "urn";
-        URN.newInstance(badNamespaceIdentifier, IRRELEVANT_NOT_EMPTY_STRING);
-    }
-
-    @Test(expected = URNSyntaxException.class)
-    public void Invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxException {
-        final String badNamespaceIdentifier = "-is!bn";
-        URN.newInstance(badNamespaceIdentifier, IRRELEVANT_NOT_EMPTY_STRING);
     }
 
     @Test
@@ -155,13 +138,14 @@ public class URNTest {
                 "\u2003", "\u2004", "\u2005", "\u2006", "\u2007", "\u2008", "\u2009", "\u200A", "\u2028", "\u2029",
                 "\u202f", "\u205f", "\u3000"
         };
-        for (String s : whitespaceStrings)
+        for (String s : whitespaceStrings) {
             try {
                 URN.fromString("urn:whitespaces:" + s);
                 fail(String.format("Expected %s to be thrown for character \\u%04d",
                         URNSyntaxException.class.getSimpleName(), (int) s.charAt(0)));
             } catch (URNSyntaxException ignored) {
             }
+        }
     }
 
     @Test(expected = URNSyntaxException.class)
