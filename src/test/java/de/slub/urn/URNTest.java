@@ -22,7 +22,8 @@ import org.junit.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class URNTest {
 
@@ -36,11 +37,6 @@ public class URNTest {
     @Test(expected = URNSyntaxException.class)
     public void Empty_namespace_specific_string_throws_exception() throws URNSyntaxException {
         URN.newInstance(IRRELEVANT_NOT_EMPTY_STRING, null);
-    }
-
-    @Test(expected = URNSyntaxException.class)
-    public void Namespace_specific_string_containing_null_throws_exception() throws Exception {
-        URN.newInstance(IRRELEVANT_NOT_EMPTY_STRING, "\u0000");
     }
 
     @Test
@@ -100,26 +96,6 @@ public class URNTest {
         assertEquals("Wrong NSS", nss, urn.getNamespaceSpecificString());
     }
 
-    @Test
-    public void URN_encoded_namespace_specific_string_gets_decoded() throws Exception {
-        final String encodedNss = "%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D";
-        final String decodedNss = "ÄÜÖ[]&<>^`{|}";
-        final URN urn = URN.fromURI(new URI(String.format("urn:non-urn:%s", encodedNss)));
-        assertEquals("Wrong NSS", decodedNss, urn.getNamespaceSpecificString());
-    }
-
-    @Test
-    public void Non_reserved_encoded_characters_get_decoded() throws Exception {
-        final URN urn = URN.fromString("urn:mix:%c3%84%2c");
-        assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", urn.getNamespaceSpecificString());
-    }
-
-    @Test
-    public void Decodes_three_byte_UTF8_encoding() throws Exception {
-        final URN urn = URN.fromString("urn:foo:a123-%e0%a4%8b-456");
-        assertEquals("Expected decoded `DEVANAGARI LETTER VOCALIC R`", "a123-\u090b-456", urn.getNamespaceSpecificString());
-    }
-
     @Test(expected = URNSyntaxException.class)
     public void URN_string_containing_null_throws_exception() throws Exception {
         URN.fromString("urn:foo:a123-\u0000-456-%2c");
@@ -128,24 +104,6 @@ public class URNTest {
     @Test(expected = URNSyntaxException.class)
     public void String_containing_empty_URN_parts_throws_exception() throws Exception {
         URN.fromString("urn::");
-    }
-
-    @Test
-    public void String_containing_unescaped_whitespace_in_NSS_throws_exception() throws Exception {
-        // https://en.wikipedia.org/wiki/Whitespace_character
-        String[] whitespaceStrings = new String[]{
-                "\u0009", "\u000B", "\u000C", "\u0020", "\u0085", "\u00A0", "\u1680", "\u2000", "\u2001", "\u2002",
-                "\u2003", "\u2004", "\u2005", "\u2006", "\u2007", "\u2008", "\u2009", "\u200A", "\u2028", "\u2029",
-                "\u202f", "\u205f", "\u3000"
-        };
-        for (String s : whitespaceStrings) {
-            try {
-                URN.fromString("urn:whitespaces:" + s);
-                fail(String.format("Expected %s to be thrown for character \\u%04d",
-                        URNSyntaxException.class.getSimpleName(), (int) s.charAt(0)));
-            } catch (URNSyntaxException ignored) {
-            }
-        }
     }
 
     @Test(expected = URNSyntaxException.class)

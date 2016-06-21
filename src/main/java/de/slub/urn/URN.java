@@ -17,16 +17,8 @@
 
 package de.slub.urn;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
-
-import static java.lang.Character.forDigit;
-import static java.lang.Character.toLowerCase;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Represents a Uniform Resource Name (URN).
@@ -61,15 +53,12 @@ final public class URN {
 
     private static final String URN_SCHEME = "urn";
 
-    private final String encodedNamespaceSpecificString;
     private final NamespaceIdentifier namespaceIdentifier;
-    private final String namespaceSpecificString;
+    private final NamespaceSpecificString namespaceSpecificString;
 
-
-    private URN(NamespaceIdentifier namespaceIdentifier, String namespaceSpecificString, String encodedNamespaceSpecificString) {
+    private URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString) {
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
-        this.encodedNamespaceSpecificString = encodedNamespaceSpecificString;
     }
 
     /**
@@ -79,7 +68,7 @@ final public class URN {
      * @return New URN instance equal to the given URN instance
      */
     public static URN fromURN(URN urn) {
-        return new URN(urn.namespaceIdentifier, urn.namespaceSpecificString, urn.encodedNamespaceSpecificString);
+        return new URN(urn.namespaceIdentifier, urn.namespaceSpecificString);
     }
 
     /**
@@ -87,16 +76,20 @@ final public class URN {
      *
      * Syntax rules for URNs apply as described in RFC2141
      *
-     * @param namespaceIdentifier     The URNs Namespace Identifier
-     * @param namespaceSpecificString The URNs Namespace Specific String
+     * @param namespaceIdentifier     The URNs Namespace Identifier literal
+     * @param namespaceSpecificString The URNs unencoded Namespace Specific String literal
      * @return A new URN instance
      * @throws URNSyntaxException If any of the syntax rules is violated or if passed parameter
      *                            strings a <pre>null</pre> or empty.
      */
     public static URN newInstance(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
-        final NamespaceIdentifier nid = new NamespaceIdentifier(namespaceIdentifier);
-        assertNotNullNotEmpty("Namespace Specific String", namespaceSpecificString);
-        return new URN(nid, namespaceSpecificString, utf8encode(namespaceSpecificString));
+        try {
+            final NamespaceIdentifier nid = new NamespaceIdentifier(namespaceIdentifier);
+            final NamespaceSpecificString nss = NamespaceSpecificString.fromRawString(namespaceSpecificString);
+            return new URN(nid, nss);
+        } catch (URNSyntaxException | IllegalArgumentException e) {
+            throw new URNSyntaxException("Error creating URN instance", e);
+        }
     }
 
     /**
@@ -115,15 +108,11 @@ final public class URN {
                     String.format("Invalid format `%s` is probably not a URN", urn));
         }
 
-        final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
-        NamespaceSpecificString.validateNamespaceSpecificString(encodedNSSPart);
-
         final NamespaceIdentifier namespaceIdentifier = new NamespaceIdentifier(parts[1]);
+        final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
+        final NamespaceSpecificString namespaceSpecificString = NamespaceSpecificString.fromEncoded(encodedNSSPart);
 
-        final String namespaceSpecificString = utf8decode(encodedNSSPart);
-        final String encodedNamespaceSpecificString = normalizeOctedPairs(encodedNSSPart);
-
-        return new URN(namespaceIdentifier, namespaceSpecificString, encodedNamespaceSpecificString);
+        return new URN(namespaceIdentifier, namespaceSpecificString);
     }
 
     /**
@@ -138,19 +127,19 @@ final public class URN {
         final String scheme = uri.getScheme();
         if (!URN_SCHEME.equalsIgnoreCase(scheme)) {
             throw new URNSyntaxException(
-                    String.format("Invalid scheme `%s` Given URI is not a URN", scheme));
+                    String.format("Invalid scheme: `%s` - Given URI is not a URN", scheme));
         }
 
         final String schemeSpecificPart = uri.getSchemeSpecificPart();
         int colonPos = schemeSpecificPart.indexOf(':');
-        NamespaceIdentifier nid = null;
-        String nss = null;
         if (colonPos > -1) {
-            nid = new NamespaceIdentifier(schemeSpecificPart.substring(0, colonPos));
-            nss = schemeSpecificPart.substring(colonPos + 1);
+            return new URN(
+                    new NamespaceIdentifier(schemeSpecificPart.substring(0, colonPos)),
+                    NamespaceSpecificString.fromEncoded(schemeSpecificPart.substring(colonPos + 1)));
+        } else {
+            throw new URNSyntaxException(
+                    String.format("Invalid format: `%s` - Given schema specific part is not a URN part", schemeSpecificPart));
         }
-
-        return new URN(nid, nss, utf8encode(nss));
     }
 
     private static void assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
@@ -158,74 +147,6 @@ final public class URN {
             throw new URNSyntaxException(
                     String.format("%s cannot be null or empty", part));
         }
-    }
-
-    private static String utf8encode(String s) throws URNSyntaxException {
-        StringBuilder sb = new StringBuilder();
-        for (char c : s.toCharArray()) {
-            if (c == 0) {
-                throw new URNSyntaxException("Illegal character `0` found");
-            }
-            if (isReservedCharacter(c)) {
-                appendEncoded(sb, c);
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    // Encode reserved character set (RFC 2141, 2.3) and explicitly excluded characters (RFC 2141, 2.4)
-    private static boolean isReservedCharacter(char c) {
-        return (c > 0x80)
-                || ((c >= 0x01) && (c <= 0x20) || ((c >= 0x7F)) && (c <= 0xFF))
-                || c == '%' || c == '/' || c == '?' || c == '#' || c == '<' || c == '"' || c == '&' || c == '\\'
-                || c == '>' || c == '[' || c == ']' || c == '^' || c == '`' || c == '{' || c == '|'
-                || c == '}' || c == '~';
-    }
-
-    // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
-    // http://www.utf8-chartable.de/
-    // http://www.ascii-code.com/
-    private static void appendEncoded(StringBuilder sb, char c) {
-        for (byte b : String.valueOf(c).getBytes(UTF_8)) {
-            sb.append('%');
-            sb.append(toLowerCase(forDigit((b >> 4) & 0xF, 16)));
-            sb.append(toLowerCase(forDigit((b & 0xF), 16)));
-        }
-    }
-
-    private static String utf8decode(String s) throws URNSyntaxException {
-        try {
-            return URLDecoder.decode(s, UTF_8.name());
-        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
-            // Both Exceptions cannot happen because:
-            //  1. the character set is hard-coded and always known
-            //  2. the hex encoding has been checked by pattern matching before
-            //
-            // Should something be wrong with the above mentioned check, throwing
-            // a URNSyntaxException is in order.
-            throw new URNSyntaxException("Error parsing URN", e);
-        }
-    }
-
-    private static String normalizeOctedPairs(String s) {
-        StringBuilder sb = new StringBuilder(s.length());
-        try (StringReader sr = new StringReader(s)) {
-            int i;
-            while ((i = sr.read()) != -1) {
-                char c = (char) i;
-                if (c == '%') {
-                    sb.append('%')
-                            .append(toLowerCase((char) sr.read()))
-                            .append(toLowerCase((char) sr.read()));
-                } else {
-                    sb.append(c);
-                }
-            }
-        } catch (IOException ignored) {
-        }
-        return sb.toString();
     }
 
     /**
@@ -243,7 +164,7 @@ final public class URN {
      * @return The URL decoded Namespace Specific String
      */
     public String getNamespaceSpecificString() {
-        return namespaceSpecificString;
+        return namespaceSpecificString.toString();
     }
 
     /**
@@ -263,14 +184,14 @@ final public class URN {
      */
     @Override
     public String toString() {
-        return String.format("%s:%s:%s", URN_SCHEME, namespaceIdentifier, encodedNamespaceSpecificString);
+        return String.format("%s:%s:%s", URN_SCHEME, namespaceIdentifier, namespaceSpecificString);
     }
 
     @Override
     public boolean equals(Object obj) {
         return (obj instanceof URN)
                 && namespaceIdentifier.equals(((URN) obj).namespaceIdentifier)
-                && encodedNamespaceSpecificString.equals(((URN) obj).encodedNamespaceSpecificString);
+                && namespaceSpecificString.equals(((URN) obj).namespaceSpecificString);
     }
 
     @Override
