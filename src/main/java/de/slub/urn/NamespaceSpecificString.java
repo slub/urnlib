@@ -27,6 +27,33 @@ import static java.lang.Character.forDigit;
 import static java.lang.Character.toLowerCase;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN).
+ *
+ * The class takes care of all RFC2141 defined encoding and decoding in order to generate valid Namespace Specific
+ * Strings.
+ *
+ * Creating a URN instance is done by using one of static factory methods, e.g.:
+ * <pre>
+ *     {@code
+ *      URN urn = NamespaceSpecificString.fromRaw("a123,456");
+ *      // or...
+ *      URN urn = NamespaceSpecificString.fromEncoded("a123%2C456");
+ * }
+ * </pre>
+ *
+ * The difference between {@code fromRaw()} and {@code fromEncoded()} is different validation and further encoding of
+ * the given value. When using {@code fromRaw()} the value gets properly encoded and not validated. When using
+ * {@code fromEncoded()} the given value must be a valid and properly encoded Namespace Specific String. The encoded
+ * value can be obtained via {@code toString()}, while the raw, unencoded value is returned by {@code raw()}.
+ *
+ * {@code NamespaceSpecificString} instances are immutable, cloneable and comparable by using {@code equals()}.
+ *
+ * @author Ralf Claussnitzer
+ * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>
+ * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
+ * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
+ */
 public class NamespaceSpecificString {
 
     private static final Pattern allowedCharacters = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
@@ -38,16 +65,31 @@ public class NamespaceSpecificString {
         this.raw = raw;
     }
 
+    // Private constructor entirely for the sake of cloning
     private NamespaceSpecificString(NamespaceSpecificString instanceForCloning) {
         this.encoded = instanceForCloning.encoded;
         this.raw = instanceForCloning.raw;
     }
 
+    /**
+     * Create a new instance from a raw, unencoded Namespace Specific String literal.
+     *
+     * @param raw Unencoded Namespace Specific String literal
+     * @return New {@code NamespaceSpecificString} instance
+     * @throws URNSyntaxException if the given string is <pre>null</pre> or empty or cannot be encoded.
+     */
     public static NamespaceSpecificString fromRawString(String raw) throws URNSyntaxException {
         assertNotNullNotEmpty(raw);
         return new NamespaceSpecificString(encode(raw), raw);
     }
 
+    /**
+     * Create a new instance from a valid, encoded Namespace Specific String literal.
+     *
+     * @param encoded Namespace Specific String literal
+     * @return New {@code NamespaceSpecificString} instance
+     * @throws URNSyntaxException if the given string is <pre>null</pre>, empty, invalid or cannot be decoded.
+     */
     public static NamespaceSpecificString fromEncoded(String encoded) throws URNSyntaxException {
         assertNotNullNotEmpty(encoded);
         validateNamespaceSpecificString(encoded);
@@ -136,10 +178,20 @@ public class NamespaceSpecificString {
         }
     }
 
+    /**
+     * Return the decoded Namespace Specific String literal.
+     *
+     * @return Decoded Namespace Specific String literal
+     */
     public String raw() {
         return this.raw;
     }
 
+    /**
+     * Return the encoded Namespace Specific String literal.
+     *
+     * @return Encoded Namespace Specific String literal
+     */
     @Override
     public String toString() {
         return this.encoded;

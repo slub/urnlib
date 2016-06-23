@@ -41,8 +41,14 @@ import java.net.URISyntaxException;
  * }
  * </pre>
  *
+ * Note that when using the factory methods, the passed namespace specific string has to be properly
+ * encoded in respect to the rules described in RFC2141.
+ *
  * The URN class itself is not designed to be extended. To represent URNs from other URN namespaces a specific class
- * should utilize this class to parse, serialize and validate proper Namespace Specific String encoding.
+ * should utilize this class to parse, serialize and validate proper Namespace Specific String encoding. You should use
+ * the specific URN part classes {@link NamespaceIdentifier} and {@link NamespaceSpecificString}.
+ *
+ * URN instances are immutable, cloneable and comparable by using {@code equals()}.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>
@@ -77,7 +83,7 @@ final public class URN {
      * Syntax rules for URNs apply as described in RFC2141
      *
      * @param namespaceIdentifier     The URNs Namespace Identifier literal
-     * @param namespaceSpecificString The URNs unencoded Namespace Specific String literal
+     * @param namespaceSpecificString The URNs Namespace Specific String literal
      * @return A new URN instance
      * @throws URNSyntaxException If any of the syntax rules is violated or if passed parameter
      *                            strings a <pre>null</pre> or empty.
