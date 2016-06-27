@@ -97,6 +97,11 @@ public class URNTest {
     }
 
     @Test(expected = URNSyntaxException.class)
+    public void Non_URN_URI_throws_exception() throws Exception {
+        URN.fromURI(new URI("urn:invalid-urn-part"));
+    }
+
+    @Test(expected = URNSyntaxException.class)
     public void URN_string_containing_null_throws_exception() throws Exception {
         URN.fromString("urn:foo:a123-\u0000-456-%2c");
     }

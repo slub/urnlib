@@ -74,8 +74,13 @@ public class NamespaceSpecificStringTest {
     }
 
     @Test(expected = URNSyntaxException.class)
-    public void Namespace_specific_string_containing_null_throws_exception() throws Exception {
+    public void Encoded_Namespace_specific_string_containing_null_throws_exception() throws Exception {
         NamespaceSpecificString.fromEncoded("there-is-null-\u0000");
+    }
+
+    @Test(expected = URNSyntaxException.class)
+    public void Raw_Namespace_specific_string_containing_null_throws_exception() throws Exception {
+        NamespaceSpecificString.fromRawString("there-is-null-\u0000");
     }
 
     @Test
