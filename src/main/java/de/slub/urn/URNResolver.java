@@ -17,29 +17,29 @@
 
 package de.slub.urn;
 
-import java.net.URL;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Defines an interface for URN resolvers.
  *
- * URN resolvers map a given URN to a list of URLs.
+ * URN resolvers map a given URN to a set of objects of type T.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141#appendix-A">Handling of URNs by URL resolvers/browsers</a>
+ * @param <T> Type the resolver resolves to
  */
-public interface URNResolver {
+public interface URNResolver<T> {
 
     /**
-     * Resolves a given URN to a list of URLs.
+     * Resolves a given URN to a set of objects.
      *
      * @param urn The URN to be resolved
      *
-     * @return List of URLs that describe a location for the resource referenced by the given URN.
-     * It shall return an empty list, if no URLs are known.
+     * @return Set of objects that describe a location or identifier for the resource referenced by the given URN.
+     * It shall return an empty set, if URN can not be resolved.
      *
      * @throws URNResolvingException If some error prevents the resolving
      */
-    List<URL> resolve(URN urn) throws URNResolvingException;
+    Set<T> resolve(URN urn) throws URNResolvingException;
 
 }
