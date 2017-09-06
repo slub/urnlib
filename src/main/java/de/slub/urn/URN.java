@@ -148,6 +148,33 @@ final public class URN {
         }
     }
 
+    /**
+     * Creates a URN by parsing the given string.
+     * <p>
+     * This convenience factory method works as if by invoking the fromString(String) method; any URNSyntaxException
+     * thrown by the method is caught and wrapped in a new IllegalArgumentException object, which is then thrown.
+     * <p>
+     * This method is provided for use in situations where it is known that the given string is a legal URN, for example
+     * for URN constants declared within in a program, and so it would be considered a programming error for the string
+     * not to parse as such. The methods, which throw URNSyntaxException directly, should be used situations where
+     * a URN is being constructed from user input or from some other source that may be prone to errors.
+     *
+     * @param str String to be parsed into a URN
+     * @return The new URN
+     * @throws NullPointerException     If str is null
+     * @throws IllegalArgumentException If the given string cannot be parsed into a URN
+     */
+    public static URN create(String str) {
+        if (str == null) {
+            throw new NullPointerException("Null is not allowed as an argument");
+        }
+        try {
+            return fromString(str);
+        } catch (URNSyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     private static void assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
         if ((s == null) || (s.isEmpty())) {
             throw new URNSyntaxException(

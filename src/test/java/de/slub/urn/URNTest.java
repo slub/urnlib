@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class URNTest {
 
@@ -176,5 +177,24 @@ public class URNTest {
         final URN urn2 = (URN) urn1.clone();
         assertEquals("Both URNs should be equal", urn1, urn2);
     }
+
+    @Test(expected = NullPointerException.class)
+    public void Convenience_methods_create_throws_NullPointerException_on_null_argument() {
+        URN.create(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void Convenience_methods_create_throws_IllegalArgumentException_on_invalid_URN_literal() {
+        URN.create("");
+    }
+
+    @Test
+    public void Convenience_methods_create_return_URN() {
+        String str = "urn:foo:bar";
+        URN urn = URN.create(str);
+        assertNotNull("Return value should not be null", urn);
+        assertEquals("URN literal should be equal to input string", str, urn.toString());
+    }
+
 
 }
