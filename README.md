@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/slub/urnlib.png?branch=master)](https://travis-ci.org/slub/urnlib)
 [![Coverage Status](https://coveralls.io/repos/github/slub/urnlib/badge.svg?branch=master)](https://coveralls.io/github/slub/urnlib?branch=master)
+[![Maven
+Central](https://maven-badges.herokuapp.com/maven-central/de.slub-dresden/urnlib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.slub-dresden/urnlib)
 
 Java library for representing, parsing and encoding URNs as in [RFC 2141].
 
