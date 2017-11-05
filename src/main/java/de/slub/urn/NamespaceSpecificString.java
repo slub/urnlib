@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.regex.Pattern;
 
 import static java.lang.Character.forDigit;
 import static java.lang.Character.toLowerCase;
@@ -54,15 +53,33 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
  * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
  */
-public class NamespaceSpecificString {
+abstract public class NamespaceSpecificString {
 
-    private static final Pattern allowedCharacters = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
+    public enum NssEncoding {
+        URL_ENCODED, NOT_ENCODED
+    }
+
     private final String encoded;
     private final String raw;
 
-    private NamespaceSpecificString(String encoded, String raw) {
-        this.encoded = encoded;
-        this.raw = raw;
+    public NamespaceSpecificString(String nss, NssEncoding nssEncoding) throws URNSyntaxException {
+        assertNotNullNotEmpty(nss);
+        switch (nssEncoding) {
+            case URL_ENCODED:
+                if (!isValidURLEncodedNamespaceSpecificString(nss)) {
+                    throw new URNSyntaxException(
+                            String.format("Not allowed characters in Namespace Specific String '%s'", nss));
+                }
+                encoded = lowerCaseOctedPairs(nss);
+                raw = decode(encoded);
+                break;
+            case NOT_ENCODED:
+                this.encoded = encode(nss);
+                this.raw = nss;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -75,40 +92,10 @@ public class NamespaceSpecificString {
         this.raw = instanceForCopying.raw;
     }
 
-    /**
-     * Create a new instance from a raw, unencoded Namespace Specific String literal.
-     *
-     * @param raw Unencoded Namespace Specific String literal
-     * @return New {@code NamespaceSpecificString} instance
-     * @throws URNSyntaxException if the given string is <pre>null</pre> or empty or cannot be encoded.
-     */
-    public static NamespaceSpecificString fromRawString(String raw) throws URNSyntaxException {
-        assertNotNullNotEmpty(raw);
-        return new NamespaceSpecificString(encode(raw), raw);
-    }
 
-    /**
-     * Create a new instance from a valid, encoded Namespace Specific String literal.
-     *
-     * @param encoded Namespace Specific String literal
-     * @return New {@code NamespaceSpecificString} instance
-     * @throws URNSyntaxException if the given string is <pre>null</pre>, empty, invalid or cannot be decoded.
-     */
-    public static NamespaceSpecificString fromEncoded(String encoded) throws URNSyntaxException {
-        assertNotNullNotEmpty(encoded);
-        validateNamespaceSpecificString(encoded);
-        final String lcop = lowerCaseOctedPairs(encoded);
-        return new NamespaceSpecificString(lcop, decode(lcop));
-    }
+    protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
 
-    private static void validateNamespaceSpecificString(String nss) throws URNSyntaxException {
-        if (!allowedCharacters.matcher(nss).matches()) {
-            throw new URNSyntaxException(
-                    String.format("Not allowed characters in Namespace Specific String '%s'", nss));
-        }
-    }
-
-    private static String encode(String s) throws URNSyntaxException {
+    protected static String encode(String s) throws URNSyntaxException {
         StringBuilder sb = new StringBuilder();
         for (char c : s.toCharArray()) {
             if (c == 0) {
@@ -143,7 +130,7 @@ public class NamespaceSpecificString {
         }
     }
 
-    private static String lowerCaseOctedPairs(String s) {
+    protected static String lowerCaseOctedPairs(String s) {
         StringBuilder sb = new StringBuilder(s.length());
         try (StringReader sr = new StringReader(s)) {
             int i;
@@ -162,7 +149,7 @@ public class NamespaceSpecificString {
         return sb.toString();
     }
 
-    private static String decode(String s) throws URNSyntaxException {
+    protected static String decode(String s) throws URNSyntaxException {
         try {
             return URLDecoder.decode(s, UTF_8.name());
         } catch (UnsupportedEncodingException | IllegalArgumentException e) {
@@ -176,7 +163,7 @@ public class NamespaceSpecificString {
         }
     }
 
-    private static void assertNotNullNotEmpty(String s) throws IllegalArgumentException {
+    protected static void assertNotNullNotEmpty(String s) throws IllegalArgumentException {
         if ((s == null) || (s.isEmpty())) {
             throw new IllegalArgumentException("Namespace Specific String part cannot be null or empty");
         }

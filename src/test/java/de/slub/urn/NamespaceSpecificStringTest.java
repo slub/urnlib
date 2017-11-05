@@ -19,87 +19,91 @@ package de.slub.urn;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static de.slub.urn.NamespaceSpecificString.NssEncoding.NOT_ENCODED;
+import static de.slub.urn.NamespaceSpecificString.NssEncoding.URL_ENCODED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 public class NamespaceSpecificStringTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void Empty_namespace_specific_string_throws_exception() throws URNSyntaxException {
         final String empty = "";
-        NamespaceSpecificString.fromEncoded(empty);
+        new NSS_RFC2141(empty, URL_ENCODED);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void Initializing_Namespace_specific_string_with_null_throws_exception() throws Exception {
-        NamespaceSpecificString.fromEncoded(null);
+        new NSS_RFC2141(null, URL_ENCODED);
     }
 
     @Test
     public void Calling_toString_returns_namespace_specific_string() throws URNSyntaxException {
         final String expected = "a-valid-nss";
-        final NamespaceSpecificString subject = NamespaceSpecificString.fromEncoded(expected);
+        final NamespaceSpecificString subject = new NSS_RFC2141(expected, URL_ENCODED);
         assertEquals(expected, subject.toString());
     }
 
     @Test
     public void Identically_initialized_NamespaceSpecificStrings_are_equal() throws Exception {
         final String nss = "a-valid-nss";
-        final NamespaceSpecificString nss1 = NamespaceSpecificString.fromEncoded(nss);
-        final NamespaceSpecificString nss2 = NamespaceSpecificString.fromEncoded(nss);
+        final NamespaceSpecificString nss1 = new NSS_RFC2141(nss, URL_ENCODED);
+        final NamespaceSpecificString nss2 = new NSS_RFC2141(nss, URL_ENCODED);
         assertEquals(nss1, nss2);
     }
 
     @Test
     public void Copied_NamespaceSpecificString_is_equal_to_orignal() throws Exception {
         final String nss = "a-valid-nss";
-        final NamespaceSpecificString nss1 = NamespaceSpecificString.fromEncoded(nss);
-        final NamespaceSpecificString nss2 = new NamespaceSpecificString(nss1);
+        final NamespaceSpecificString nss1 = new NSS_RFC2141(nss, URL_ENCODED);
+        final NamespaceSpecificString nss2 = new NSS_RFC2141(nss1);
         assertEquals(nss1, nss2);
     }
 
     @Test
     public void Copied_NamespaceSpecificString_is_not_identical_to_original() throws Exception {
         final String nss = "a-valid-nss";
-        final NamespaceSpecificString nss1 = NamespaceSpecificString.fromEncoded(nss);
-        final NamespaceSpecificString nss2 = new NamespaceSpecificString(nss1);
+        final NamespaceSpecificString nss1 = new NSS_RFC2141(nss, URL_ENCODED);
+        final NamespaceSpecificString nss2 = new NSS_RFC2141(nss1);
         assertFalse(nss1 == nss2);
     }
 
     @Test
     public void Identically_initialized_NamespaceSpecificStrings_have_same_hash_code() throws Exception {
         final String nss = "a-valid-nss";
-        final NamespaceSpecificString nss1 = NamespaceSpecificString.fromEncoded(nss);
-        final NamespaceSpecificString nss2 = NamespaceSpecificString.fromEncoded(nss);
+        final NamespaceSpecificString nss1 = new NSS_RFC2141(nss, URL_ENCODED);
+        final NamespaceSpecificString nss2 = new NSS_RFC2141(nss, URL_ENCODED);
         assertEquals(nss1.hashCode(), nss2.hashCode());
     }
 
     @Test(expected = URNSyntaxException.class)
     public void Encoded_Namespace_specific_string_containing_null_throws_exception() throws Exception {
-        NamespaceSpecificString.fromEncoded("there-is-null-\u0000");
+        new NSS_RFC2141("there-is-null-\u0000", URL_ENCODED);
     }
 
     @Test(expected = URNSyntaxException.class)
     public void Raw_Namespace_specific_string_containing_null_throws_exception() throws Exception {
-        NamespaceSpecificString.fromRawString("there-is-null-\u0000");
+        new NSS_RFC2141("there-is-null-\u0000", NOT_ENCODED);
     }
 
     @Test
     public void URN_encoded_namespace_specific_string_gets_decoded() throws Exception {
         final String encodedNss = "%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D";
         final String decodedNss = "ÄÜÖ[]&<>^`{|}";
-        final NamespaceSpecificString subject = NamespaceSpecificString.fromEncoded(encodedNss);
+        final NamespaceSpecificString subject = new NSS_RFC2141(encodedNss, URL_ENCODED);
         assertEquals(decodedNss, subject.raw());
     }
 
     @Test
     public void Characters_which_are_not_reserved_but_encoded_get_decoded_regardless() throws Exception {
-        final NamespaceSpecificString subject = NamespaceSpecificString.fromEncoded("%c3%84%2c");
+        final NamespaceSpecificString subject = new NSS_RFC2141("%c3%84%2c", URL_ENCODED);
         assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", subject.raw());
     }
 
     @Test
     public void Decodes_three_byte_UTF8_encoding() throws Exception {
-        final NamespaceSpecificString subject = NamespaceSpecificString.fromEncoded("a123-%e0%a4%8b-456");
+        final NamespaceSpecificString subject = new NSS_RFC2141("a123-%e0%a4%8b-456", URL_ENCODED);
         assertEquals("Expected decoded `DEVANAGARI LETTER VOCALIC R`", "a123-\u090b-456", subject.raw());
     }
 
@@ -107,7 +111,7 @@ public class NamespaceSpecificStringTest {
     public void Unencoded_NamespaceSpecificString_get_encoded() throws Exception {
         final String decodedNss = "ÄÜÖ[]&<>^`{|}";
         final String encodedNss = "%c3%84%c3%9c%c3%96%5b%5d%26%3c%3e%5e%60%7b%7c%7d";
-        final NamespaceSpecificString subject = NamespaceSpecificString.fromRawString(decodedNss);
+        final NamespaceSpecificString subject = new NSS_RFC2141(decodedNss, NOT_ENCODED);
         assertEquals(encodedNss, subject.toString());
     }
 
@@ -121,7 +125,7 @@ public class NamespaceSpecificStringTest {
         };
         for (String s : whitespaceStrings) {
             try {
-                NamespaceSpecificString.fromEncoded(s);
+                new NSS_RFC2141(s, URL_ENCODED);
                 fail(String.format("Expected %s to be thrown for character \\u%04d",
                         URNSyntaxException.class.getSimpleName(), (int) s.charAt(0)));
             } catch (URNSyntaxException ignored) {

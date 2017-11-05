@@ -20,6 +20,9 @@ package de.slub.urn;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static de.slub.urn.NamespaceSpecificString.NssEncoding.NOT_ENCODED;
+import static de.slub.urn.NamespaceSpecificString.NssEncoding.URL_ENCODED;
+
 /**
  * Represents a Uniform Resource Name (URN).
  *
@@ -91,7 +94,7 @@ final public class URN {
     public static URN newInstance(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
         try {
             final NamespaceIdentifier nid = new NID_RFC2141(namespaceIdentifier);
-            final NamespaceSpecificString nss = NamespaceSpecificString.fromRawString(namespaceSpecificString);
+            final NamespaceSpecificString nss = new NSS_RFC2141(namespaceSpecificString, NOT_ENCODED);
             return new URN(nid, nss);
         } catch (URNSyntaxException | IllegalArgumentException e) {
             throw new URNSyntaxException("Error creating URN instance", e);
@@ -116,7 +119,7 @@ final public class URN {
 
         final NamespaceIdentifier namespaceIdentifier = new NID_RFC2141(parts[1]);
         final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
-        final NamespaceSpecificString namespaceSpecificString = NamespaceSpecificString.fromEncoded(encodedNSSPart);
+        final NamespaceSpecificString namespaceSpecificString = new NSS_RFC2141(encodedNSSPart, URL_ENCODED);
 
         return new URN(namespaceIdentifier, namespaceSpecificString);
     }
@@ -141,7 +144,7 @@ final public class URN {
         if (colonPos > -1) {
             return new URN(
                     new NID_RFC2141(schemeSpecificPart.substring(0, colonPos)),
-                    NamespaceSpecificString.fromEncoded(schemeSpecificPart.substring(colonPos + 1)));
+                    new NSS_RFC2141(schemeSpecificPart.substring(colonPos + 1), URL_ENCODED));
         } else {
             throw new URNSyntaxException(
                     String.format("Invalid format: `%s` - Given schema specific part is not a URN part", schemeSpecificPart));
