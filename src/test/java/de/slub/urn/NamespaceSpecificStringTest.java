@@ -50,18 +50,18 @@ public class NamespaceSpecificStringTest {
     }
 
     @Test
-    public void Cloned_NamespaceSpecificString_is_equal_to_orignal() throws Exception {
+    public void Copied_NamespaceSpecificString_is_equal_to_orignal() throws Exception {
         final String nss = "a-valid-nss";
         final NamespaceSpecificString nss1 = NamespaceSpecificString.fromEncoded(nss);
-        final NamespaceSpecificString nss2 = (NamespaceSpecificString) nss1.clone();
+        final NamespaceSpecificString nss2 = new NamespaceSpecificString(nss1);
         assertEquals(nss1, nss2);
     }
 
     @Test
-    public void Cloned_NamespaceSpecificString_is_not_identical_to_original() throws Exception {
+    public void Copied_NamespaceSpecificString_is_not_identical_to_original() throws Exception {
         final String nss = "a-valid-nss";
         final NamespaceSpecificString nss1 = NamespaceSpecificString.fromEncoded(nss);
-        final NamespaceSpecificString nss2 = (NamespaceSpecificString) nss1.clone();
+        final NamespaceSpecificString nss2 = new NamespaceSpecificString(nss1);
         assertFalse(nss1 == nss2);
     }
 

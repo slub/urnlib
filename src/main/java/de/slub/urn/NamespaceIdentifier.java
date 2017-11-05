@@ -52,8 +52,13 @@ abstract public class NamespaceIdentifier {
         this.nid = nid;
     }
 
-    public NamespaceIdentifier(NamespaceIdentifier instanceForCloning) {
-        nid = instanceForCloning.nid;
+    /**
+     * Create a new {@code NamespaceIdentifier} instance that is an exact copy of the given instance.
+     *
+     * @param instanceForCopying Base instance for copying
+     */
+    public NamespaceIdentifier(NamespaceIdentifier instanceForCopying) {
+        nid = instanceForCopying.nid;
     }
 
     /**
@@ -90,13 +95,6 @@ abstract public class NamespaceIdentifier {
     public int hashCode() {
         return nid.hashCode();
     }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return makeCopy(this);
-    }
-
-    protected abstract NamespaceIdentifier makeCopy(NamespaceIdentifier namespaceIdentifier);
 
     private void assertNotNullNotEmpty(String s) throws URNSyntaxException {
         if ((s == null) || (s.isEmpty())) {

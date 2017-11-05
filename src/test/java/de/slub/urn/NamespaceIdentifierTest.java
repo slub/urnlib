@@ -32,7 +32,7 @@ public class NamespaceIdentifierTest {
 
     @Test(expected = URNSyntaxException.class)
     public void Passing_null_to_constructor_throws_exception() throws URNSyntaxException {
-        new NID_RFC2141(null);
+        new NID_RFC2141((String) null);
     }
 
     @Test
@@ -76,18 +76,18 @@ public class NamespaceIdentifierTest {
     }
 
     @Test
-    public void Cloned_NamespaceIdentifier_is_equal_to_orignal() throws Exception {
+    public void Copied_NamespaceIdentifier_is_equal_to_orignal() throws Exception {
         final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
-        final NamespaceIdentifier nid2 = (NamespaceIdentifier) nid1.clone();
+        final NamespaceIdentifier nid2 = new NID_RFC2141(nid1);
         assertEquals(nid1, nid2);
     }
 
     @Test
-    public void Cloned_NamespaceIdentifier_is_not_identical_to_original() throws Exception {
+    public void Copied_NamespaceIdentifier_is_not_identical_to_original() throws Exception {
         final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
-        final NamespaceIdentifier nid2 = (NamespaceIdentifier) nid1.clone();
+        final NamespaceIdentifier nid2 = new NID_RFC2141(nid1);
         assertFalse(nid1 == nid2);
     }
 

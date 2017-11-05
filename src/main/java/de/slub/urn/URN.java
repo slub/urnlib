@@ -19,7 +19,6 @@ package de.slub.urn;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.regex.Pattern;
 
 /**
  * Represents a Uniform Resource Name (URN).
@@ -233,9 +232,4 @@ final public class URN {
         return this.toString().hashCode();
     }
 
-    @Override
-    @SuppressWarnings("CloneDoesntCallSuperClone")
-    protected Object clone() throws CloneNotSupportedException {
-        return fromURN(this);
-    }
 }

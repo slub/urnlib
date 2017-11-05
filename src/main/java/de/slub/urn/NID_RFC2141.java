@@ -10,7 +10,7 @@ public class NID_RFC2141 extends NamespaceIdentifier {
         super(nid);
     }
 
-    private NID_RFC2141(NID_RFC2141 instanceForCloning) {
+    public NID_RFC2141(NamespaceIdentifier instanceForCloning) {
         super(instanceForCloning);
     }
 
@@ -19,8 +19,4 @@ public class NID_RFC2141 extends NamespaceIdentifier {
         return allowedNID.matcher(nid).matches();
     }
 
-    @Override
-    protected NamespaceIdentifier makeCopy(NamespaceIdentifier namespaceIdentifier) {
-        return new NID_RFC2141(this);
-    }
 }

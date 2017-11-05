@@ -65,10 +65,14 @@ public class NamespaceSpecificString {
         this.raw = raw;
     }
 
-    // Private constructor entirely for the sake of cloning
-    private NamespaceSpecificString(NamespaceSpecificString instanceForCloning) {
-        this.encoded = instanceForCloning.encoded;
-        this.raw = instanceForCloning.raw;
+    /**
+     * Create a new {@code NamespaceSpecificString} instance that is an exact copy of the given instance.
+     *
+     * @param instanceForCopying Base instance for copying
+     */
+    public NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
+        this.encoded = instanceForCopying.encoded;
+        this.raw = instanceForCopying.raw;
     }
 
     /**
@@ -201,11 +205,6 @@ public class NamespaceSpecificString {
     public boolean equals(Object obj) {
         return obj instanceof NamespaceSpecificString
                 && this.encoded.equals(((NamespaceSpecificString) obj).encoded);
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return new NamespaceSpecificString(this);
     }
 
     @Override

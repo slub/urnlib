@@ -172,9 +172,9 @@ public class URNTest {
     }
 
     @Test
-    public void Cloning_gives_equal_objects() throws Exception {
+    public void Copying_gives_equal_objects() throws Exception {
         final URN urn1 = URN.newInstance("test", "1224");
-        final URN urn2 = (URN) urn1.clone();
+        final URN urn2 = URN.fromURN(urn1);
         assertEquals("Both URNs should be equal", urn1, urn2);
     }
 
