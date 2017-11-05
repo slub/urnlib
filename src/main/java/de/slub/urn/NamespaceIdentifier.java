@@ -17,8 +17,6 @@
 
 package de.slub.urn;
 
-import java.util.regex.Pattern;
-
 /**
  * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN).
  *
@@ -31,9 +29,8 @@ import java.util.regex.Pattern;
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
  * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
  */
-public class NamespaceIdentifier {
+abstract public class NamespaceIdentifier {
 
-    private static final Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]+[0-9a-zA-Z-]{0,31}$");
     private static final String URN_SCHEME = "urn";
     private final String nid;
 
@@ -45,14 +42,27 @@ public class NamespaceIdentifier {
      */
     public NamespaceIdentifier(String nid) throws URNSyntaxException {
         assertNotNullNotEmpty(nid);
-        validateNamespaceIdentifier(nid);
+        if (URN_SCHEME.equalsIgnoreCase(nid)) {
+            throw new URNSyntaxException(
+                    String.format("Namespace identifier can not be '%s'", URN_SCHEME));
+        }
+        if (!isValidNamespaceIdentifier(nid)) {
+            throw new URNSyntaxException(String.format("Not allowed characters in Namespace Identifier '%s'", nid));
+        }
         this.nid = nid;
     }
 
-    // Private constructor entirely for the sake of cloning
-    private NamespaceIdentifier(NamespaceIdentifier instanceForCloning) {
-        this.nid = instanceForCloning.nid;
+    public NamespaceIdentifier(NamespaceIdentifier instanceForCloning) {
+        nid = instanceForCloning.nid;
     }
+
+    /**
+     * Check if a given literal is a valid namespace identifier
+     *
+     * @param nid Namespace identifier literal
+     * @return True, if the given string complies to the rules for valid namespace identifiers. False, if not.
+     */
+    abstract protected boolean isValidNamespaceIdentifier(String nid);
 
     /**
      * Returns the Namespace Identifier literal
@@ -83,24 +93,14 @@ public class NamespaceIdentifier {
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        return new NamespaceIdentifier(this);
+        return makeCopy(this);
     }
+
+    protected abstract NamespaceIdentifier makeCopy(NamespaceIdentifier namespaceIdentifier);
 
     private void assertNotNullNotEmpty(String s) throws URNSyntaxException {
         if ((s == null) || (s.isEmpty())) {
             throw new URNSyntaxException("Namespace Identifier part cannot be null or empty");
-        }
-    }
-
-    private void validateNamespaceIdentifier(String nid) throws URNSyntaxException {
-        if (URN_SCHEME.equalsIgnoreCase(nid)) {
-            throw new URNSyntaxException(
-                    String.format("Namespace identifier can not be '%s'", URN_SCHEME));
-        }
-
-        if (!allowedNID.matcher(nid).matches()) {
-            throw new URNSyntaxException(
-                    String.format("Not allowed characters in Namespace Identifier '%s'", nid));
         }
     }
 

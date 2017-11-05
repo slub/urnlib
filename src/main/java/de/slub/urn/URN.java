@@ -19,6 +19,7 @@ package de.slub.urn;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
 /**
  * Represents a Uniform Resource Name (URN).
@@ -90,7 +91,7 @@ final public class URN {
      */
     public static URN newInstance(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
         try {
-            final NamespaceIdentifier nid = new NamespaceIdentifier(namespaceIdentifier);
+            final NamespaceIdentifier nid = new NID_RFC2141(namespaceIdentifier);
             final NamespaceSpecificString nss = NamespaceSpecificString.fromRawString(namespaceSpecificString);
             return new URN(nid, nss);
         } catch (URNSyntaxException | IllegalArgumentException e) {
@@ -114,7 +115,7 @@ final public class URN {
                     String.format("Invalid format `%s` is probably not a URN", urn));
         }
 
-        final NamespaceIdentifier namespaceIdentifier = new NamespaceIdentifier(parts[1]);
+        final NamespaceIdentifier namespaceIdentifier = new NID_RFC2141(parts[1]);
         final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
         final NamespaceSpecificString namespaceSpecificString = NamespaceSpecificString.fromEncoded(encodedNSSPart);
 
@@ -140,7 +141,7 @@ final public class URN {
         int colonPos = schemeSpecificPart.indexOf(':');
         if (colonPos > -1) {
             return new URN(
-                    new NamespaceIdentifier(schemeSpecificPart.substring(0, colonPos)),
+                    new NID_RFC2141(schemeSpecificPart.substring(0, colonPos)),
                     NamespaceSpecificString.fromEncoded(schemeSpecificPart.substring(colonPos + 1)));
         } else {
             throw new URNSyntaxException(
