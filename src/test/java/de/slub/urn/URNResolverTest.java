@@ -48,8 +48,8 @@ public class URNResolverTest {
         URL_A = new URL("http://demo.org/a/1234");
         URL_B = new URL("http://demo.org/b/5678");
 
-        URN_A = URN.create("urn:demo:a-1234");
-        URN_AB = URN.create("urn:demo:ab-12");
+        URN_A = URN.rfc2141.create("urn:demo:a-1234");
+        URN_AB = URN.rfc2141.create("urn:demo:ab-12");
 
         URIMAP = new HashMap<>();
         URIMAP.put(URN_A, new HashSet<URL>(1) {{

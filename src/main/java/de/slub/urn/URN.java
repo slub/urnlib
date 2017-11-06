@@ -60,21 +60,34 @@ import static de.slub.urn.NamespaceSpecificString.NssEncoding.URL_ENCODED;
  */
 final public class URN {
 
+    public enum RFC {
+        RFC_2141
+    }
+
     private static final String URN_SCHEME = "urn";
 
     private final NamespaceIdentifier namespaceIdentifier;
     private final NamespaceSpecificString namespaceSpecificString;
+    private final RFC supportedRFC;
 
     /**
      * @param namespaceIdentifier
      * @param namespaceSpecificString
+     * @param supportedRFC
      * @throws IllegalArgumentException
      */
-    public URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString) {
+    private URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString, RFC supportedRFC) {
         assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
         assertNotNull(namespaceSpecificString, "Namespace specific string cannot be null");
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
+        this.supportedRFC = supportedRFC;
+    }
+
+    private static void assertNotNull(Object o, String message) {
+        if (o == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 
     /**
@@ -86,92 +99,91 @@ final public class URN {
      */
     public static URN create(URN urn) {
         assertNotNull(urn, "URN parameter cannot be null");
-        return new URN(urn.namespaceIdentifier, urn.namespaceSpecificString);
+        return new URN(urn.namespaceIdentifier, urn.namespaceSpecificString, urn.supportedRFC);
     }
 
-    private static void assertNotNull(Object o, String message) {
-        if (o == null) {
-            throw new IllegalArgumentException(message);
-        }
-    }
+    public static class rfc2141 {
 
-    /**
-     * Create a new URN instance using a particular Namespace Identifier and Namespace Specific String.
-     *
-     * Syntax rules for URNs apply as described in RFC2141
-     *
-     * @param namespaceIdentifier     The URNs Namespace Identifier literal
-     * @param namespaceSpecificString The URNs Namespace Specific String literal
-     * @return A new URN instance
-     * @throws URNSyntaxException If any of the syntax rules is violated or if passed parameter
-     *                            strings a <pre>null</pre> or empty.
-     * @throws IllegalArgumentException
-     */
-    public static URN create(String namespaceIdentifier, String namespaceSpecificString) {
-        try {
-            final NamespaceIdentifier nid = new NID_RFC2141(namespaceIdentifier);
-            final NamespaceSpecificString nss = new NSS_RFC2141(namespaceSpecificString, NOT_ENCODED);
-            return new URN(nid, nss);
-        } catch (URNSyntaxException | IllegalArgumentException e) {
-            throw new IllegalArgumentException("Error creating URN instance", e);
-        }
-    }
-
-    /**
-     * Create a new URN instance by parsing a URN serialisation.
-     *
-     * @param urn String to be parsed into an URN instance with
-     * @return New URN instance
-     * @throws URNSyntaxException If any of the syntax rules is violated or if passed string is <pre>null</pre> or empty.
-     * @throws IllegalArgumentException If the given string cannot be parsed into a URN
-     */
-    public static URN create(String urn) {
-        if ((urn == null) || (urn.isEmpty())) {
-            throw new IllegalArgumentException("URN cannot be null or empty");
+        /**
+         * Create a new URN instance using a particular Namespace Identifier and Namespace Specific String.
+         * <p>
+         * Syntax rules for URNs apply as described in RFC2141
+         *
+         * @param namespaceIdentifier     The URNs Namespace Identifier literal
+         * @param namespaceSpecificString The URNs Namespace Specific String literal
+         * @return A new URN instance
+         * @throws URNSyntaxException       If any of the syntax rules is violated or if passed parameter
+         *                                  strings a <pre>null</pre> or empty.
+         * @throws IllegalArgumentException
+         */
+        public static URN create(String namespaceIdentifier, String namespaceSpecificString) {
+            try {
+                final NamespaceIdentifier nid = new NID_RFC2141(namespaceIdentifier);
+                final NamespaceSpecificString nss = new NSS_RFC2141(namespaceSpecificString, NOT_ENCODED);
+                return new URN(nid, nss, RFC.RFC_2141);
+            } catch (URNSyntaxException | IllegalArgumentException e) {
+                throw new IllegalArgumentException("Error creating URN instance", e);
+            }
         }
 
-        final String[] parts = urn.split(":");
-
-        try {
-            if (parts.length < 3 || !URN_SCHEME.equalsIgnoreCase(parts[0])) {
-                throw new URNSyntaxException(
-                        String.format("Invalid format `%s` is probably not a URN", urn));
+        /**
+         * Create a new URN instance by parsing a URN serialisation.
+         *
+         * @param urn String to be parsed into an URN instance with
+         * @return New URN instance
+         * @throws URNSyntaxException       If any of the syntax rules is violated or if passed string is
+         *                                  <pre>null</pre> or empty.
+         * @throws IllegalArgumentException If the given string cannot be parsed into a URN
+         */
+        public static URN create(String urn) {
+            if ((urn == null) || (urn.isEmpty())) {
+                throw new IllegalArgumentException("URN cannot be null or empty");
             }
 
-            final NamespaceIdentifier namespaceIdentifier = new NID_RFC2141(parts[1]);
-            final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
-            final NamespaceSpecificString namespaceSpecificString = new NSS_RFC2141(encodedNSSPart, URL_ENCODED);
+            final String[] parts = urn.split(":");
 
-            return new URN(namespaceIdentifier, namespaceSpecificString);
-        } catch (URNSyntaxException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
+            try {
+                if (parts.length < 3 || !URN_SCHEME.equalsIgnoreCase(parts[0])) {
+                    throw new URNSyntaxException(
+                            String.format("Invalid format `%s` is probably not a URN", urn));
+                }
 
-    /**
-     * Constructing a new URN instance by parsing URN parts from a URI instance.
-     *
-     * @param uri The URI to be parsed into a URN
-     * @return A new URN instance
-     * @throws URNSyntaxException If the URI scheme is not <pre>urn</pre> or the scheme specific part cannot be
-     *                            parsed into Namespace Identifier and Namespace Specific String.
-     */
-    public static URN create(URI uri) throws URNSyntaxException {
-        final String scheme = uri.getScheme();
-        if (!URN_SCHEME.equalsIgnoreCase(scheme)) {
-            throw new URNSyntaxException(
-                    String.format("Invalid scheme: `%s` - Given URI is not a URN", scheme));
+                final NamespaceIdentifier namespaceIdentifier = new NID_RFC2141(parts[1]);
+                final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
+                final NamespaceSpecificString namespaceSpecificString = new NSS_RFC2141(encodedNSSPart, URL_ENCODED);
+
+                return new URN(namespaceIdentifier, namespaceSpecificString, RFC.RFC_2141);
+            } catch (URNSyntaxException e) {
+                throw new IllegalArgumentException(e);
+            }
         }
 
-        final String schemeSpecificPart = uri.getSchemeSpecificPart();
-        int colonPos = schemeSpecificPart.indexOf(':');
-        if (colonPos > -1) {
-            return new URN(
-                    new NID_RFC2141(schemeSpecificPart.substring(0, colonPos)),
-                    new NSS_RFC2141(schemeSpecificPart.substring(colonPos + 1), URL_ENCODED));
-        } else {
-            throw new URNSyntaxException(
-                    String.format("Invalid format: `%s` - Given schema specific part is not a URN part", schemeSpecificPart));
+        /**
+         * Constructing a new URN instance by parsing URN parts from a URI instance.
+         *
+         * @param uri The URI to be parsed into a URN
+         * @return A new URN instance
+         * @throws URNSyntaxException If the URI scheme is not <pre>urn</pre> or the scheme specific part cannot be
+         *                            parsed into Namespace Identifier and Namespace Specific String.
+         */
+        public static URN create(URI uri) throws URNSyntaxException {
+            final String scheme = uri.getScheme();
+            if (!URN_SCHEME.equalsIgnoreCase(scheme)) {
+                throw new URNSyntaxException(
+                        String.format("Invalid scheme: `%s` - Given URI is not a URN", scheme));
+            }
+
+            final String schemeSpecificPart = uri.getSchemeSpecificPart();
+            int colonPos = schemeSpecificPart.indexOf(':');
+            if (colonPos > -1) {
+                return new URN(
+                        new NID_RFC2141(schemeSpecificPart.substring(0, colonPos)),
+                        new NSS_RFC2141(schemeSpecificPart.substring(colonPos + 1), URL_ENCODED),
+                        RFC.RFC_2141);
+            } else {
+                throw new URNSyntaxException(
+                        String.format("Invalid format: `%s` - Given schema specific part is not a URN part", schemeSpecificPart));
+            }
         }
     }
 
