@@ -64,21 +64,16 @@ abstract public class NamespaceSpecificString {
 
     public NamespaceSpecificString(String nss, NssEncoding nssEncoding) throws URNSyntaxException {
         assertNotNullNotEmpty(nss);
-        switch (nssEncoding) {
-            case URL_ENCODED:
-                if (!isValidURLEncodedNamespaceSpecificString(nss)) {
-                    throw new URNSyntaxException(
-                            String.format("Not allowed characters in Namespace Specific String '%s'", nss));
-                }
-                encoded = lowerCaseOctedPairs(nss);
-                raw = decode(encoded);
-                break;
-            case NOT_ENCODED:
-                this.encoded = encode(nss);
-                this.raw = nss;
-                break;
-            default:
-                throw new IllegalArgumentException();
+        if (nssEncoding == NssEncoding.URL_ENCODED) {
+            if (!isValidURLEncodedNamespaceSpecificString(nss)) {
+                throw new URNSyntaxException(
+                        String.format("Not allowed characters in Namespace Specific String '%s'", nss));
+            }
+            encoded = lowerCaseOctedPairs(nss);
+            raw = decode(encoded);
+        } else {
+            this.encoded = encode(nss);
+            this.raw = nss;
         }
     }
 

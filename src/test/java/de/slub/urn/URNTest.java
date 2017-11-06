@@ -31,6 +31,11 @@ public class URNTest {
     private static final String IRRELEVANT_NOT_EMPTY_STRING = "irrelevant";
 
     @Test(expected = IllegalArgumentException.class)
+    public void Null_arguments_throws_exception() throws URNSyntaxException {
+        URN.create(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
         URN.create(null, IRRELEVANT_NOT_EMPTY_STRING);
     }
@@ -110,6 +115,11 @@ public class URNTest {
     @Test(expected = IllegalArgumentException.class)
     public void String_containing_empty_URN_parts_throws_exception() throws Exception {
         URN.create("urn::");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void Factory_method_throws_exception_when_parsing_null() throws URNSyntaxException {
+        URN.create((URN) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
