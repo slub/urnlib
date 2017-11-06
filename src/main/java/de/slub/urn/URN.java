@@ -29,18 +29,18 @@ import static de.slub.urn.NamespaceSpecificString.NssEncoding.URL_ENCODED;
  * Creating a URN instance is done by using one of static factory methods, e.g.:
  * <pre>
  *     {@code
- *      URN urn = URN.newInstance("isbn", "0451450523");
+ *      URN urn = URN.create("isbn", "0451450523");
  *      // or...
- *      URN urn = URN.fromString("urn:isbn:0451450523");
+ *      URN urn = URN.create("urn:isbn:0451450523");
  * }
  * </pre>
  *
  * One can also use URN instances or URIs to create new a URN instance, e.g.:
  * <pre>
  *     {@code
- *      URN urn = URN.fromURI(new URI("urn:isbn:0451450523"));
+ *      URN urn = URN.create(new URI("urn:isbn:0451450523"));
  *      // or
- *      URN urn = URN.fromURN(URN.newInstance("isbn", "0451450523"));
+ *      URN urn = URN.create(URN.create("isbn", "0451450523"));
  * }
  * </pre>
  *
@@ -65,7 +65,14 @@ final public class URN {
     private final NamespaceIdentifier namespaceIdentifier;
     private final NamespaceSpecificString namespaceSpecificString;
 
-    private URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString) {
+    /**
+     * @param namespaceIdentifier
+     * @param namespaceSpecificString
+     * @throws IllegalArgumentException
+     */
+    public URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString) {
+        assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
+        assertNotNull(namespaceSpecificString, "Namespace specific string cannot be null");
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
     }
@@ -75,9 +82,17 @@ final public class URN {
      *
      * @param urn URN to duplicate
      * @return New URN instance equal to the given URN instance
+     * @throws IllegalArgumentException
      */
-    public static URN fromURN(URN urn) {
+    public static URN create(URN urn) {
+        assertNotNull(urn, "URN parameter cannot be null");
         return new URN(urn.namespaceIdentifier, urn.namespaceSpecificString);
+    }
+
+    private static void assertNotNull(Object o, String message) {
+        if (o == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 
     /**
@@ -90,14 +105,15 @@ final public class URN {
      * @return A new URN instance
      * @throws URNSyntaxException If any of the syntax rules is violated or if passed parameter
      *                            strings a <pre>null</pre> or empty.
+     * @throws IllegalArgumentException
      */
-    public static URN newInstance(String namespaceIdentifier, String namespaceSpecificString) throws URNSyntaxException {
+    public static URN create(String namespaceIdentifier, String namespaceSpecificString) {
         try {
             final NamespaceIdentifier nid = new NID_RFC2141(namespaceIdentifier);
             final NamespaceSpecificString nss = new NSS_RFC2141(namespaceSpecificString, NOT_ENCODED);
             return new URN(nid, nss);
         } catch (URNSyntaxException | IllegalArgumentException e) {
-            throw new URNSyntaxException("Error creating URN instance", e);
+            throw new IllegalArgumentException("Error creating URN instance", e);
         }
     }
 
@@ -107,21 +123,29 @@ final public class URN {
      * @param urn String to be parsed into an URN instance with
      * @return New URN instance
      * @throws URNSyntaxException If any of the syntax rules is violated or if passed string is <pre>null</pre> or empty.
+     * @throws IllegalArgumentException If the given string cannot be parsed into a URN
      */
-    public static URN fromString(String urn) throws URNSyntaxException {
-        assertNotNullNotEmpty("URN", urn);
-        final String[] parts = urn.split(":");
-
-        if (parts.length < 3 || !URN_SCHEME.equalsIgnoreCase(parts[0])) {
-            throw new URNSyntaxException(
-                    String.format("Invalid format `%s` is probably not a URN", urn));
+    public static URN create(String urn) {
+        if ((urn == null) || (urn.isEmpty())) {
+            throw new IllegalArgumentException("URN cannot be null or empty");
         }
 
-        final NamespaceIdentifier namespaceIdentifier = new NID_RFC2141(parts[1]);
-        final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
-        final NamespaceSpecificString namespaceSpecificString = new NSS_RFC2141(encodedNSSPart, URL_ENCODED);
+        final String[] parts = urn.split(":");
 
-        return new URN(namespaceIdentifier, namespaceSpecificString);
+        try {
+            if (parts.length < 3 || !URN_SCHEME.equalsIgnoreCase(parts[0])) {
+                throw new URNSyntaxException(
+                        String.format("Invalid format `%s` is probably not a URN", urn));
+            }
+
+            final NamespaceIdentifier namespaceIdentifier = new NID_RFC2141(parts[1]);
+            final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
+            final NamespaceSpecificString namespaceSpecificString = new NSS_RFC2141(encodedNSSPart, URL_ENCODED);
+
+            return new URN(namespaceIdentifier, namespaceSpecificString);
+        } catch (URNSyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
@@ -132,7 +156,7 @@ final public class URN {
      * @throws URNSyntaxException If the URI scheme is not <pre>urn</pre> or the scheme specific part cannot be
      *                            parsed into Namespace Identifier and Namespace Specific String.
      */
-    public static URN fromURI(URI uri) throws URNSyntaxException {
+    public static URN create(URI uri) throws URNSyntaxException {
         final String scheme = uri.getScheme();
         if (!URN_SCHEME.equalsIgnoreCase(scheme)) {
             throw new URNSyntaxException(
@@ -148,40 +172,6 @@ final public class URN {
         } else {
             throw new URNSyntaxException(
                     String.format("Invalid format: `%s` - Given schema specific part is not a URN part", schemeSpecificPart));
-        }
-    }
-
-    /**
-     * Creates a URN by parsing the given string.
-     * <p>
-     * This convenience factory method works as if by invoking the fromString(String) method; any URNSyntaxException
-     * thrown by the method is caught and wrapped in a new IllegalArgumentException object, which is then thrown.
-     * <p>
-     * This method is provided for use in situations where it is known that the given string is a legal URN, for example
-     * for URN constants declared within in a program, and so it would be considered a programming error for the string
-     * not to parse as such. The methods, which throw URNSyntaxException directly, should be used situations where
-     * a URN is being constructed from user input or from some other source that may be prone to errors.
-     *
-     * @param str String to be parsed into a URN
-     * @return The new URN
-     * @throws NullPointerException     If str is null
-     * @throws IllegalArgumentException If the given string cannot be parsed into a URN
-     */
-    public static URN create(String str) {
-        if (str == null) {
-            throw new NullPointerException("Null is not allowed as an argument");
-        }
-        try {
-            return fromString(str);
-        } catch (URNSyntaxException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    private static void assertNotNullNotEmpty(String part, String s) throws URNSyntaxException {
-        if ((s == null) || (s.isEmpty())) {
-            throw new URNSyntaxException(
-                    String.format("%s cannot be null or empty", part));
         }
     }
 
@@ -234,5 +224,4 @@ final public class URN {
     public int hashCode() {
         return this.toString().hashCode();
     }
-
 }
