@@ -62,14 +62,14 @@ public class URNResolverTest {
     }
 
     @Test
-    public void Demonstrate_intended_use_of_resolve_method_returning_a_URL() throws Exception {
+    public void Demonstrate_intended_use_of_resolve_method_returning_a_URL() throws URNResolvingException {
         assertTrue(
                 String.format("%s should resolve to %s", URN_A, URL_A),
                 subject.resolve(URN_A).contains(URL_A));
     }
 
     @Test
-    public void Demonstrate_intended_use_of_resolve_method_returning_multiple_URLs() throws Exception {
+    public void Demonstrate_intended_use_of_resolve_method_returning_multiple_URLs() throws URNResolvingException {
         Set<URL> urls = subject.resolve(URN_AB);
         int expectedNumberOfUrls = 2;
         assertEquals(

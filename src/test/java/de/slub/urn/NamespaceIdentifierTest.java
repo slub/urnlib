@@ -60,7 +60,7 @@ public class NamespaceIdentifierTest {
     }
 
     @Test
-    public void Identically_initialized_NamespaceIdentifiers_are_equal() throws Exception {
+    public void Identically_initialized_NamespaceIdentifiers_are_equal() throws URNSyntaxException {
         final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
         final NamespaceIdentifier nid2 = new NID_RFC2141(nid);
@@ -68,7 +68,7 @@ public class NamespaceIdentifierTest {
     }
 
     @Test
-    public void NamespaceIdentifiers_equality_check_is_case_insensitive() throws Exception {
+    public void NamespaceIdentifiers_equality_check_is_case_insensitive() throws URNSyntaxException {
         final String nid = "A-Valid-Nid";
         final NamespaceIdentifier nid1 = new NID_RFC2141(nid.toUpperCase());
         final NamespaceIdentifier nid2 = new NID_RFC2141(nid.toLowerCase());
@@ -76,7 +76,7 @@ public class NamespaceIdentifierTest {
     }
 
     @Test
-    public void Copied_NamespaceIdentifier_is_equal_to_orignal() throws Exception {
+    public void Copied_NamespaceIdentifier_is_equal_to_orignal() throws URNSyntaxException {
         final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
         final NamespaceIdentifier nid2 = new NID_RFC2141(nid1);
@@ -84,7 +84,7 @@ public class NamespaceIdentifierTest {
     }
 
     @Test
-    public void Copied_NamespaceIdentifier_is_not_identical_to_original() throws Exception {
+    public void Copied_NamespaceIdentifier_is_not_identical_to_original() throws URNSyntaxException {
         final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
         final NamespaceIdentifier nid2 = new NID_RFC2141(nid1);
@@ -92,7 +92,7 @@ public class NamespaceIdentifierTest {
     }
 
     @Test
-    public void Identically_initialized_NamespaceIdentifiers_have_same_hash_code() throws Exception {
+    public void Identically_initialized_NamespaceIdentifiers_have_same_hash_code() throws URNSyntaxException {
         final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
         final NamespaceIdentifier nid2 = new NID_RFC2141(nid);

@@ -31,70 +31,70 @@ public class URNTest {
     private static final String IRRELEVANT_NOT_EMPTY_STRING = "irrelevant";
 
     @Test(expected = IllegalArgumentException.class)
-    public void Null_arguments_throws_exception() throws URNSyntaxException {
+    public void Null_arguments_throws_exception() {
         URN.rfc2141().create(null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
+    public void Empty_namespace_identifier_throws_exception() {
         URN.rfc2141().create(null, IRRELEVANT_NOT_EMPTY_STRING);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Empty_namespace_specific_string_throws_exception() throws URNSyntaxException {
+    public void Empty_namespace_specific_string_throws_exception() {
         URN.rfc2141().create(IRRELEVANT_NOT_EMPTY_STRING, null);
     }
 
     @Test
-    public void Returns_namespace_identifier() throws URNSyntaxException {
+    public void Returns_namespace_identifier() {
         final String namespaceIdentifier = "isbn";
         final String nid = URN.rfc2141().create(namespaceIdentifier, IRRELEVANT_NOT_EMPTY_STRING).getNamespaceIdentifier();
         assertEquals(namespaceIdentifier, nid);
     }
 
     @Test
-    public void Returns_namespace_specific_string() throws URNSyntaxException {
+    public void Returns_namespace_specific_string() {
         final String namespaceSpecificString = "0451450523";
         final String nid = URN.rfc2141().create(IRRELEVANT_NOT_EMPTY_STRING, namespaceSpecificString).getNamespaceSpecificString();
         assertEquals(namespaceSpecificString, nid);
     }
 
     @Test
-    public void Generates_valid_URI() throws URISyntaxException, URNSyntaxException {
+    public void Generates_valid_URI() throws URISyntaxException {
         final String asciiString = URN.rfc2141().create("isbn", "0451450523").toURI().toASCIIString();
         assertEquals("urn:isbn:0451450523", asciiString);
     }
 
     @Test
-    public void Reserved_chars_in_URI_are_escaped() throws Exception {
+    public void Reserved_chars_in_URI_are_escaped() throws URISyntaxException {
         final String asciiString = URN.rfc2141().create("reserved", "%/?#,").toURI().toASCIIString();
         assertEquals("urn:reserved:%25%2f%3f%23,", asciiString);
     }
 
     @Test
-    public void Non_URN_chars_in_URI_are_escaped() throws Exception {
+    public void Non_URN_chars_in_URI_are_escaped() throws URISyntaxException {
         final String asciiString = URN.rfc2141().create("non-urn", " []&<>^`{|}").toURI().toASCIIString();
         assertEquals("urn:non-urn:%20%5b%5d%26%3c%3e%5e%60%7b%7c%7d", asciiString);
     }
 
     @Test
-    public void Special_UTF8_chars_are_escaped() throws Exception {
+    public void Special_UTF8_chars_are_escaped() throws URISyntaxException {
         final String asciiString = URN.rfc2141().create("non-urn", "ÄÜÖ").toURI().toASCIIString();
         assertEquals("urn:non-urn:%c3%84%c3%9c%c3%96", asciiString);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Parsing_non_URN_URIs_throws_exception() throws Exception {
+    public void Parsing_non_URN_URIs_throws_exception() throws URISyntaxException {
         URN.rfc2141().create(new URI("http://foo"));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Invalid_NID_part_in_URI_throws_exception() throws Exception {
+    public void Invalid_NID_part_in_URI_throws_exception() throws URISyntaxException {
         URN.rfc2141().create(new URI("urn:!?:1234"));
     }
 
     @Test
-    public void URN_string_can_be_parsed_into_its_components() throws Exception {
+    public void URN_string_can_be_parsed_into_its_components() throws URISyntaxException {
         final String nid = "isbn";
         final String nss = "0451450523";
         final URN urn = URN.rfc2141().create(new URI(String.format("urn:%s:%s", nid, nss)));
@@ -103,7 +103,7 @@ public class URNTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Non_URN_URI_throws_exception() throws Exception {
+    public void Non_URN_URI_throws_exception() throws URISyntaxException {
         URN.rfc2141().create(new URI("urn:invalid-urn-part"));
     }
 
@@ -118,27 +118,27 @@ public class URNTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Factory_method_throws_exception_when_parsing_null() throws URNSyntaxException {
+    public void Factory_method_throws_exception_when_parsing_null() {
         URN.create((URN) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Factory_method_fromString_throws_exception_when_parsing_null() throws URNSyntaxException {
+    public void Factory_method_fromString_throws_exception_when_parsing_null() {
         URN.rfc2141().create((String) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Factory_method_fromString_throws_exception_when_parsing_empty_string() throws URNSyntaxException {
+    public void Factory_method_fromString_throws_exception_when_parsing_empty_string() {
         URN.rfc2141().create("");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Factory_method_fromString_throws_exception_when_parsing_non_URN() throws URNSyntaxException {
+    public void Factory_method_fromString_throws_exception_when_parsing_non_URN() {
         URN.rfc2141().create("http://foo");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Factory_method_throws_exception_when_NSS_part_is_missing() throws URNSyntaxException {
+    public void Factory_method_throws_exception_when_NSS_part_is_missing() {
         URN.rfc2141().create("urn:foo");
     }
 
