@@ -64,11 +64,12 @@ final public class URN {
     private final NamespaceSpecificString namespaceSpecificString;
 
     /**
+     *
      * @param namespaceIdentifier
      * @param namespaceSpecificString
      * @throws IllegalArgumentException
      */
-    URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString) {
+    public URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString) {
         assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
         assertNotNull(namespaceSpecificString, "Namespace specific string cannot be null");
 
