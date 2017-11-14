@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 
 import static de.slub.urn.NamespaceIdentifier.URN_SCHEME;
 import static de.slub.urn.RFC.RFC_2141;
+import static de.slub.urn.RFC.RFC_8141;
 
 /**
  * Represents a Uniform Resource Name (URN).
@@ -89,6 +90,10 @@ final public class URN {
 
     public static URNFactory rfc2141() {
         return new URNFactory(RFC_2141);
+    }
+
+    public static URNFactory rfc8141() {
+        return new URNFactory(RFC_8141);
     }
 
     /**

@@ -22,6 +22,7 @@ import org.junit.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static de.slub.urn.NamespaceSpecificString.NssEncoding.NOT_ENCODED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,6 +30,33 @@ import static org.junit.Assert.assertNotNull;
 public class URNTest {
 
     private static final String IRRELEVANT_NOT_EMPTY_STRING = "irrelevant";
+
+    @Test(expected = IllegalArgumentException.class)
+    public void Throws_exception_if_NID_and_NSS_RFC_dont_match() throws URNSyntaxException {
+        NamespaceIdentifier rfc2141_NID = new NamespaceIdentifier(IRRELEVANT_NOT_EMPTY_STRING) {
+            @Override
+            protected boolean isValidNamespaceIdentifier(String nid) {
+                return true;
+            }
+
+            @Override
+            protected RFC supportedRFC() {
+                return RFC.RFC_2141;
+            }
+        };
+        NamespaceSpecificString rfc8141_NSS = new NamespaceSpecificString(IRRELEVANT_NOT_EMPTY_STRING, NOT_ENCODED) {
+            @Override
+            protected boolean isValidURLEncodedNamespaceSpecificString(String encoded) {
+                return true;
+            }
+
+            @Override
+            protected RFC supportedRFC() {
+                return RFC.RFC_8141;
+            }
+        };
+        new URN(rfc2141_NID, rfc8141_NSS);
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void Null_arguments_throws_exception() {

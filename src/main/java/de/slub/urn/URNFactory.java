@@ -1,5 +1,7 @@
 package de.slub.urn;
 
+import de.slub.urn.NamespaceSpecificString.NssEncoding;
+
 import java.net.URI;
 
 import static de.slub.urn.NamespaceIdentifier.URN_SCHEME;
@@ -35,11 +37,21 @@ public class URNFactory {
     }
 
     private NamespaceIdentifier getNidInstance(String namespaceIdentifier) throws URNSyntaxException {
-        return new NID_RFC2141(namespaceIdentifier);
+        switch (supportedRFC) {
+            case RFC_2141:
+                return new NID_RFC2141(namespaceIdentifier);
+            default:
+                throw new IllegalStateException("URN factory initialized with unsupported RFC: " + supportedRFC);
+        }
     }
 
-    private NamespaceSpecificString getNssInstance(String namespaceSpecificString, NamespaceSpecificString.NssEncoding encoding) throws URNSyntaxException {
-        return new NSS_RFC2141(namespaceSpecificString, encoding);
+    private NamespaceSpecificString getNssInstance(String namespaceSpecificString, NssEncoding encoding) throws URNSyntaxException {
+        switch (supportedRFC) {
+            case RFC_2141:
+                return new NSS_RFC2141(namespaceSpecificString, encoding);
+            default:
+                throw new IllegalStateException("URN factory initialized with unsupported RFC: " + supportedRFC);
+        }
     }
 
     /**
