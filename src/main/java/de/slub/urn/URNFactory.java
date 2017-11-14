@@ -71,29 +71,26 @@ public class URNFactory {
      *
      * @param uri The URI to be parsed into a URN
      * @return A new URN instance
-     * @throws IllegalArgumentException If the given URI cannot be parsed into a URN
+     * @throws URNSyntaxException If the URI scheme is not <pre>urn</pre> or the scheme specific part cannot be
+     *                            parsed into Namespace Identifier and Namespace Specific String.
      */
-    public URN create(URI uri) {
+    public URN create(URI uri) throws URNSyntaxException {
         final String scheme = uri.getScheme();
-        try {
-            if (!URN_SCHEME.equalsIgnoreCase(scheme)) {
-                throw new URNSyntaxException(
-                        String.format("Invalid scheme: `%s` - Given URI is not a URN", scheme));
-            }
+        if (!URN_SCHEME.equalsIgnoreCase(scheme)) {
+            throw new URNSyntaxException(
+                    String.format("Invalid scheme: `%s` - Given URI is not a URN", scheme));
+        }
 
-            final String schemeSpecificPart = uri.getSchemeSpecificPart();
-            int colonPos = schemeSpecificPart.indexOf(':');
-            if (colonPos > -1) {
-                return new URN(
-                        getNidInstance(schemeSpecificPart.substring(0, colonPos)),
-                        getNssInstance(schemeSpecificPart.substring(colonPos + 1), URL_ENCODED),
-                        URN.RFC.RFC_2141);
-            } else {
-                throw new URNSyntaxException(
-                        String.format("Invalid format: `%s` - Given schema specific part is not a URN part", schemeSpecificPart));
-            }
-        } catch (URNSyntaxException e) {
-            throw new IllegalArgumentException(e);
+        final String schemeSpecificPart = uri.getSchemeSpecificPart();
+        int colonPos = schemeSpecificPart.indexOf(':');
+        if (colonPos > -1) {
+            return new URN(
+                    getNidInstance(schemeSpecificPart.substring(0, colonPos)),
+                    getNssInstance(schemeSpecificPart.substring(colonPos + 1), URL_ENCODED),
+                    URN.RFC.RFC_2141);
+        } else {
+            throw new URNSyntaxException(
+                    String.format("Invalid format: `%s` - Given schema specific part is not a URN part", schemeSpecificPart));
         }
     }
 

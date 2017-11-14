@@ -31,7 +31,7 @@ package de.slub.urn;
  */
 abstract public class NamespaceIdentifier {
 
-    private static final String URN_SCHEME = "urn";
+    protected static final String URN_SCHEME = "urn";
     private final String nid;
 
     /**
