@@ -70,6 +70,13 @@ abstract public class NamespaceIdentifier {
     abstract protected boolean isValidNamespaceIdentifier(String nid);
 
     /**
+     * Return RFC supported by this namespace identifier instance
+     *
+     * @return The supported RFC
+     */
+    protected abstract RFC supportedRFC();
+
+    /**
      * Returns the Namespace Identifier literal
      *
      * @return Namespace Identifier literal

@@ -8,6 +8,12 @@ import static de.slub.urn.NamespaceSpecificString.NssEncoding.URL_ENCODED;
 
 public class URNFactory {
 
+    private final RFC supportedRFC;
+
+    public URNFactory(RFC supportedRFC) {
+        this.supportedRFC = supportedRFC;
+    }
+
     /**
      * Create a new URN instance using a particular Namespace Identifier and Namespace Specific String.
      * <p>
@@ -22,7 +28,7 @@ public class URNFactory {
         try {
             final NamespaceIdentifier nid = getNidInstance(namespaceIdentifier);
             final NamespaceSpecificString nss = getNssInstance(namespaceSpecificString, NOT_ENCODED);
-            return new URN(nid, nss, URN.RFC.RFC_2141);
+            return new URN(nid, nss);
         } catch (URNSyntaxException | IllegalArgumentException e) {
             throw new IllegalArgumentException("Error creating URN instance", e);
         }
@@ -60,7 +66,7 @@ public class URNFactory {
             final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
             final NamespaceSpecificString namespaceSpecificString = getNssInstance(encodedNSSPart, URL_ENCODED);
 
-            return new URN(namespaceIdentifier, namespaceSpecificString, URN.RFC.RFC_2141);
+            return new URN(namespaceIdentifier, namespaceSpecificString);
         } catch (URNSyntaxException e) {
             throw new IllegalArgumentException(e);
         }
@@ -71,26 +77,28 @@ public class URNFactory {
      *
      * @param uri The URI to be parsed into a URN
      * @return A new URN instance
-     * @throws URNSyntaxException If the URI scheme is not <pre>urn</pre> or the scheme specific part cannot be
-     *                            parsed into Namespace Identifier and Namespace Specific String.
+     * @throws IllegalArgumentException If the given URI cannot be parsed into a URN
      */
-    public URN create(URI uri) throws URNSyntaxException {
+    public URN create(URI uri) {
         final String scheme = uri.getScheme();
-        if (!URN_SCHEME.equalsIgnoreCase(scheme)) {
-            throw new URNSyntaxException(
-                    String.format("Invalid scheme: `%s` - Given URI is not a URN", scheme));
-        }
+        try {
+            if (!URN_SCHEME.equalsIgnoreCase(scheme)) {
+                throw new URNSyntaxException(
+                        String.format("Invalid scheme: `%s` - Given URI is not a URN", scheme));
+            }
 
-        final String schemeSpecificPart = uri.getSchemeSpecificPart();
-        int colonPos = schemeSpecificPart.indexOf(':');
-        if (colonPos > -1) {
-            return new URN(
-                    getNidInstance(schemeSpecificPart.substring(0, colonPos)),
-                    getNssInstance(schemeSpecificPart.substring(colonPos + 1), URL_ENCODED),
-                    URN.RFC.RFC_2141);
-        } else {
-            throw new URNSyntaxException(
-                    String.format("Invalid format: `%s` - Given schema specific part is not a URN part", schemeSpecificPart));
+            final String schemeSpecificPart = uri.getSchemeSpecificPart();
+            int colonPos = schemeSpecificPart.indexOf(':');
+            if (colonPos > -1) {
+                return new URN(
+                        getNidInstance(schemeSpecificPart.substring(0, colonPos)),
+                        getNssInstance(schemeSpecificPart.substring(colonPos + 1), URL_ENCODED));
+            } else {
+                throw new URNSyntaxException(
+                        String.format("Invalid format: `%s` - Given schema specific part is not a URN part", schemeSpecificPart));
+            }
+        } catch (URNSyntaxException e) {
+            throw new IllegalArgumentException(e);
         }
     }
 

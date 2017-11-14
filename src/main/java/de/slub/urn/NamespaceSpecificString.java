@@ -72,8 +72,8 @@ abstract public class NamespaceSpecificString {
             encoded = lowerCaseOctedPairs(nss);
             raw = decode(encoded);
         } else {
-            this.encoded = encode(nss);
-            this.raw = nss;
+            encoded = encode(nss);
+            raw = nss;
         }
     }
 
@@ -87,8 +87,14 @@ abstract public class NamespaceSpecificString {
         this.raw = instanceForCopying.raw;
     }
 
-
     protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
+
+    /**
+     * Return RFC supported by this namespace specific string instance
+     *
+     * @return The supported RFC
+     */
+    protected abstract RFC supportedRFC();
 
     protected static String encode(String s) throws URNSyntaxException {
         StringBuilder sb = new StringBuilder();

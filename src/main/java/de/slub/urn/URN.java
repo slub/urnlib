@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static de.slub.urn.NamespaceIdentifier.URN_SCHEME;
+import static de.slub.urn.RFC.RFC_2141;
 
 /**
  * Represents a Uniform Resource Name (URN).
@@ -59,26 +60,24 @@ import static de.slub.urn.NamespaceIdentifier.URN_SCHEME;
  */
 final public class URN {
 
-    public enum RFC {
-        RFC_2141
-    }
-
     private final NamespaceIdentifier namespaceIdentifier;
     private final NamespaceSpecificString namespaceSpecificString;
-    private final RFC supportedRFC;
 
     /**
      * @param namespaceIdentifier
      * @param namespaceSpecificString
-     * @param supportedRFC
      * @throws IllegalArgumentException
      */
-    URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString, RFC supportedRFC) {
+    URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString) {
         assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
         assertNotNull(namespaceSpecificString, "Namespace specific string cannot be null");
+
+        if (!namespaceIdentifier.supportedRFC().equals(namespaceSpecificString.supportedRFC())) {
+            throw new IllegalArgumentException("RFCs of namespace identifier and namespace specific string must match");
+        }
+
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
-        this.supportedRFC = supportedRFC;
     }
 
     private static void assertNotNull(Object o, String message) {
@@ -88,7 +87,7 @@ final public class URN {
     }
 
     public static URNFactory rfc2141() {
-        return new URNFactory();
+        return new URNFactory(RFC_2141);
     }
 
     /**
@@ -100,7 +99,7 @@ final public class URN {
      */
     public static URN create(URN urn) {
         assertNotNull(urn, "URN parameter cannot be null");
-        return new URN(urn.namespaceIdentifier, urn.namespaceSpecificString, urn.supportedRFC);
+        return new URN(urn.namespaceIdentifier, urn.namespaceSpecificString);
     }
 
     /**

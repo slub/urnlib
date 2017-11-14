@@ -2,6 +2,8 @@ package de.slub.urn;
 
 import java.util.regex.Pattern;
 
+import static de.slub.urn.RFC.RFC_2141;
+
 public class NSS_RFC2141 extends NamespaceSpecificString {
 
     private static final Pattern allowedCharacters = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
@@ -23,6 +25,11 @@ public class NSS_RFC2141 extends NamespaceSpecificString {
     @Override
     protected boolean isValidURLEncodedNamespaceSpecificString(String encoded) {
          return allowedCharacters.matcher(encoded).matches();
+    }
+
+    @Override
+    protected RFC supportedRFC() {
+        return RFC_2141;
     }
 
 }
