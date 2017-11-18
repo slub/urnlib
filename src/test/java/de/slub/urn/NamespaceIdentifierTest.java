@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Saxon State and University Library Dresden (SLUB)
+ * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,80 +22,90 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class NamespaceIdentifierTest {
+abstract class NamespaceIdentifierTest {
+
+    /**
+     * Return instance of the {@code NamespaceIdentifier} implementation under test
+     *
+     * @param nid Namespace identifier literal
+     * @return Instance for testing
+     */
+    abstract NamespaceIdentifier newTestInstance(String nid) throws URNSyntaxException;
+
+    /**
+     * Return instance of the {@code NamespaceIdentifier} implementation under test
+     *
+     * @param nid Namespace identifier
+     * @return Instance for testing
+     */
+    abstract NamespaceIdentifier newTestInstance(NamespaceIdentifier nid) throws URNSyntaxException;
 
     @Test(expected = URNSyntaxException.class)
     public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
         final String empty = "";
-        new NID_RFC2141(empty);
+        newTestInstance(empty);
     }
 
     @Test(expected = URNSyntaxException.class)
     public void Passing_null_to_constructor_throws_exception() throws URNSyntaxException {
-        new NID_RFC2141((String) null);
+        newTestInstance((String) null);
     }
 
     @Test
     public void Calling_toString_returns_namespace_identifier() throws URNSyntaxException {
-        final String expected = "isbn";
-        final NamespaceIdentifier subject = new NID_RFC2141(expected);
+        final String              expected = "isbn";
+        final NamespaceIdentifier subject  = newTestInstance(expected);
         assertEquals(expected, subject.toString());
     }
 
     @Test
     public void Allows_single_letter_namespace_identifier() throws URNSyntaxException {
-        new NID_RFC2141("A");
+        newTestInstance("A");
     }
 
     @Test(expected = URNSyntaxException.class)
     public void URN_as_namespace_identifier_throws_exception() throws URNSyntaxException {
         final String badNamespaceIdentifier = "urn";
-        new NID_RFC2141(badNamespaceIdentifier);
-    }
-
-    @Test(expected = URNSyntaxException.class)
-    public void Invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxException {
-        final String badNamespaceIdentifier = "-is!bn";
-        new NID_RFC2141(badNamespaceIdentifier);
+        newTestInstance(badNamespaceIdentifier);
     }
 
     @Test
     public void Identically_initialized_NamespaceIdentifiers_are_equal() throws URNSyntaxException {
-        final String nid = "a-valid-nid";
-        final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
-        final NamespaceIdentifier nid2 = new NID_RFC2141(nid);
+        final String              nid  = "a-valid-nid";
+        final NamespaceIdentifier nid1 = newTestInstance(nid);
+        final NamespaceIdentifier nid2 = newTestInstance(nid);
         assertEquals(nid1, nid2);
     }
 
     @Test
     public void NamespaceIdentifiers_equality_check_is_case_insensitive() throws URNSyntaxException {
-        final String nid = "A-Valid-Nid";
-        final NamespaceIdentifier nid1 = new NID_RFC2141(nid.toUpperCase());
-        final NamespaceIdentifier nid2 = new NID_RFC2141(nid.toLowerCase());
+        final String              nid  = "A-Valid-Nid";
+        final NamespaceIdentifier nid1 = newTestInstance(nid.toUpperCase());
+        final NamespaceIdentifier nid2 = newTestInstance(nid.toLowerCase());
         assertEquals(nid1, nid2);
     }
 
     @Test
     public void Copied_NamespaceIdentifier_is_equal_to_orignal() throws URNSyntaxException {
-        final String nid = "a-valid-nid";
-        final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
-        final NamespaceIdentifier nid2 = new NID_RFC2141(nid1);
+        final String              nid  = "a-valid-nid";
+        final NamespaceIdentifier nid1 = newTestInstance(nid);
+        final NamespaceIdentifier nid2 = newTestInstance(nid1);
         assertEquals(nid1, nid2);
     }
 
     @Test
     public void Copied_NamespaceIdentifier_is_not_identical_to_original() throws URNSyntaxException {
-        final String nid = "a-valid-nid";
-        final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
-        final NamespaceIdentifier nid2 = new NID_RFC2141(nid1);
+        final String              nid  = "a-valid-nid";
+        final NamespaceIdentifier nid1 = newTestInstance(nid);
+        final NamespaceIdentifier nid2 = newTestInstance(nid1);
         assertFalse(nid1 == nid2);
     }
 
     @Test
     public void Identically_initialized_NamespaceIdentifiers_have_same_hash_code() throws URNSyntaxException {
-        final String nid = "a-valid-nid";
-        final NamespaceIdentifier nid1 = new NID_RFC2141(nid);
-        final NamespaceIdentifier nid2 = new NID_RFC2141(nid);
+        final String              nid  = "a-valid-nid";
+        final NamespaceIdentifier nid1 = newTestInstance(nid);
+        final NamespaceIdentifier nid2 = newTestInstance(nid);
         assertEquals(nid1.hashCode(), nid2.hashCode());
     }
 
