@@ -17,11 +17,11 @@
 
 package de.slub.urn;
 
-import de.slub.urn.NamespaceSpecificString.NssEncoding;
+import de.slub.urn.NamespaceSpecificString.Encoding;
 import org.junit.Test;
 
-import static de.slub.urn.NamespaceSpecificString.NssEncoding.NOT_ENCODED;
-import static de.slub.urn.NamespaceSpecificString.NssEncoding.URL_ENCODED;
+import static de.slub.urn.NamespaceSpecificString.Encoding.NOT_ENCODED;
+import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 import static org.junit.Assert.*;
 
 abstract class NamespaceSpecificStringTest {
@@ -132,7 +132,7 @@ abstract class NamespaceSpecificStringTest {
         assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", subject.raw());
     }
 
-    abstract NamespaceSpecificString newTestInstance(String nss, NssEncoding encoding) throws URNSyntaxException;
+    abstract NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException;
 
     abstract NamespaceSpecificString newTestInstance(NamespaceSpecificString nss);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Saxon State and University Library Dresden (SLUB)
+ * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,48 +27,39 @@ import static de.slub.urn.RFC.RFC_8141;
 /**
  * Represents a Uniform Resource Name (URN).
  *
- * Creating a URN instance is done by using one of static factory methods, e.g.:
- * <pre>
- *     {@code
- *      URN urn = URN.create("isbn", "0451450523");
- *      // or...
- *      URN urn = URN.create("urn:isbn:0451450523");
- * }
- * </pre>
- *
- * One can also use URN instances or URIs to create new a URN instance, e.g.:
- * <pre>
- *     {@code
- *      URN urn = URN.create(new URI("urn:isbn:0451450523"));
- *      // or
- *      URN urn = URN.create(URN.create("isbn", "0451450523"));
- * }
- * </pre>
- *
- * Note that when using the factory methods, the passed namespace specific string has to be properly
- * encoded in respect to the rules described in RFC2141.
+ * A new URN instance can be created via the constructor if provided with proper {@link NamespaceIdentifier} and
+ * {@link NamespaceSpecificString} instances. For creating URNs from string literals or parts, use a {@link URNFactory}
+ * for a particular RFC which can be obtained via the {@code rfc2141()} or {@code rfc8141()} methods.
  *
  * The URN class itself is not designed to be extended. To represent URNs from other URN namespaces a specific class
- * should utilize this class to parse, serialize and validate proper Namespace Specific String encoding. You should use
- * the specific URN part classes {@link NamespaceIdentifier} and {@link NamespaceSpecificString}.
+ * should utilize this class to parse, serialize and validate proper Namespace Identifier and Namespace Specific String
+ * encodings. You should use the specific URN part classes {@link NamespaceIdentifier} and {@link NamespaceSpecificString}.
  *
- * URN instances are immutable, cloneable and comparable by using {@code equals()}.
+ * URN instances are immutable and comparable by using {@code equals()}.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>
+ * TODO Update RFC Link
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
  * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
  */
 final public class URN {
 
+    private static final URNFactory URN_FACTORY_RFC2141 = new URNFactory(RFC_2141);
+    private static final URNFactory URN_FACTORY_RFC8141 = new URNFactory(RFC_8141);
+
     private final NamespaceIdentifier namespaceIdentifier;
     private final NamespaceSpecificString namespaceSpecificString;
 
     /**
+     * Creates a new {@code URN} instance from a {@code NamespaceIdentifier} (NID) and
+     * a {@code NamespaceSpecificString} (NSS).
      *
-     * @param namespaceIdentifier
-     * @param namespaceSpecificString
-     * @throws IllegalArgumentException
+     * Both NID and NSS must support the same RFC.
+     *
+     * @param namespaceIdentifier The namespace identifier for this URN
+     * @param namespaceSpecificString The namespace specific string for this URN
+     * @throws IllegalArgumentException Thrown if NID and NSS support different RFCs, or if any of the arguments is null.
      */
     public URN(NamespaceIdentifier namespaceIdentifier, NamespaceSpecificString namespaceSpecificString) {
         assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
@@ -88,12 +79,22 @@ final public class URN {
         }
     }
 
+    /**
+     * Returns a factory to produce and parse URNs according to RFC 2141
+     *
+     * @return Factory instance
+     */
     public static URNFactory rfc2141() {
-        return new URNFactory(RFC_2141);
+        return URN_FACTORY_RFC2141;
     }
 
+    /**
+     * Returns a factory to produce and parse URNs according to RFC 8141
+     *
+     * @return Factory instance
+     */
     public static URNFactory rfc8141() {
-        return new URNFactory(RFC_8141);
+        return URN_FACTORY_RFC8141;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Saxon State and University Library Dresden (SLUB)
+ * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

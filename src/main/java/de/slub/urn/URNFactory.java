@@ -1,12 +1,29 @@
+/*
+ * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.slub.urn;
 
-import de.slub.urn.NamespaceSpecificString.NssEncoding;
+import de.slub.urn.NamespaceSpecificString.Encoding;
 
 import java.net.URI;
 
 import static de.slub.urn.NamespaceIdentifier.URN_SCHEME;
-import static de.slub.urn.NamespaceSpecificString.NssEncoding.NOT_ENCODED;
-import static de.slub.urn.NamespaceSpecificString.NssEncoding.URL_ENCODED;
+import static de.slub.urn.NamespaceSpecificString.Encoding.NOT_ENCODED;
+import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 
 public class URNFactory {
 
@@ -28,7 +45,7 @@ public class URNFactory {
      */
     public URN create(String namespaceIdentifier, String namespaceSpecificString) {
         try {
-            final NamespaceIdentifier nid = getNidInstance(namespaceIdentifier);
+            final NamespaceIdentifier     nid = getNidInstance(namespaceIdentifier);
             final NamespaceSpecificString nss = getNssInstance(namespaceSpecificString, NOT_ENCODED);
             return new URN(nid, nss);
         } catch (URNSyntaxException | IllegalArgumentException e) {
@@ -45,7 +62,7 @@ public class URNFactory {
         }
     }
 
-    private NamespaceSpecificString getNssInstance(String namespaceSpecificString, NssEncoding encoding) throws URNSyntaxException {
+    private NamespaceSpecificString getNssInstance(String namespaceSpecificString, Encoding encoding) throws URNSyntaxException {
         switch (supportedRFC) {
             case RFC_2141:
                 return new NSS_RFC2141(namespaceSpecificString, encoding);
@@ -74,8 +91,8 @@ public class URNFactory {
                         String.format("Invalid format `%s` is probably not a URN", urn));
             }
 
-            final NamespaceIdentifier namespaceIdentifier = getNidInstance(parts[1]);
-            final String encodedNSSPart = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
+            final NamespaceIdentifier     namespaceIdentifier     = getNidInstance(parts[1]);
+            final String                  encodedNSSPart          = urn.substring(urn.indexOf(parts[1]) + parts[1].length() + 1);
             final NamespaceSpecificString namespaceSpecificString = getNssInstance(encodedNSSPart, URL_ENCODED);
 
             return new URN(namespaceIdentifier, namespaceSpecificString);
@@ -100,7 +117,7 @@ public class URNFactory {
             }
 
             final String schemeSpecificPart = uri.getSchemeSpecificPart();
-            int colonPos = schemeSpecificPart.indexOf(':');
+            int          colonPos           = schemeSpecificPart.indexOf(':');
             if (colonPos > -1) {
                 return new URN(
                         getNidInstance(schemeSpecificPart.substring(0, colonPos)),

@@ -22,7 +22,7 @@ import org.junit.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static de.slub.urn.NamespaceSpecificString.NssEncoding.NOT_ENCODED;
+import static de.slub.urn.NamespaceSpecificString.Encoding.NOT_ENCODED;
 import static org.junit.Assert.*;
 
 abstract class URNTest {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Saxon State and University Library Dresden (SLUB)
+ * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,7 @@ package de.slub.urn;
 /**
  * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN).
  *
- * It takes care of the validity according to RFC2141.
- *
- * {@code NamespaceIdentifier} instances are immutable, cloneable and comparable by using {@code equals()}.
- *
  * @author Ralf Claussnitzer
- * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
  * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
  */
@@ -38,7 +33,8 @@ abstract public class NamespaceIdentifier {
      * Creates a new {@code NamespaceIdentifier} instance.
      *
      * @param nid The Namespace Identifier literal
-     * @throws URNSyntaxException if the given value is <pre>null</pre>, empty or invalid according to RFC2141.
+     * @throws URNSyntaxException if the given value is <pre>null</pre>, empty or invalid according to the
+     *                            {@code isValidNamespaceIdentifier()} method.
      */
     public NamespaceIdentifier(String nid) throws URNSyntaxException {
         assertNotNullNotEmpty(nid);
@@ -74,7 +70,7 @@ abstract public class NamespaceIdentifier {
      *
      * @return The supported RFC
      */
-    protected abstract RFC supportedRFC();
+    abstract protected RFC supportedRFC();
 
     /**
      * Returns the Namespace Identifier literal

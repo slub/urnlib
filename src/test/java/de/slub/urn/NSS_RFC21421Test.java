@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Saxon State and University Library Dresden (SLUB)
+ * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package de.slub.urn;
 
-import de.slub.urn.NamespaceSpecificString.NssEncoding;
+import de.slub.urn.NamespaceSpecificString.Encoding;
 import org.junit.Test;
 
 public class NSS_RFC21421Test extends NamespaceSpecificStringTest {
@@ -25,11 +25,11 @@ public class NSS_RFC21421Test extends NamespaceSpecificStringTest {
     @Test(expected = URNSyntaxException.class)
     public void Initializing_with_illegal_character_throws_exception() throws URNSyntaxException {
         String illegalNss = "ill/eg&al";
-        newTestInstance(illegalNss, NssEncoding.URL_ENCODED);
+        newTestInstance(illegalNss, Encoding.URL_ENCODED);
     }
 
     @Override
-    NamespaceSpecificString newTestInstance(String nss, NssEncoding encoding) throws URNSyntaxException {
+    NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException {
         return new NSS_RFC2141(nss, encoding);
     }
 

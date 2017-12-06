@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Saxon State and University Library Dresden (SLUB)
+ * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,42 +29,25 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 /**
  * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN).
  *
- * The class takes care of all RFC2141 defined encoding and decoding in order to generate valid Namespace Specific
- * Strings.
- *
- * Creating a URN instance is done by using one of static factory methods, e.g.:
- * <pre>
- *     {@code
- *      URN urn = NamespaceSpecificString.fromRaw("a123,456");
- *      // or...
- *      URN urn = NamespaceSpecificString.fromEncoded("a123%2C456");
- * }
- * </pre>
- *
- * The difference between {@code fromRaw()} and {@code fromEncoded()} is different validation and further encoding of
- * the given value. When using {@code fromRaw()} the value gets properly encoded and not validated. When using
- * {@code fromEncoded()} the given value must be a valid and properly encoded Namespace Specific String. The encoded
- * value can be obtained via {@code toString()}, while the raw, unencoded value is returned by {@code raw()}.
- *
- * {@code NamespaceSpecificString} instances are immutable, cloneable and comparable by using {@code equals()}.
+ * {@code NamespaceSpecificString} instances are immutable and comparable by using {@code equals()}.
  *
  * @author Ralf Claussnitzer
- * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
  * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
  */
 abstract public class NamespaceSpecificString {
 
-    public enum NssEncoding {
-        URL_ENCODED, NOT_ENCODED
-    }
-
-    private final String encoded;
-    private final String raw;
-
-    public NamespaceSpecificString(String nss, NssEncoding nssEncoding) throws URNSyntaxException {
+    /**
+     * Creates a new {@code NamespaceSpecificString} instance.
+     *
+     * @param nss         The namespace specific string literal
+     * @param encoding Telling whether the given literal is URL encoded or not
+     * @throws URNSyntaxException Thrown if the given literal is not valid according to {@code
+     *                            isValidURLEncodedNamespaceSpecificString()}
+     */
+    public NamespaceSpecificString(String nss, Encoding encoding) throws URNSyntaxException {
         assertNotNullNotEmpty(nss);
-        if (nssEncoding == NssEncoding.URL_ENCODED) {
+        if (encoding == Encoding.URL_ENCODED) {
             if (!isValidURLEncodedNamespaceSpecificString(nss)) {
                 throw new URNSyntaxException(
                         String.format("Not allowed characters in Namespace Specific String '%s'", nss));
@@ -77,6 +60,16 @@ abstract public class NamespaceSpecificString {
         }
     }
 
+    private final String encoded;
+    private final String raw;
+
+    /**
+     * Represents the state of encoding for a string literal.
+     */
+    public enum Encoding {
+        URL_ENCODED, NOT_ENCODED
+    }
+
     /**
      * Create a new {@code NamespaceSpecificString} instance that is an exact copy of the given instance.
      *
@@ -87,15 +80,33 @@ abstract public class NamespaceSpecificString {
         this.raw = instanceForCopying.raw;
     }
 
+    /**
+     * Check if a given URL encoded NSS literal is valid.
+     *
+     * Implementions must validate according to the RFC they represent.
+     *
+     * @param encoded The URL encoded NSS literal
+     * @return True, if the literal is valid according to the RFC.
+     */
     protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
 
     /**
-     * Return RFC supported by this namespace specific string instance
+     * Return RFC supported by this namespace specific string instance.
      *
      * @return The supported RFC
      */
     protected abstract RFC supportedRFC();
 
+    /**
+     * URL Encode all NSS reserved characters of a given string literal.
+     *
+     * Uses {@code isReservedCharacter()} to determine whether a character is reserved according to the RFC.
+     *
+     * @param s A string
+     * @return URL encoded string according to RFC
+     * @throws URNSyntaxException Thrown if the string contains illegal character `0`.
+     */
+    // TODO Check if Java strings can actually contain character `0`
     protected static String encode(String s) throws URNSyntaxException {
         StringBuilder sb = new StringBuilder();
         for (char c : s.toCharArray()) {
@@ -112,6 +123,7 @@ abstract public class NamespaceSpecificString {
     }
 
     // Encode reserved character set (RFC 2141, 2.3) and explicitly excluded characters (RFC 2141, 2.4)
+    // TODO Should this be abstract as well?
     private static boolean isReservedCharacter(char c) {
         return (c > 0x80)
                 || ((c >= 0x01) && (c <= 0x20) || ((c >= 0x7F)) && (c <= 0xFF))
@@ -131,7 +143,7 @@ abstract public class NamespaceSpecificString {
         }
     }
 
-    protected static String lowerCaseOctedPairs(String s) {
+    private static String lowerCaseOctedPairs(String s) {
         StringBuilder sb = new StringBuilder(s.length());
         try (StringReader sr = new StringReader(s)) {
             int i;
@@ -150,7 +162,7 @@ abstract public class NamespaceSpecificString {
         return sb.toString();
     }
 
-    protected static String decode(String s) throws URNSyntaxException {
+    private static String decode(String s) throws URNSyntaxException {
         try {
             return URLDecoder.decode(s, UTF_8.name());
         } catch (UnsupportedEncodingException | IllegalArgumentException e) {
@@ -164,7 +176,7 @@ abstract public class NamespaceSpecificString {
         }
     }
 
-    protected static void assertNotNullNotEmpty(String s) throws IllegalArgumentException {
+    private static void assertNotNullNotEmpty(String s) throws IllegalArgumentException {
         if ((s == null) || (s.isEmpty())) {
             throw new IllegalArgumentException("Namespace Specific String part cannot be null or empty");
         }
