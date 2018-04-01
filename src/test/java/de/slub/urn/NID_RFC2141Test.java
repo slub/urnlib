@@ -19,6 +19,9 @@ package de.slub.urn;
 
 import org.junit.Test;
 
+import static de.slub.urn.RFC.RFC_2141;
+import static org.junit.Assert.assertEquals;
+
 public class NID_RFC2141Test extends NamespaceIdentifierTest {
 
     @Test(expected = URNSyntaxException.class)
@@ -27,13 +30,25 @@ public class NID_RFC2141Test extends NamespaceIdentifierTest {
         newTestInstance(badNamespaceIdentifier);
     }
 
+    @Test
+    public void Supports_RFC_2141() throws URNSyntaxException {
+        NamespaceIdentifier nid = newTestInstance("foo");
+        assertEquals(RFC_2141, nid.supportedRFC());
+    }
+
+    @Test
+    public void Allows_single_letter_namespace_identifier() throws URNSyntaxException {
+        newTestInstance("A");
+    }
+
     @Override
     NamespaceIdentifier newTestInstance(String nid) throws URNSyntaxException {
         return new NID_RFC2141(nid);
     }
 
     @Override
-    NamespaceIdentifier newTestInstance(NamespaceIdentifier nid) throws URNSyntaxException {
+    NamespaceIdentifier newTestInstance(NamespaceIdentifier nid) {
         return new NID_RFC2141(nid);
     }
+
 }
