@@ -157,7 +157,8 @@ abstract public class NamespaceSpecificString {
                     sb.append(c);
                 }
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
         return sb.toString();
     }
