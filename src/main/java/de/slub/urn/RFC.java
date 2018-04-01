@@ -28,4 +28,8 @@ public enum RFC {
     RFC(String url) {
         this.url = url;
     }
+
+    public String url() {
+        return url;
+    }
 }
