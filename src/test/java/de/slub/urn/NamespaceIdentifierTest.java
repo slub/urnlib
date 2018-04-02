@@ -104,4 +104,10 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         assertEquals(nid1.hashCode(), nid2.hashCode());
     }
 
+    @Test(expected = URNSyntaxException.class)
+    public void Identifier_must_not_be_longer_than_32_characters() throws URNSyntaxException {
+        final String tooLong = "abcdefghijklmnopqrstuvwxyz-1234567";
+        newTestInstance(tooLong);
+    }
+
 }
