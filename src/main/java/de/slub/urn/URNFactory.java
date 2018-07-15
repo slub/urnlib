@@ -57,6 +57,8 @@ public class URNFactory {
         switch (supportedRFC) {
             case RFC_2141:
                 return new NID_RFC2141(namespaceIdentifier);
+            case RFC_8141:
+                return new NID_RFC8141(namespaceIdentifier);
             default:
                 throw new IllegalStateException("URN factory initialized with unsupported RFC: " + supportedRFC);
         }
@@ -66,6 +68,8 @@ public class URNFactory {
         switch (supportedRFC) {
             case RFC_2141:
                 return new NSS_RFC2141(namespaceSpecificString, encoding);
+            case RFC_8141:
+                return new NSS_RFC8141(namespaceSpecificString, encoding);
             default:
                 throw new IllegalStateException("URN factory initialized with unsupported RFC: " + supportedRFC);
         }
