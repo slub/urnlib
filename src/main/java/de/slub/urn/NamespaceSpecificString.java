@@ -106,7 +106,6 @@ abstract public class NamespaceSpecificString {
      * @return URL encoded string according to RFC
      * @throws URNSyntaxException Thrown if the string contains illegal character `0`.
      */
-    // TODO Check if Java strings can actually contain character `0`
     protected static String encode(String s) throws URNSyntaxException {
         StringBuilder sb = new StringBuilder();
         for (char c : s.toCharArray()) {
