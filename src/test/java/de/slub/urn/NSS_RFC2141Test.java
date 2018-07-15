@@ -20,7 +20,7 @@ package de.slub.urn;
 import de.slub.urn.NamespaceSpecificString.Encoding;
 import org.junit.Test;
 
-public class NSS_RFC21421Test extends NamespaceSpecificStringTest {
+public class NSS_RFC2141Test extends NamespaceSpecificStringTest {
 
     @Test(expected = URNSyntaxException.class)
     public void Initializing_with_illegal_character_throws_exception() throws URNSyntaxException {
