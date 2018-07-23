@@ -22,15 +22,15 @@ import org.junit.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class URN_RFC2141Test extends URNTest {
+public class RFC2141ParserTest extends URNParserTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void Invalid_NID_part_in_URI_throws_exception() throws URISyntaxException {
-        getInstanceFactory().create(new URI("urn:!?:1234"));
+    @Test(expected = URNSyntaxException.class)
+    public void Invalid_NID_part_in_URI_throws_exception() throws URISyntaxException, URNSyntaxException {
+        getURNParser().parse(new URI("urn:!?:1234"));
     }
 
     @Override
-    URNFactory getInstanceFactory() {
+    URNParser<URN_2141> getURNParser() {
         return URN.rfc2141();
     }
 }

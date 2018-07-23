@@ -28,7 +28,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN).
- *
+ * <p>
  * {@code NamespaceSpecificString} instances are immutable and comparable by using {@code equals()}.
  *
  * @author Ralf Claussnitzer
@@ -37,10 +37,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 abstract public class NamespaceSpecificString {
 
+    private final String encoded;
+    private final String raw;
     /**
      * Creates a new {@code NamespaceSpecificString} instance.
      *
-     * @param nss         The namespace specific string literal
+     * @param nss      The namespace specific string literal
      * @param encoding Telling whether the given literal is URL encoded or not
      * @throws URNSyntaxException Thrown if the given literal is not valid according to {@code
      *                            isValidURLEncodedNamespaceSpecificString()}
@@ -60,87 +62,21 @@ abstract public class NamespaceSpecificString {
         }
     }
 
-    private final String encoded;
-    private final String raw;
-
-    /**
-     * Represents the state of encoding for a string literal.
-     */
-    public enum Encoding {
-        URL_ENCODED, NOT_ENCODED
-    }
-
-    /**
-     * Create a new {@code NamespaceSpecificString} instance that is an exact copy of the given instance.
-     *
-     * @param instanceForCopying Base instance for copying
-     */
-    public NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
-        this.encoded = instanceForCopying.encoded;
-        this.raw = instanceForCopying.raw;
+    private static void assertNotNullNotEmpty(String s) throws IllegalArgumentException {
+        if ((s == null) || (s.isEmpty())) {
+            throw new IllegalArgumentException("Namespace Specific String part cannot be null or empty");
+        }
     }
 
     /**
      * Check if a given URL encoded NSS literal is valid.
-     *
+     * <p>
      * Implementions must validate according to the RFC they represent.
      *
      * @param encoded The URL encoded NSS literal
      * @return True, if the literal is valid according to the RFC.
      */
     protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
-
-    /**
-     * Return RFC supported by this namespace specific string instance.
-     *
-     * @return The supported RFC
-     */
-    protected abstract RFC supportedRFC();
-
-    /**
-     * URL Encode all NSS reserved characters of a given string literal.
-     *
-     * Uses {@code isReservedCharacter()} to determine whether a character is reserved according to the RFC.
-     *
-     * @param s A string
-     * @return URL encoded string according to RFC
-     * @throws URNSyntaxException Thrown if the string contains illegal character `0`.
-     */
-    protected static String encode(String s) throws URNSyntaxException {
-        StringBuilder sb = new StringBuilder();
-        for (char c : s.toCharArray()) {
-            if (c == 0) {
-                throw new URNSyntaxException("Illegal character `0` found");
-            }
-            if (isReservedCharacter(c)) {
-                appendEncoded(sb, c);
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    // Encode reserved character set (RFC 2141, 2.3) and explicitly excluded characters (RFC 2141, 2.4)
-    // TODO Should this be abstract as well?
-    private static boolean isReservedCharacter(char c) {
-        return (c > 0x80)
-                || ((c >= 0x01) && (c <= 0x20) || ((c >= 0x7F)) && (c <= 0xFF))
-                || c == '%' || c == '/' || c == '?' || c == '#' || c == '<' || c == '"' || c == '&' || c == '\\'
-                || c == '>' || c == '[' || c == ']' || c == '^' || c == '`' || c == '{' || c == '|'
-                || c == '}' || c == '~';
-    }
-
-    // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
-    // http://www.utf8-chartable.de/
-    // http://www.ascii-code.com/
-    private static void appendEncoded(StringBuilder sb, char c) {
-        for (byte b : String.valueOf(c).getBytes(UTF_8)) {
-            sb.append('%');
-            sb.append(toLowerCase(forDigit((b >> 4) & 0xF, 16)));
-            sb.append(toLowerCase(forDigit((b & 0xF), 16)));
-        }
-    }
 
     private static String lowerCaseOctedPairs(String s) {
         StringBuilder sb = new StringBuilder(s.length());
@@ -176,10 +112,58 @@ abstract public class NamespaceSpecificString {
         }
     }
 
-    private static void assertNotNullNotEmpty(String s) throws IllegalArgumentException {
-        if ((s == null) || (s.isEmpty())) {
-            throw new IllegalArgumentException("Namespace Specific String part cannot be null or empty");
+    /**
+     * URL Encode all NSS reserved characters of a given string literal.
+     * <p>
+     * Uses {@code isReservedCharacter()} to determine whether a character is reserved according to the RFC.
+     *
+     * @param s A string
+     * @return URL encoded string according to RFC
+     * @throws URNSyntaxException Thrown if the string contains illegal character `0`.
+     */
+    protected static String encode(String s) throws URNSyntaxException {
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (c == 0) {
+                throw new URNSyntaxException("Illegal character `0` found");
+            }
+            if (isReservedCharacter(c)) {
+                appendEncoded(sb, c);
+            } else {
+                sb.append(c);
+            }
         }
+        return sb.toString();
+    }
+
+    // Encode reserved character set (RFC 2141, 2.3) and explicitly excluded characters (RFC 2141, 2.4)
+    private static boolean isReservedCharacter(char c) {
+        return (c > 0x80)
+                || ((c >= 0x01) && (c <= 0x20) || ((c >= 0x7F)) && (c <= 0xFF))
+                || c == '%' || c == '/' || c == '?' || c == '#' || c == '<' || c == '"' || c == '&' || c == '\\'
+                || c == '>' || c == '[' || c == ']' || c == '^' || c == '`' || c == '{' || c == '|'
+                || c == '}' || c == '~';
+    }
+
+    // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
+    // http://www.utf8-chartable.de/
+    // http://www.ascii-code.com/
+    private static void appendEncoded(StringBuilder sb, char c) {
+        for (byte b : String.valueOf(c).getBytes(UTF_8)) {
+            sb.append('%');
+            sb.append(toLowerCase(forDigit((b >> 4) & 0xF, 16)));
+            sb.append(toLowerCase(forDigit((b & 0xF), 16)));
+        }
+    }
+
+    /**
+     * Create a new {@code NamespaceSpecificString} instance that is an exact copy of the given instance.
+     *
+     * @param instanceForCopying Base instance for copying
+     */
+    public NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
+        this.encoded = instanceForCopying.encoded;
+        this.raw = instanceForCopying.raw;
     }
 
     /**
@@ -189,6 +173,17 @@ abstract public class NamespaceSpecificString {
      */
     public String raw() {
         return this.raw;
+    }
+
+    @Override
+    public int hashCode() {
+        return encoded.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof NamespaceSpecificString
+                && this.encoded.equals(((NamespaceSpecificString) obj).encoded);
     }
 
     /**
@@ -201,15 +196,18 @@ abstract public class NamespaceSpecificString {
         return this.encoded;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof NamespaceSpecificString
-                && this.encoded.equals(((NamespaceSpecificString) obj).encoded);
-    }
+    /**
+     * Return RFC supported by this namespace specific string instance.
+     *
+     * @return The supported RFC
+     */
+    protected abstract RFC supportedRFC();
 
-    @Override
-    public int hashCode() {
-        return encoded.hashCode();
+    /**
+     * Represents the state of encoding for a string literal.
+     */
+    public enum Encoding {
+        URL_ENCODED, NOT_ENCODED
     }
 
 }

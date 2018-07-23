@@ -17,17 +17,10 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
-
-public class URN_RFC8141Test extends URNTest {
-
-    @Test
-    public void Slash_character_is_allowed() {
-        getInstanceFactory().create("urn:example:1/406/47452/2");
-    }
+public class URN_2141Test extends URNTest {
 
     @Override
-    URNFactory getInstanceFactory() {
-        return URN.rfc8141();
+    URN_2141 getSample(String str) throws URNSyntaxException {
+        return URN.rfc2141().parse(str);
     }
 }

@@ -17,6 +17,8 @@
 
 package de.slub.urn;
 
+import static de.slub.urn.URN.SCHEME;
+
 /**
  * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN).
  *
@@ -26,7 +28,6 @@ package de.slub.urn;
  */
 abstract public class NamespaceIdentifier {
 
-    protected static final String URN_SCHEME = "urn";
     private final String nid;
 
     /**
@@ -38,9 +39,9 @@ abstract public class NamespaceIdentifier {
      */
     public NamespaceIdentifier(String nid) throws URNSyntaxException {
         assertNotNullNotEmpty(nid);
-        if (URN_SCHEME.equalsIgnoreCase(nid)) {
+        if (SCHEME.equalsIgnoreCase(nid)) {
             throw new URNSyntaxException(
-                    String.format("Namespace identifier can not be '%s'", URN_SCHEME));
+                    String.format("Namespace identifier can not be '%s'", SCHEME));
         }
         if (!isValidNamespaceIdentifier(nid)) {
             throw new URNSyntaxException(String.format("Not allowed characters in Namespace Identifier '%s'", nid));
@@ -48,13 +49,10 @@ abstract public class NamespaceIdentifier {
         this.nid = nid;
     }
 
-    /**
-     * Create a new {@code NamespaceIdentifier} instance that is an exact copy of the given instance.
-     *
-     * @param instanceForCopying Base instance for copying
-     */
-    public NamespaceIdentifier(NamespaceIdentifier instanceForCopying) {
-        nid = instanceForCopying.nid;
+    private void assertNotNullNotEmpty(String s) throws URNSyntaxException {
+        if ((s == null) || (s.isEmpty())) {
+            throw new URNSyntaxException("Namespace Identifier part cannot be null or empty");
+        }
     }
 
     /**
@@ -66,20 +64,17 @@ abstract public class NamespaceIdentifier {
     abstract protected boolean isValidNamespaceIdentifier(String nid);
 
     /**
-     * Return RFC supported by this namespace identifier instance
+     * Create a new {@code NamespaceIdentifier} instance that is an exact copy of the given instance.
      *
-     * @return The supported RFC
+     * @param instanceForCopying Base instance for copying
      */
-    abstract protected RFC supportedRFC();
+    public NamespaceIdentifier(NamespaceIdentifier instanceForCopying) {
+        nid = instanceForCopying.nid;
+    }
 
-    /**
-     * Returns the Namespace Identifier literal
-     *
-     * @return Namespace Identifier literal
-     */
     @Override
-    public String toString() {
-        return nid;
+    public int hashCode() {
+        return nid.hashCode();
     }
 
     /**
@@ -94,15 +89,21 @@ abstract public class NamespaceIdentifier {
                 && this.nid.equalsIgnoreCase(((NamespaceIdentifier) obj).nid);
     }
 
+    /**
+     * Returns the Namespace Identifier literal
+     *
+     * @return Namespace Identifier literal
+     */
     @Override
-    public int hashCode() {
-        return nid.hashCode();
+    public String toString() {
+        return nid;
     }
 
-    private void assertNotNullNotEmpty(String s) throws URNSyntaxException {
-        if ((s == null) || (s.isEmpty())) {
-            throw new URNSyntaxException("Namespace Identifier part cannot be null or empty");
-        }
-    }
+    /**
+     * Return RFC supported by this namespace identifier instance
+     *
+     * @return The supported RFC
+     */
+    abstract protected RFC supportedRFC();
 
 }

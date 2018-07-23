@@ -21,12 +21,12 @@ import java.util.Set;
 
 /**
  * Defines an interface for URN resolvers.
- *
+ * <p>
  * URN resolvers map a given URN to a set of objects of type T.
  *
+ * @param <T> Type the resolver resolves to
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141#appendix-A">Handling of URNs by URL resolvers/browsers</a>
- * @param <T> Type the resolver resolves to
  */
 public interface URNResolver<T> {
 
@@ -34,10 +34,8 @@ public interface URNResolver<T> {
      * Resolves a given URN to a set of objects.
      *
      * @param urn The URN to be resolved
-     *
      * @return Set of objects that describe a location or identifier for the resource referenced by the given URN.
      * It shall return an empty set, if URN can not be resolved.
-     *
      * @throws URNResolvingException If some error prevents the resolving
      */
     Set<T> resolve(URN urn) throws URNResolvingException;

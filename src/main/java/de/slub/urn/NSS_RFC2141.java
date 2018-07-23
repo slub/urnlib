@@ -23,10 +23,10 @@ import static de.slub.urn.RFC.RFC_2141;
 
 /**
  * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN).
- *
+ * <p>
  * The class takes care of all RFC2141 defined encoding and decoding in order to generate valid Namespace Specific
  * Strings.
- *
+ * <p>
  * {@code NamespaceSpecificString} instances are immutable and comparable by using {@code equals()}.
  *
  * @author Ralf Claussnitzer
