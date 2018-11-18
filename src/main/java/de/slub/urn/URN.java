@@ -20,7 +20,7 @@ package de.slub.urn;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public abstract class URN {
+public abstract class URN implements RFCSupport {
 
     public static final String SCHEME = "urn";
 
@@ -55,13 +55,6 @@ public abstract class URN {
      * @return The URL decoded Namespace Specific String
      */
     public abstract String namespaceSpecificString();
-
-    /**
-     * Returns the RFC this URN is based on.
-     *
-     * @return Supported RFC for this URN.
-     */
-    public abstract RFC supportedRfc();
 
     /**
      * Return a URI instance for this URN.

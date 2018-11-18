@@ -78,7 +78,7 @@ public final class URN_8141 extends URN {
     }
 
     @Override
-    public RFC supportedRfc() {
+    public RFC supportedRFC() {
         return supportedRfc;
     }
 

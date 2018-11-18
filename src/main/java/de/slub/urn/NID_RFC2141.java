@@ -66,10 +66,10 @@ public final class NID_RFC2141 extends NamespaceIdentifier {
     }
 
     /**
-     * @see NamespaceIdentifier#supportedRFC()
+     * @see RFCSupport#supportedRFC()
      */
     @Override
-    protected RFC supportedRFC() {
+    public RFC supportedRFC() {
         return RFC_2141;
     }
 

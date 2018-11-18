@@ -17,26 +17,13 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+public interface RFCSupport {
 
-import static org.junit.Assert.assertEquals;
-
-public class URN_2141Test extends URNTest {
-
-    @Test
-    public void Returns_supported_RFC_2141() throws URNSyntaxException {
-        URN urn = getSample("urn:foo:bar");
-        assertEquals(RFC.RFC_2141, urn.supportedRFC());
-    }
-
-    @Override
-    URN_2141 getSample(String urnLiteral) throws URNSyntaxException {
-        return URN.rfc2141().parse(urnLiteral);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void Raises_exception_on_null_arguments() {
-        new URN_2141(null, null);
-    }
+    /**
+     * Return RFC supported by this namespace identifier instance
+     *
+     * @return The supported RFC
+     */
+    RFC supportedRFC();
 
 }

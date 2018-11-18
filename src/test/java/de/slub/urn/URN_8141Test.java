@@ -29,7 +29,7 @@ public class URN_8141Test extends URNTest {
     @Test
     public void Returns_supported_RFC_8141() throws URNSyntaxException {
         URN urn = getSample("urn:foo:bar");
-        assertEquals(RFC.RFC_8141, urn.supportedRfc());
+        assertEquals(RFC.RFC_8141, urn.supportedRFC());
     }
 
     @Override

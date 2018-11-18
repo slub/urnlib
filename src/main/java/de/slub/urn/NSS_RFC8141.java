@@ -76,7 +76,7 @@ public final class NSS_RFC8141 extends NamespaceSpecificString {
     }
 
     @Override
-    protected RFC supportedRFC() {
+    public RFC supportedRFC() {
         return RFC.RFC_8141;
     }
 }

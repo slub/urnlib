@@ -72,7 +72,7 @@ public final class NID_RFC8141 extends NamespaceIdentifier {
     }
 
     @Override
-    protected RFC supportedRFC() {
+    public RFC supportedRFC() {
         return RFC_8141;
     }
 
