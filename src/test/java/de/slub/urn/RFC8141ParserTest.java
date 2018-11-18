@@ -100,4 +100,53 @@ public class RFC8141ParserTest extends URNParserTest {
         assertEquals("Missing fragment `somepart`", "somepart", urn.fragment());
     }
 
+    @Test
+    public void Resolution_parameters_without_values_get_empty_value() throws URNSyntaxException {
+        URN_8141 urn = getURNParser().parse("urn:foo:bar?+foo");
+
+        Map<String, String> resolutionParameters = urn.resolutionParameters();
+        assertTrue(resolutionParameters.containsKey("foo"));
+        assertEquals("", resolutionParameters.get("foo"));
+    }
+
+    @Test
+    public void Query_parameters_without_values_get_empty_value() throws URNSyntaxException {
+        URN_8141 urn = getURNParser().parse("urn:foo:bar?=bar");
+
+        Map<String, String> queryParameters = urn.queryParameters();
+        assertTrue(queryParameters.containsKey("bar"));
+        assertEquals("", queryParameters.get("bar"));
+    }
+
+    @Test
+    public void Parses_individual_resolution_parameters() throws URNSyntaxException {
+        String   str = "urn:foo:bar?+a=b&c=d";
+        URN_8141 urn = getURNParser().parse(str);
+
+        Map<String, String> resolutionParameters = urn.resolutionParameters();
+        assertTrue(resolutionParameters.containsKey("a"));
+        assertTrue(resolutionParameters.containsValue("b"));
+        assertTrue(resolutionParameters.containsKey("c"));
+        assertTrue(resolutionParameters.containsValue("d"));
+    }
+
+    @Test
+    public void Parses_individual_query_parameters() throws URNSyntaxException {
+        String   str = "urn:foo:bar?=q=v&u=w";
+        URN_8141 urn = getURNParser().parse(str);
+
+        Map<String, String> queryParameters = urn.queryParameters();
+        assertTrue(queryParameters.containsKey("q"));
+        assertTrue(queryParameters.containsValue("v"));
+        assertTrue(queryParameters.containsKey("u"));
+        assertTrue(queryParameters.containsValue("w"));
+    }
+
+    @Test
+    public void Parses_fragment_part() throws URNSyntaxException {
+        String   str = "urn:foo:bar#bar";
+        URN_8141 urn = getURNParser().parse(str);
+        assertEquals("bar", urn.fragment());
+    }
+
 }

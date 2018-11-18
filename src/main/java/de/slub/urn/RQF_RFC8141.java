@@ -17,15 +17,9 @@
 
 package de.slub.urn;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.EMPTY_MAP;
 
 /**
@@ -39,60 +33,31 @@ public final class RQF_RFC8141 {
     private final Map<String, String> resolutionParameters;
     private final Map<String, String> queryParameters;
     private final String              fragment;
+    private final String              stringRepresentation;
 
-    private RQF_RFC8141(
+    /**
+     * @param resolutionParameters
+     * @param queryParameters
+     * @param fragment
+     * @throws IllegalArgumentException if any of the parameters are null
+     */
+    public RQF_RFC8141(
             Map<String, String> resolutionParameters,
             Map<String, String> queryParameters,
             String fragment) {
+        if (queryParameters == null) {
+            throw new IllegalArgumentException("Resolution parameter map cannot be null");
+        }
+        if (fragment == null) {
+            throw new IllegalArgumentException("Query parameter map cannot be null");
+        }
+        if (resolutionParameters == null) {
+            throw new IllegalArgumentException("Fragment string cannot be null");
+        }
         this.resolutionParameters = Collections.unmodifiableMap(resolutionParameters);
         this.queryParameters = Collections.unmodifiableMap(queryParameters);
         this.fragment = fragment;
-    }
-
-    public static RQF_RFC8141 parse(String rqfComponents) {
-        return new RQF_RFC8141(
-                parseResolutionParameters(rqfComponents),
-                parseQueryParameters(rqfComponents),
-                parseFragment(rqfComponents));
-    }
-
-    private static Map<String, String> parseResolutionParameters(String s) {
-        final Pattern rComponentPattern = Pattern.compile("\\?\\+([^?#]*)");
-        return parseComponentsFromMatcher(rComponentPattern.matcher(s));
-    }
-
-    private static Map<String, String> parseQueryParameters(String s) {
-        final Pattern qComponentPattern = Pattern.compile("\\?=([^?#]*)");
-        return parseComponentsFromMatcher(qComponentPattern.matcher(s));
-    }
-
-    private static String parseFragment(String s) {
-        final Pattern fragment = Pattern.compile("#(.*)$");
-        Matcher       matcher  = fragment.matcher(s);
-        return matcher.find() ? matcher.group(1) : "";
-    }
-
-    private static Map<String, String> parseComponentsFromMatcher(Matcher rComponentMatcher) {
-        List<String> components = EMPTY_LIST;
-        if (rComponentMatcher.find()) {
-            final String params = rComponentMatcher.toMatchResult().group(1);
-            components = Arrays.asList(params.split("&"));
-        }
-
-        Map<String, String> parameters = new HashMap<>();
-        for (String rComponent : components) {
-            final String[] kv  = rComponent.split("=");
-            final String   key = kv[0];
-            final String   val = (kv.length == 2) ? kv[1] : "";
-            parameters.put(key, val);
-        }
-
-        return parameters;
-    }
-
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
+        this.stringRepresentation = initialToString();
     }
 
     @Override
@@ -106,8 +71,7 @@ public final class RQF_RFC8141 {
         return false;
     }
 
-    @Override
-    public String toString() {
+    private String initialToString() {
         StringBuilder sb = new StringBuilder();
         if (!resolutionParameters.isEmpty()) {
             sb.append("?+");
@@ -127,6 +91,16 @@ public final class RQF_RFC8141 {
         return sb.toString();
     }
 
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return stringRepresentation;
+    }
+
     public Map<String, String> resolutionParameters() {
         return resolutionParameters;
     }
@@ -138,4 +112,5 @@ public final class RQF_RFC8141 {
     public String fragment() {
         return fragment;
     }
+
 }

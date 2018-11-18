@@ -18,8 +18,15 @@
 package de.slub.urn;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
+import static java.util.Collections.EMPTY_LIST;
 
 public class RFC8141Parser implements URNParser<URN_8141> {
 
@@ -66,7 +73,7 @@ public class RFC8141Parser implements URNParser<URN_8141> {
             schemeSpecificPart = schemeSpecificPart.substring(0, schemeSpecificPart.length() - 2);
         }
 
-        final RQF_RFC8141 rqfComponents = RQF_RFC8141.parse(schemeSpecificPart);
+        final RQF_RFC8141 rqfComponents = parseRQFComponents(schemeSpecificPart);
 
         return new URN_8141(nid, nss, rqfComponents);
     }
@@ -77,6 +84,47 @@ public class RFC8141Parser implements URNParser<URN_8141> {
             throw new IllegalArgumentException("URI cannot be null");
         }
         return parse(uri.toASCIIString());
+    }
+
+    private RQF_RFC8141 parseRQFComponents(String s) {
+        return new RQF_RFC8141(
+                parseResolutionParameters(s),
+                parseQueryParameters(s),
+                parseFragment(s));
+    }
+
+    private Map<String, String> parseResolutionParameters(String s) {
+        final Pattern rComponentPattern = Pattern.compile("\\?\\+([^?#]*)");
+        return parseComponentsFromMatcher(rComponentPattern.matcher(s));
+    }
+
+    private Map<String, String> parseQueryParameters(String s) {
+        final Pattern qComponentPattern = Pattern.compile("\\?=([^?#]*)");
+        return parseComponentsFromMatcher(qComponentPattern.matcher(s));
+    }
+
+    private String parseFragment(String s) {
+        final Pattern fragment = Pattern.compile("#(.*)$");
+        Matcher       matcher  = fragment.matcher(s);
+        return matcher.find() ? matcher.group(1) : "";
+    }
+
+    private Map<String, String> parseComponentsFromMatcher(Matcher rComponentMatcher) {
+        List<String> components = EMPTY_LIST;
+        if (rComponentMatcher.find()) {
+            final String params = rComponentMatcher.toMatchResult().group(1);
+            components = Arrays.asList(params.split("&"));
+        }
+
+        Map<String, String> parameters = new HashMap<>();
+        for (String rComponent : components) {
+            final String[] kv  = rComponent.split("=");
+            final String   key = kv[0];
+            final String   val = (kv.length == 2) ? kv[1] : "";
+            parameters.put(key, val);
+        }
+
+        return parameters;
     }
 
 }

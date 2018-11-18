@@ -19,7 +19,7 @@ package de.slub.urn;
 
 import org.junit.Test;
 
-import java.util.Map;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -41,95 +41,28 @@ public class RQFRFC8141Test {
     }
 
     @Test
+    public void NULL_objects_have_equal_hash_codes() {
+        assertEquals(RQF_RFC8141.NULL.hashCode(), RQF_RFC8141.NULL.hashCode());
+    }
+
+    @Test
     public void NULL_object_is_not_equal_to_null() {
         assertNotEquals(RQF_RFC8141.NULL, null);
     }
 
-    @Test
-    public void Different_objects_are_not_equal() {
-        RQF_RFC8141 n1 = RQF_RFC8141.parse("?+a=b?=foo=bar");
-        RQF_RFC8141 n2 = RQF_RFC8141.parse("?+a=b?=foo=bar#baz");
-        assertNotEquals(n1, n2);
+    @Test(expected = IllegalArgumentException.class)
+    public void Passing_null_as_resolutionParameterMap_throws_exception() {
+        new RQF_RFC8141(null, Collections.EMPTY_MAP, "");
     }
 
-    @Test
-    public void Equals_NULL_object_when_parsing_empty_string() {
-        RQF_RFC8141 n = RQF_RFC8141.parse("");
-        assertEquals(RQF_RFC8141.NULL, n);
+    @Test(expected = IllegalArgumentException.class)
+    public void Passing_null_as_queryParameterMap_throws_exception() {
+        new RQF_RFC8141(Collections.EMPTY_MAP, null, "");
     }
 
-    @Test
-    public void Resolution_parameters_without_values_get_empty_value() {
-        RQF_RFC8141 n = RQF_RFC8141.parse("?+foo");
-
-        Map<String, String> resolutionParameters = n.resolutionParameters();
-        assertTrue(resolutionParameters.containsKey("foo"));
-        assertEquals("", resolutionParameters.get("foo"));
-    }
-
-    @Test
-    public void Query_parameters_without_values_get_empty_value() {
-        RQF_RFC8141 n = RQF_RFC8141.parse("?=bar");
-
-        Map<String, String> queryParameters = n.queryParameters();
-        assertTrue(queryParameters.containsKey("bar"));
-        assertEquals("", queryParameters.get("bar"));
-    }
-
-    @Test
-    public void Empty_RQFComponent_generates_empty_string() {
-        assertEquals("", RQF_RFC8141.NULL.toString());
-    }
-
-    @Test
-    public void Identical_objects_have_same_hash() {
-        RQF_RFC8141 n1 = RQF_RFC8141.parse("?+a=b?=foo=bar#baz");
-        RQF_RFC8141 n2 = RQF_RFC8141.parse("?+a=b?=foo=bar#baz");
-        assertEquals(n1.hashCode(), n2.hashCode());
-    }
-
-    @Test
-    public void Parsed_string_equals_toString_result() {
-        String      s = "?+a=b?=foo=bar#baz";
-        RQF_RFC8141 n = RQF_RFC8141.parse(s);
-        assertEquals(s, n.toString());
-    }
-
-    @Test
-    public void Parses_resolution_parts() {
-        String      s = "?+a=b&c=d";
-        RQF_RFC8141 n = RQF_RFC8141.parse(s);
-
-        Map<String, String> resolutionParameters = n.resolutionParameters();
-        assertTrue(resolutionParameters.containsKey("a"));
-        assertTrue(resolutionParameters.containsValue("b"));
-        assertTrue(resolutionParameters.containsKey("c"));
-        assertTrue(resolutionParameters.containsValue("d"));
-    }
-
-    @Test
-    public void Parses_query_parts() {
-        String      s = "?=q=v&u=w";
-        RQF_RFC8141 n = RQF_RFC8141.parse(s);
-
-        Map<String, String> queryParameters = n.queryParameters();
-        assertTrue(queryParameters.containsKey("q"));
-        assertTrue(queryParameters.containsValue("v"));
-        assertTrue(queryParameters.containsKey("u"));
-        assertTrue(queryParameters.containsValue("w"));
-    }
-
-    @Test
-    public void Parses_fragment_part() {
-        String      s = "#bar";
-        RQF_RFC8141 n = RQF_RFC8141.parse(s);
-        assertEquals("bar", n.fragment());
-    }
-
-    @Test
-    public void Empty_RQF_components_serialize_to_empty_string() {
-        RQF_RFC8141 n = RQF_RFC8141.parse("");
-        assertEquals("", n.toString());
+    @Test(expected = IllegalArgumentException.class)
+    public void Passing_null_as_fragment_throws_exception() {
+        new RQF_RFC8141(Collections.EMPTY_MAP, Collections.EMPTY_MAP, null);
     }
 
 }
