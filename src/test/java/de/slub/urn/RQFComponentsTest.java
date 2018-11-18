@@ -99,6 +99,7 @@ public class RQFComponentsTest {
     public void Parses_resolution_parts() {
         String        s = "?+a=b&c=d";
         RQFComponents n = RQFComponents.parse(s);
+
         Map<String, String> resolutionParameters = n.resolutionParameters();
         assertTrue(resolutionParameters.containsKey("a"));
         assertTrue(resolutionParameters.containsValue("b"));
@@ -110,6 +111,7 @@ public class RQFComponentsTest {
     public void Parses_query_parts() {
         String        s = "?=q=v&u=w";
         RQFComponents n = RQFComponents.parse(s);
+
         Map<String, String> queryParameters = n.queryParameters();
         assertTrue(queryParameters.containsKey("q"));
         assertTrue(queryParameters.containsValue("v"));

@@ -34,8 +34,9 @@ abstract public class NamespaceIdentifier {
      * Creates a new {@code NamespaceIdentifier} instance.
      *
      * @param nid The Namespace Identifier literal
-     * @throws URNSyntaxException if the given value is <pre>null</pre>, empty or invalid according to the
-     *                            {@code isValidNamespaceIdentifier()} method.
+     * @throws URNSyntaxException       if the given value is <pre>null</pre>, empty or invalid according to the
+     *                                  {@code isValidNamespaceIdentifier()} method.
+     * @throws IllegalArgumentException if the parameter is null or empty
      */
     public NamespaceIdentifier(String nid) throws URNSyntaxException {
         assertNotNullNotEmpty(nid);
@@ -47,12 +48,6 @@ abstract public class NamespaceIdentifier {
             throw new URNSyntaxException(String.format("Not allowed characters in Namespace Identifier '%s'", nid));
         }
         this.nid = nid;
-    }
-
-    private void assertNotNullNotEmpty(String s) throws URNSyntaxException {
-        if ((s == null) || (s.isEmpty())) {
-            throw new URNSyntaxException("Namespace Identifier part cannot be null or empty");
-        }
     }
 
     /**
@@ -67,8 +62,12 @@ abstract public class NamespaceIdentifier {
      * Create a new {@code NamespaceIdentifier} instance that is an exact copy of the given instance.
      *
      * @param instanceForCopying Base instance for copying
+     * @throws IllegalArgumentException if parameter is null or empty
      */
     public NamespaceIdentifier(NamespaceIdentifier instanceForCopying) {
+        if (instanceForCopying == null) {
+            throw new IllegalArgumentException("Namespace identifier cannot be null");
+        }
         nid = instanceForCopying.nid;
     }
 
@@ -105,5 +104,11 @@ abstract public class NamespaceIdentifier {
      * @return The supported RFC
      */
     abstract protected RFC supportedRFC();
+
+    private void assertNotNullNotEmpty(String s) {
+        if ((s == null) || (s.isEmpty())) {
+            throw new IllegalArgumentException("Namespace identifier part cannot be null or empty");
+        }
+    }
 
 }

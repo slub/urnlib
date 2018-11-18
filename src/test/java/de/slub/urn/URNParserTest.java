@@ -26,12 +26,12 @@ import static org.junit.Assert.assertEquals;
 
 abstract class URNParserTest {
 
-    abstract URNParser<?> getURNParser();
-
     @Test(expected = IllegalArgumentException.class)
     public void Null_string_argument_throws_exception() throws URNSyntaxException {
         getURNParser().parse((String) null);
     }
+
+    abstract URNParser<?> getURNParser();
 
     @Test(expected = IllegalArgumentException.class)
     public void Null_URI_argument_throws_exception() throws URNSyntaxException {
@@ -72,16 +72,6 @@ abstract class URNParserTest {
         getURNParser().parse("urn::");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void Factory_method_fromString_throws_exception_when_parsing_empty_string() throws URNSyntaxException {
-        getURNParser().parse("");
-    }
-
-    @Test(expected = URNSyntaxException.class)
-    public void Factory_method_fromString_throws_exception_when_parsing_non_URN() throws URNSyntaxException {
-        getURNParser().parse("http://foo");
-    }
-
     @Test(expected = URNSyntaxException.class)
     public void Parsing_throws_exception_when_NSS_part_is_missing() throws URNSyntaxException {
         getURNParser().parse("urn:foo");
@@ -91,15 +81,6 @@ abstract class URNParserTest {
     public void Can_parse_URN_with_NSS_having_colons() throws URNSyntaxException {
         URN urn = getURNParser().parse("urn:foo:bar:baz");
         assertEquals("bar:baz", urn.getNamespaceSpecificString());
-    }
-
-    @Test
-    public void Can_parse_URN_from_string() throws URNSyntaxException {
-        String    nid = "isbn";
-        String    nss = "0451450523";
-        final URN urn = getURNParser().parse(String.format("urn:%s:%s", nid, nss));
-        assertEquals("Wrong NID ", nid, urn.getNamespaceIdentifier());
-        assertEquals("Wrong NSS", nss, urn.getNamespaceSpecificString());
     }
 
 }

@@ -34,40 +34,40 @@ public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
     @Test
     public void Slashes_are_allowed() throws URNSyntaxException {
         String nss = "1/406/47452/2";
-        newTestInstance(nss, Encoding.URL_ENCODED);
+        newTestInstance(nss, Encoding.NOT_ENCODED);
     }
 
     @Test
     public void Questionmark_chracter_is_allowed() throws URNSyntaxException {
         String nss = "1?q";
-        newTestInstance(nss, Encoding.URL_ENCODED);
+        newTestInstance(nss, Encoding.NOT_ENCODED);
     }
 
     @Test
     public void Tilde_character_is_allowed() throws URNSyntaxException {
         String nss = "1~q";
-        newTestInstance(nss, Encoding.URL_ENCODED);
+        newTestInstance(nss, Encoding.NOT_ENCODED);
     }
 
     @Test
     public void Ampersand_character_is_allowed() throws URNSyntaxException {
         String nss = "1&q";
-        newTestInstance(nss, Encoding.URL_ENCODED);
+        newTestInstance(nss, Encoding.NOT_ENCODED);
     }
 
     @Test
     public void At_sign_character_is_allowed() throws URNSyntaxException {
         String nss = "1@q";
-        newTestInstance(nss, Encoding.URL_ENCODED);
-    }
-
-    @Override
-    NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException {
-        return new NSS_RFC8141(nss, encoding);
+        newTestInstance(nss, Encoding.NOT_ENCODED);
     }
 
     @Override
     NamespaceSpecificString newTestInstance(NamespaceSpecificString nss) {
         return new NSS_RFC8141(nss);
+    }
+
+    @Override
+    NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException {
+        return new NSS_RFC8141(nss, encoding);
     }
 }

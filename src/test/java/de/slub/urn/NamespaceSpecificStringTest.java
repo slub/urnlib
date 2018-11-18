@@ -26,6 +26,10 @@ import static org.junit.Assert.*;
 
 abstract class NamespaceSpecificStringTest {
 
+    abstract NamespaceSpecificString newTestInstance(NamespaceSpecificString nss);
+
+    abstract NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException;
+
     @Test(expected = IllegalArgumentException.class)
     public void Empty_namespace_specific_string_throws_exception() throws URNSyntaxException {
         final String empty = "";
@@ -65,7 +69,7 @@ abstract class NamespaceSpecificStringTest {
         final String                  nss  = "a-valid-nss";
         final NamespaceSpecificString nss1 = newTestInstance(nss, URL_ENCODED);
         final NamespaceSpecificString nss2 = newTestInstance(nss1);
-        assertFalse(nss1 == nss2);
+        assertNotSame(nss1, nss2);
     }
 
     @Test
@@ -131,9 +135,5 @@ abstract class NamespaceSpecificStringTest {
         final NamespaceSpecificString subject = newTestInstance("%c3%84%2c", URL_ENCODED);
         assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", subject.raw());
     }
-
-    abstract NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException;
-
-    abstract NamespaceSpecificString newTestInstance(NamespaceSpecificString nss);
 
 }

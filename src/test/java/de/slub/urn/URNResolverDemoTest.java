@@ -31,17 +31,12 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class URNResolverTest {
+public class URNResolverDemoTest {
 
     private static URL URL_A, URL_B;
     private static URN URN_A, URN_AB;
     private static Map<URN, Set<URL>> URIMAP;
     private        DemoURNResolver    subject;
-
-    @Before
-    public void createDemoResolver() {
-        this.subject = new DemoURNResolver(URIMAP);
-    }
 
     @BeforeClass
     public static void createDemoUriMap() throws URNSyntaxException, MalformedURLException {
@@ -61,17 +56,22 @@ public class URNResolverTest {
         }});
     }
 
+    @Before
+    public void createDemoResolver() {
+        this.subject = new DemoURNResolver(URIMAP);
+    }
+
     @Test
-    public void Demonstrate_intended_use_of_resolve_method_returning_a_URL() throws URNResolvingException {
+    public void Demonstrate_intended_use_of_resolve_method_returning_a_URL() {
         assertTrue(
                 String.format("%s should resolve to %s", URN_A, URL_A),
                 subject.resolve(URN_A).contains(URL_A));
     }
 
     @Test
-    public void Demonstrate_intended_use_of_resolve_method_returning_multiple_URLs() throws URNResolvingException {
-        Set<URL> urls = subject.resolve(URN_AB);
-        int expectedNumberOfUrls = 2;
+    public void Demonstrate_intended_use_of_resolve_method_returning_multiple_URLs() {
+        Set<URL> urls                 = subject.resolve(URN_AB);
+        int      expectedNumberOfUrls = 2;
         assertEquals(
                 String.format("%s should resolve to %d URLs", URN_AB, expectedNumberOfUrls),
                 expectedNumberOfUrls, urls.size());
@@ -87,7 +87,7 @@ public class URNResolverTest {
         }
 
         @Override
-        public Set<URL> resolve(final URN urn) throws URNResolvingException {
+        public Set<URL> resolve(final URN urn) {
             return map.get(urn);
         }
     }

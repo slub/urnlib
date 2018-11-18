@@ -26,15 +26,15 @@ import static org.junit.Assert.assertNotEquals;
 
 public class URN_8141Test extends URNTest {
 
-    @Override
-    URN_8141 getSample(String str) throws URNSyntaxException {
-        return URN.rfc8141().parse(str);
-    }
-
     @Test
     public void Returns_supported_RFC_8141() throws URNSyntaxException {
         URN urn = getSample("urn:foo:bar");
         assertEquals(RFC.RFC_8141, urn.supportedRfc());
+    }
+
+    @Override
+    URN_8141 getSample(String urnLiteral) throws URNSyntaxException {
+        return URN.rfc8141().parse(urnLiteral);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -45,7 +45,7 @@ public class URN_8141Test extends URNTest {
     @Test
     public void URNs_are_equivalent_despite_different_RQF_components() throws URNSyntaxException {
         final String message = "RQF components should be ignored when comparing URNs";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>(){{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("urn:example:a123,z456?+abc"));
             add(getSample("urn:example:a123,z456?=xyz"));
@@ -61,7 +61,7 @@ public class URN_8141Test extends URNTest {
     @Test
     public void URNs_with_different_NSS_path_parts_are_not_equivalent() throws URNSyntaxException {
         final String message = "URNs with different NSS should not be equivalent";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>(){{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("urn:example:a123,z456/foo"));
             add(getSample("urn:example:a123,z456/bar"));

@@ -37,12 +37,12 @@ public class NSS_RFC2141Test extends NamespaceSpecificStringTest {
     }
 
     @Override
-    NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException {
-        return new NSS_RFC2141(nss, encoding);
+    NamespaceSpecificString newTestInstance(NamespaceSpecificString nss) {
+        return new NSS_RFC2141(nss);
     }
 
     @Override
-    NamespaceSpecificString newTestInstance(NamespaceSpecificString nss) {
-        return new NSS_RFC2141(nss);
+    NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException {
+        return new NSS_RFC2141(nss, encoding);
     }
 }

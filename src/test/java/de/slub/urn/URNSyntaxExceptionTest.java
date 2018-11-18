@@ -25,7 +25,7 @@ public class URNSyntaxExceptionTest {
 
     @Test
     public void GetMessage_returns_message_passed_when_constructed() {
-        String message = "The Message";
+        String             message = "The Message";
         URNSyntaxException subject = new URNSyntaxException(message);
 
         assertEquals(message, subject.getMessage());
@@ -33,7 +33,7 @@ public class URNSyntaxExceptionTest {
 
     @Test
     public void GetCause_returns_root_cause_exception() {
-        Exception cause = new Exception("The Cause");
+        Exception          cause   = new Exception("The Cause");
         URNSyntaxException subject = new URNSyntaxException("message-doesn't-matter", cause);
 
         assertEquals(cause, subject.getCause());

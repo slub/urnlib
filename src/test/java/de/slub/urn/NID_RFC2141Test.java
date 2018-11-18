@@ -30,6 +30,16 @@ public class NID_RFC2141Test extends NamespaceIdentifierTest {
         newTestInstance(badNamespaceIdentifier);
     }
 
+    @Override
+    NamespaceIdentifier newTestInstance(String nid) throws URNSyntaxException {
+        return new NID_RFC2141(nid);
+    }
+
+    @Override
+    NamespaceIdentifier newTestInstance(NamespaceIdentifier nid) {
+        return new NID_RFC2141(nid);
+    }
+
     @Test
     public void Supports_RFC_2141() throws URNSyntaxException {
         NamespaceIdentifier nid = newTestInstance("foo");
@@ -39,16 +49,6 @@ public class NID_RFC2141Test extends NamespaceIdentifierTest {
     @Test
     public void Allows_single_letter_namespace_identifier() throws URNSyntaxException {
         newTestInstance("A");
-    }
-
-    @Override
-    NamespaceIdentifier newTestInstance(String nid) throws URNSyntaxException {
-        return new NID_RFC2141(nid);
-    }
-
-    @Override
-    NamespaceIdentifier newTestInstance(NamespaceIdentifier nid) {
-        return new NID_RFC2141(nid);
     }
 
 }

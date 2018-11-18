@@ -20,9 +20,14 @@ package de.slub.urn;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 
 abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
+
+    @Test(expected = IllegalArgumentException.class)
+    public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
+        newTestInstance("");
+    }
 
     /**
      * Return instance of the {@code NamespaceIdentifier} implementation under test
@@ -32,6 +37,16 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
      */
     abstract T newTestInstance(String nid) throws URNSyntaxException;
 
+    @Test(expected = IllegalArgumentException.class)
+    public void Passing_null_string_to_constructor_throws_exception() throws URNSyntaxException {
+        newTestInstance((String) null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void Passing_null_object_to_constructor_throws_exception() {
+        newTestInstance((T) null);
+    }
+
     /**
      * Return instance of the {@code NamespaceIdentifier} implementation under test
      *
@@ -39,17 +54,6 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
      * @return Instance for testing
      */
     abstract T newTestInstance(T nid);
-
-    @Test(expected = URNSyntaxException.class)
-    public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
-        final String empty = "";
-        newTestInstance(empty);
-    }
-
-    @Test(expected = URNSyntaxException.class)
-    public void Passing_null_to_constructor_throws_exception() throws URNSyntaxException {
-        newTestInstance((String) null);
-    }
 
     @Test
     public void Calling_toString_returns_namespace_identifier() throws URNSyntaxException {
@@ -93,7 +97,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         final String              nid  = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance((T) nid1);
-        assertFalse(nid1 == nid2);
+        assertNotSame(nid1, nid2);
     }
 
     @Test

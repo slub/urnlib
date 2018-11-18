@@ -27,14 +27,23 @@ import static org.junit.Assert.assertNotEquals;
 
 public abstract class URNTest {
 
-    abstract URN getSample(String str) throws URNSyntaxException;
-
     @Test
     final public void Returns_namespace_identifier() throws URNSyntaxException {
         URN    urn = getSample("urn:isbn:irrelevant");
         String nid = urn.getNamespaceIdentifier();
         assertEquals("isbn", nid);
     }
+
+    /**
+     * Return a URN sample parsed from given string using the appropriate parser.
+     * <p>
+     * Tests implementing this method need to select an URN parser.
+     *
+     * @param urnLiteral URN string literal to be parsed into URN for further testing
+     * @return URN created from given URN string literal
+     * @throws URNSyntaxException if parsing fails
+     */
+    abstract URN getSample(String urnLiteral) throws URNSyntaxException;
 
     @Test
     final public void Returns_namespace_specific_string() throws URNSyntaxException {
@@ -60,7 +69,7 @@ public abstract class URNTest {
     @Test
     final public void Lexical_equivalent_URNs_generate_equivalent_representations() throws URNSyntaxException {
         final String message = "Lexical equivalent URNs should be equal";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>(){{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("URN:example:a123,z456"));
             add(getSample("urn:EXAMPLE:a123,z456"));
@@ -75,7 +84,7 @@ public abstract class URNTest {
     @Test
     final public void Identical_URNs_generate_equivalent_representations() throws URNSyntaxException {
         final String message = "Identical URNs should be equal";
-        final LinkedHashSet<String> equivalent = new LinkedHashSet<String>(){{
+        final LinkedHashSet<String> equivalent = new LinkedHashSet<String>() {{
             add("urn:foo:bar");
             add("URN:foo:a123,456");
             add("urn:foo:a123,456");
@@ -103,12 +112,12 @@ public abstract class URNTest {
     @Test
     final public void URNs_with_diffenent_NSS_case_are_not_equal_to_each_other() throws URNSyntaxException {
         final String message = "URNs with different case in NSS should not be equal";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>(){{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("URN:example:a123,z456"));
             add(getSample("urn:EXAMPLE:a123,z456"));
         }};
-        final LinkedHashSet<URN> notEquivalent = new LinkedHashSet<URN>(){{
+        final LinkedHashSet<URN> notEquivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:A123,z456"));
             add(getSample("urn:example:a123,Z456"));
         }};
@@ -122,7 +131,7 @@ public abstract class URNTest {
     @Test
     final public void URN_with_cyrillic_letter_is_not_equal_to_URN_with_latin_letter() throws URNSyntaxException {
         final String message = "URNs with cyrillic letter should not be equal to URN with latin letter";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>(){{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("URN:example:a123,z456"));
             add(getSample("urn:EXAMPLE:a123,z456"));
