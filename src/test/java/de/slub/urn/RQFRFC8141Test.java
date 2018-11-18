@@ -25,11 +25,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-public class RQFComponentsTest {
+public class RQFRFC8141Test {
 
     @Test
     public void NULL_object_is_empty() {
-        RQFComponents n = RQFComponents.NULL;
+        RQF_RFC8141 n = RQF_RFC8141.NULL;
         assertTrue(n.resolutionParameters().isEmpty());
         assertTrue(n.queryParameters().isEmpty());
         assertTrue(n.fragment().isEmpty());
@@ -37,30 +37,30 @@ public class RQFComponentsTest {
 
     @Test
     public void NULL_object_is_equal_to_itself() {
-        assertEquals(RQFComponents.NULL, RQFComponents.NULL);
+        assertEquals(RQF_RFC8141.NULL, RQF_RFC8141.NULL);
     }
 
     @Test
     public void NULL_object_is_not_equal_to_null() {
-        assertNotEquals(RQFComponents.NULL, null);
+        assertNotEquals(RQF_RFC8141.NULL, null);
     }
 
     @Test
     public void Different_objects_are_not_equal() {
-        RQFComponents n1 = RQFComponents.parse("?+a=b?=foo=bar");
-        RQFComponents n2 = RQFComponents.parse("?+a=b?=foo=bar#baz");
+        RQF_RFC8141 n1 = RQF_RFC8141.parse("?+a=b?=foo=bar");
+        RQF_RFC8141 n2 = RQF_RFC8141.parse("?+a=b?=foo=bar#baz");
         assertNotEquals(n1, n2);
     }
 
     @Test
     public void Equals_NULL_object_when_parsing_empty_string() {
-        RQFComponents n = RQFComponents.parse("");
-        assertEquals(RQFComponents.NULL, n);
+        RQF_RFC8141 n = RQF_RFC8141.parse("");
+        assertEquals(RQF_RFC8141.NULL, n);
     }
 
     @Test
     public void Resolution_parameters_without_values_get_empty_value() {
-        RQFComponents n = RQFComponents.parse("?+foo");
+        RQF_RFC8141 n = RQF_RFC8141.parse("?+foo");
 
         Map<String, String> resolutionParameters = n.resolutionParameters();
         assertTrue(resolutionParameters.containsKey("foo"));
@@ -69,7 +69,7 @@ public class RQFComponentsTest {
 
     @Test
     public void Query_parameters_without_values_get_empty_value() {
-        RQFComponents n = RQFComponents.parse("?=bar");
+        RQF_RFC8141 n = RQF_RFC8141.parse("?=bar");
 
         Map<String, String> queryParameters = n.queryParameters();
         assertTrue(queryParameters.containsKey("bar"));
@@ -78,27 +78,27 @@ public class RQFComponentsTest {
 
     @Test
     public void Empty_RQFComponent_generates_empty_string() {
-        assertEquals("", RQFComponents.NULL.toString());
+        assertEquals("", RQF_RFC8141.NULL.toString());
     }
 
     @Test
     public void Identical_objects_have_same_hash() {
-        RQFComponents n1 = RQFComponents.parse("?+a=b?=foo=bar#baz");
-        RQFComponents n2 = RQFComponents.parse("?+a=b?=foo=bar#baz");
+        RQF_RFC8141 n1 = RQF_RFC8141.parse("?+a=b?=foo=bar#baz");
+        RQF_RFC8141 n2 = RQF_RFC8141.parse("?+a=b?=foo=bar#baz");
         assertEquals(n1.hashCode(), n2.hashCode());
     }
 
     @Test
     public void Parsed_string_equals_toString_result() {
-        String        s = "?+a=b?=foo=bar#baz";
-        RQFComponents n = RQFComponents.parse(s);
+        String      s = "?+a=b?=foo=bar#baz";
+        RQF_RFC8141 n = RQF_RFC8141.parse(s);
         assertEquals(s, n.toString());
     }
 
     @Test
     public void Parses_resolution_parts() {
-        String        s = "?+a=b&c=d";
-        RQFComponents n = RQFComponents.parse(s);
+        String      s = "?+a=b&c=d";
+        RQF_RFC8141 n = RQF_RFC8141.parse(s);
 
         Map<String, String> resolutionParameters = n.resolutionParameters();
         assertTrue(resolutionParameters.containsKey("a"));
@@ -109,8 +109,8 @@ public class RQFComponentsTest {
 
     @Test
     public void Parses_query_parts() {
-        String        s = "?=q=v&u=w";
-        RQFComponents n = RQFComponents.parse(s);
+        String      s = "?=q=v&u=w";
+        RQF_RFC8141 n = RQF_RFC8141.parse(s);
 
         Map<String, String> queryParameters = n.queryParameters();
         assertTrue(queryParameters.containsKey("q"));
@@ -121,14 +121,14 @@ public class RQFComponentsTest {
 
     @Test
     public void Parses_fragment_part() {
-        String        s = "#bar";
-        RQFComponents n = RQFComponents.parse(s);
+        String      s = "#bar";
+        RQF_RFC8141 n = RQF_RFC8141.parse(s);
         assertEquals("bar", n.fragment());
     }
 
     @Test
     public void Empty_RQF_components_serialize_to_empty_string() {
-        RQFComponents n = RQFComponents.parse("");
+        RQF_RFC8141 n = RQF_RFC8141.parse("");
         assertEquals("", n.toString());
     }
 

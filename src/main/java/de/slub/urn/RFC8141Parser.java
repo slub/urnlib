@@ -66,7 +66,7 @@ public class RFC8141Parser implements URNParser<URN_8141> {
             schemeSpecificPart = schemeSpecificPart.substring(0, schemeSpecificPart.length() - 2);
         }
 
-        final RQFComponents rqfComponents = RQFComponents.parse(schemeSpecificPart);
+        final RQF_RFC8141 rqfComponents = RQF_RFC8141.parse(schemeSpecificPart);
 
         return new URN_8141(nid, nss, rqfComponents);
     }

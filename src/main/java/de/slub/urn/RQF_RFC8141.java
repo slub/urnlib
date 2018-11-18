@@ -32,15 +32,15 @@ import static java.util.Collections.EMPTY_MAP;
  * Class for representing and parsing a URNs RQF (resolution, query, fragment) parameters
  * and making them accessible via unmodifiable maps.
  */
-public final class RQFComponents {
+public final class RQF_RFC8141 {
 
-    public static final RQFComponents NULL = new RQFComponents(EMPTY_MAP, EMPTY_MAP, "");
+    public static final RQF_RFC8141 NULL = new RQF_RFC8141(EMPTY_MAP, EMPTY_MAP, "");
 
     private final Map<String, String> resolutionParameters;
     private final Map<String, String> queryParameters;
     private final String              fragment;
 
-    private RQFComponents(
+    private RQF_RFC8141(
             Map<String, String> resolutionParameters,
             Map<String, String> queryParameters,
             String fragment) {
@@ -49,8 +49,8 @@ public final class RQFComponents {
         this.fragment = fragment;
     }
 
-    public static RQFComponents parse(String rqfComponents) {
-        return new RQFComponents(
+    public static RQF_RFC8141 parse(String rqfComponents) {
+        return new RQF_RFC8141(
                 parseResolutionParameters(rqfComponents),
                 parseQueryParameters(rqfComponents),
                 parseFragment(rqfComponents));
@@ -97,8 +97,8 @@ public final class RQFComponents {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof RQFComponents) {
-            RQFComponents that = (RQFComponents) obj;
+        if (obj instanceof RQF_RFC8141) {
+            RQF_RFC8141 that = (RQF_RFC8141) obj;
             return this.resolutionParameters.equals(that.resolutionParameters)
                     && this.queryParameters.equals(that.queryParameters)
                     && this.fragment.equals(that.fragment);

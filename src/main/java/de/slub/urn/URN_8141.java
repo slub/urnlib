@@ -23,11 +23,11 @@ public final class URN_8141 extends URN {
 
     protected final RFC supportedRfc = RFC.RFC_8141;
 
-    private final NID_RFC8141   namespaceIdentifier;
-    private final NSS_RFC8141   namespaceSpecificString;
-    private final RQFComponents rqfComponents;
+    private final NID_RFC8141 namespaceIdentifier;
+    private final NSS_RFC8141 namespaceSpecificString;
+    private final RQF_RFC8141 rqfComponents;
 
-    URN_8141(NID_RFC8141 namespaceIdentifier, NSS_RFC8141 namespaceSpecificString, RQFComponents rqfComponents) {
+    URN_8141(NID_RFC8141 namespaceIdentifier, NSS_RFC8141 namespaceSpecificString, RQF_RFC8141 rqfComponents) {
         assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
         assertNotNull(namespaceSpecificString, "Namespace specific string cannot be null");
         assertNotNull(rqfComponents, "Resolution-Query-Fragment component cannot be null");
