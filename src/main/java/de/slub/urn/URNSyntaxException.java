@@ -28,10 +28,6 @@ public class URNSyntaxException extends Exception {
         super(msg);
     }
 
-    public URNSyntaxException(Throwable cause) {
-        super(cause);
-    }
-
     public URNSyntaxException(String msg, Throwable t) {
         super(msg, t);
     }

@@ -21,7 +21,15 @@ package de.slub.urn;
 import de.slub.urn.NamespaceSpecificString.Encoding;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
+
+    @Test
+    public void Returns_supported_RFC_8141() throws URNSyntaxException {
+        NamespaceSpecificString nss = newTestInstance("abc", Encoding.NOT_ENCODED);
+        assertEquals(RFC.RFC_8141, nss.supportedRFC());
+    }
 
     @Test
     public void Slashes_are_allowed() throws URNSyntaxException {

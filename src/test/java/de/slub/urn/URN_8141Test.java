@@ -32,6 +32,17 @@ public class URN_8141Test extends URNTest {
     }
 
     @Test
+    public void Returns_supported_RFC_8141() throws URNSyntaxException {
+        URN urn = getSample("urn:foo:bar");
+        assertEquals(RFC.RFC_8141, urn.supportedRfc());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void Raises_exception_on_null_arguments() {
+        new URN_8141(null, null, null);
+    }
+
+    @Test
     public void URNs_are_equivalent_despite_different_RQF_components() throws URNSyntaxException {
         final String message = "RQF components should be ignored when comparing URNs";
         final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>(){{

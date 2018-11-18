@@ -22,6 +22,7 @@ import org.junit.Test;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class RQFComponentsTest {
@@ -35,8 +36,20 @@ public class RQFComponentsTest {
     }
 
     @Test
-    public void NULL_object_is_equal_to_itelf() {
+    public void NULL_object_is_equal_to_itself() {
         assertEquals(RQFComponents.NULL, RQFComponents.NULL);
+    }
+
+    @Test
+    public void NULL_object_is_not_equal_to_null() {
+        assertNotEquals(RQFComponents.NULL, null);
+    }
+
+    @Test
+    public void Different_objects_are_not_equal() {
+        RQFComponents n1 = RQFComponents.parse("?+a=b?=foo=bar");
+        RQFComponents n2 = RQFComponents.parse("?+a=b?=foo=bar#baz");
+        assertNotEquals(n1, n2);
     }
 
     @Test

@@ -43,17 +43,11 @@ final public class URN_2141 extends URN {
      *
      * @param namespaceIdentifier     The namespace identifier for this URN
      * @param namespaceSpecificString The namespace specific string for this URN
-     * @throws IllegalArgumentException Thrown if any of the arguments are null or
-     *                                  if the URN components support different RFCs.
+     * @throws IllegalArgumentException Thrown if any of the arguments are null
      */
     public URN_2141(NID_RFC2141 namespaceIdentifier, NSS_RFC2141 namespaceSpecificString) {
         assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
         assertNotNull(namespaceSpecificString, "Namespace specific string cannot be null");
-
-        if (!namespaceIdentifier.supportedRFC().equals(namespaceSpecificString.supportedRFC())) {
-            throw new IllegalArgumentException("RFCs of namespace identifier and namespace specific string must match");
-        }
-
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
     }

@@ -28,6 +28,9 @@ final public class URN_8141 extends URN {
     private final RQFComponents rqfComponents;
 
     URN_8141(NID_RFC8141 namespaceIdentifier, NSS_RFC8141 namespaceSpecificString, RQFComponents rqfComponents) {
+        assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
+        assertNotNull(namespaceSpecificString, "Namespace specific string cannot be null");
+        assertNotNull(rqfComponents, "Resolution-Query-Fragment component cannot be null");
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
         this.rqfComponents = (rqfComponents == null) ? RQFComponents.NULL : rqfComponents;
@@ -78,4 +81,11 @@ final public class URN_8141 extends URN {
     public RFC supportedRfc() {
         return supportedRfc;
     }
+
+    private static void assertNotNull(Object o, String message) {
+        if (o == null) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
 }
