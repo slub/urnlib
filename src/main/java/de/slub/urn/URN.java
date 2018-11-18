@@ -47,14 +47,14 @@ public abstract class URN {
      *
      * @return The Namespace Identifier
      */
-    public abstract String getNamespaceIdentifier();
+    public abstract String namespaceIdentifier();
 
     /**
      * Return the URNs Namespace Specific String part.
      *
      * @return The URL decoded Namespace Specific String
      */
-    public abstract String getNamespaceSpecificString();
+    public abstract String namespaceSpecificString();
 
     /**
      * Returns the RFC this URN is based on.

@@ -22,6 +22,7 @@ import java.net.URI;
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 
 public class RFC8141Parser implements URNParser<URN_8141> {
+
     @Override
     public URN_8141 parse(String urnLiteral) throws URNSyntaxException {
         if ((urnLiteral == null) || (urnLiteral.isEmpty())) {

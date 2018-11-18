@@ -39,7 +39,9 @@ abstract public class NamespaceIdentifier {
      * @throws IllegalArgumentException if the parameter is null or empty
      */
     public NamespaceIdentifier(String nid) throws URNSyntaxException {
-        assertNotNullNotEmpty(nid);
+        if ((nid == null) || (nid.isEmpty())) {
+            throw new IllegalArgumentException("Namespace identifier part cannot be null or empty");
+        }
         if (SCHEME.equalsIgnoreCase(nid)) {
             throw new URNSyntaxException(
                     String.format("Namespace identifier can not be '%s'", SCHEME));
@@ -104,11 +106,5 @@ abstract public class NamespaceIdentifier {
      * @return The supported RFC
      */
     abstract protected RFC supportedRFC();
-
-    private void assertNotNullNotEmpty(String s) {
-        if ((s == null) || (s.isEmpty())) {
-            throw new IllegalArgumentException("Namespace identifier part cannot be null or empty");
-        }
-    }
 
 }

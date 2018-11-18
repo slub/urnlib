@@ -41,7 +41,7 @@ public class RFC8141ParserTest extends URNParserTest {
     @Test
     public void Slash_character_is_part_of_NSS() throws URNSyntaxException {
         URN urn = getURNParser().parse("urn:example:1/406/47452/2");
-        assertEquals("1/406/47452/2", urn.getNamespaceSpecificString());
+        assertEquals("1/406/47452/2", urn.namespaceSpecificString());
     }
 
     @Test
@@ -90,14 +90,14 @@ public class RFC8141ParserTest extends URNParserTest {
     @Test
     public void Trailing_dash_is_ignored() throws URNSyntaxException {
         URN_8141 urn = getURNParser().parse("urn:foo:bar#");
-        assertTrue(urn.getFragment().isEmpty());
+        assertTrue(urn.fragment().isEmpty());
     }
 
     @Test
     public void F_component_gets_parsed_into_fragment_string() throws URNSyntaxException {
         URN_8141 urn = getURNParser()
                 .parse("urn:example:foo-bar-baz-qux#somepart");
-        assertEquals("Missing fragment `somepart`", "somepart", urn.getFragment());
+        assertEquals("Missing fragment `somepart`", "somepart", urn.fragment());
     }
 
 }

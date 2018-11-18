@@ -30,7 +30,7 @@ public abstract class URNTest {
     @Test
     final public void Returns_namespace_identifier() throws URNSyntaxException {
         URN    urn = getSample("urn:isbn:irrelevant");
-        String nid = urn.getNamespaceIdentifier();
+        String nid = urn.namespaceIdentifier();
         assertEquals("isbn", nid);
     }
 
@@ -48,7 +48,7 @@ public abstract class URNTest {
     @Test
     final public void Returns_namespace_specific_string() throws URNSyntaxException {
         URN    urn = getSample("urn:foo:0451450523");
-        String nss = urn.getNamespaceSpecificString();
+        String nss = urn.namespaceSpecificString();
         assertEquals("0451450523", nss);
     }
 

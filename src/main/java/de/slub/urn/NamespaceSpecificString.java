@@ -39,6 +39,7 @@ abstract public class NamespaceSpecificString {
 
     private final String encoded;
     private final String raw;
+
     /**
      * Creates a new {@code NamespaceSpecificString} instance.
      *
@@ -48,7 +49,9 @@ abstract public class NamespaceSpecificString {
      *                            isValidURLEncodedNamespaceSpecificString()}
      */
     public NamespaceSpecificString(String nss, Encoding encoding) throws URNSyntaxException {
-        assertNotNullNotEmpty(nss);
+        if ((nss == null) || (nss.isEmpty())) {
+            throw new IllegalArgumentException("Namespace Specific String part cannot be null or empty");
+        }
         if (encoding == Encoding.URL_ENCODED) {
             if (!isValidURLEncodedNamespaceSpecificString(nss)) {
                 throw new URNSyntaxException(
@@ -59,12 +62,6 @@ abstract public class NamespaceSpecificString {
         } else {
             encoded = encode(nss);
             raw = nss;
-        }
-    }
-
-    private static void assertNotNullNotEmpty(String s) throws IllegalArgumentException {
-        if ((s == null) || (s.isEmpty())) {
-            throw new IllegalArgumentException("Namespace Specific String part cannot be null or empty");
         }
     }
 
@@ -93,12 +90,14 @@ abstract public class NamespaceSpecificString {
                 }
             }
         } catch (IOException e) {
+            // IOException thrown by StringReader.read() should not happen when reading a string value.
+            // If so, it's a JDK bug or change of API.
             throw new IllegalStateException(e);
         }
         return sb.toString();
     }
 
-    private static String decode(String s) throws URNSyntaxException {
+    private static String decode(String s) {
         try {
             return URLDecoder.decode(s, UTF_8.name());
         } catch (UnsupportedEncodingException | IllegalArgumentException e) {
@@ -107,8 +106,8 @@ abstract public class NamespaceSpecificString {
             //  2. the hex encoding has been checked by pattern matching before
             //
             // Should something be wrong with the above mentioned check, throwing
-            // a URNSyntaxException is in order.
-            throw new URNSyntaxException("Error decoding Namespace Specific String part", e);
+            // an RuntimeException signals programmer or JDK error.
+            throw new IllegalStateException("Error decoding Namespace Specific String part", e);
         }
     }
 

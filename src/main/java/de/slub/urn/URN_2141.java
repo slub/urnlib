@@ -74,16 +74,16 @@ final public class URN_2141 extends URN {
      */
     @Override
     public String toString() {
-        return String.format("%s:%s:%s", SCHEME, getNamespaceIdentifier(), getNamespaceSpecificString());
+        return String.format("%s:%s:%s", SCHEME, namespaceIdentifier, namespaceSpecificString);
     }
 
     @Override
-    public String getNamespaceIdentifier() {
+    public String namespaceIdentifier() {
         return namespaceIdentifier.toString();
     }
 
     @Override
-    public String getNamespaceSpecificString() {
+    public String namespaceSpecificString() {
         return namespaceSpecificString.toString();
     }
 

@@ -33,7 +33,7 @@ final public class URN_8141 extends URN {
         assertNotNull(rqfComponents, "Resolution-Query-Fragment component cannot be null");
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
-        this.rqfComponents = (rqfComponents == null) ? RQFComponents.NULL : rqfComponents;
+        this.rqfComponents = rqfComponents;
     }
 
     public Map<String, String> resolutionParameters() {
@@ -44,7 +44,7 @@ final public class URN_8141 extends URN {
         return rqfComponents.queryParameters();
     }
 
-    public String getFragment() {
+    public String fragment() {
         return rqfComponents.fragment();
     }
 
@@ -68,12 +68,12 @@ final public class URN_8141 extends URN {
     }
 
     @Override
-    public String getNamespaceIdentifier() {
+    public String namespaceIdentifier() {
         return namespaceIdentifier.toString();
     }
 
     @Override
-    public String getNamespaceSpecificString() {
+    public String namespaceSpecificString() {
         return namespaceSpecificString.toString();
     }
 
