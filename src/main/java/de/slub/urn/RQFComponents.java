@@ -32,7 +32,7 @@ import static java.util.Collections.EMPTY_MAP;
  * Class for representing and parsing a URNs RQF (resolution, query, fragment) parameters
  * and making them accessible via unmodifiable maps.
  */
-public class RQFComponents {
+public final class RQFComponents {
 
     public static final RQFComponents NULL = new RQFComponents(EMPTY_MAP, EMPTY_MAP, "");
 

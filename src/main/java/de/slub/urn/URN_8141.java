@@ -19,7 +19,7 @@ package de.slub.urn;
 
 import java.util.Map;
 
-final public class URN_8141 extends URN {
+public final class URN_8141 extends URN {
 
     protected final RFC supportedRfc = RFC.RFC_8141;
 

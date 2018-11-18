@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import static de.slub.urn.RFC.RFC_8141;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
-public class NID_RFC8141 extends NamespaceIdentifier {
+public final class NID_RFC8141 extends NamespaceIdentifier {
 
     private static final Pattern allowedNID         = Pattern.compile("^[0-9a-z][0-9a-z-]{0,30}[0-9a-z]$", CASE_INSENSITIVE);
     private static final Pattern formalExclusionNID = Pattern.compile("^([a-z]{2}-{1,2}|X-).*", CASE_INSENSITIVE);

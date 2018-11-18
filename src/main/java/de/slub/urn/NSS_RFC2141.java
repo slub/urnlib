@@ -34,7 +34,7 @@ import static de.slub.urn.RFC.RFC_2141;
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
  * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
  */
-public class NSS_RFC2141 extends NamespaceSpecificString {
+public final class NSS_RFC2141 extends NamespaceSpecificString {
 
     private static final Pattern allowedCharacters = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
 

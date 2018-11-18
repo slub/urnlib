@@ -30,7 +30,7 @@ package de.slub.urn;
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
  * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
  */
-final public class URN_2141 extends URN {
+public final class URN_2141 extends URN {
 
     protected final RFC supportedRfc = RFC.RFC_2141;
 
