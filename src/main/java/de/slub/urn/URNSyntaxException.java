@@ -18,16 +18,23 @@
 package de.slub.urn;
 
 /**
- * An Exception which is thrown if a URN or any URN part cannot be parsed due to violations of the URN syntax.
+ * An Exception which is thrown if a URN or any part of a URN cannot be parsed due to violations of the URN syntax.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>
  */
 public class URNSyntaxException extends Exception {
+
+    /**
+     * @see Exception#Exception(String)
+     */
     public URNSyntaxException(String msg) {
         super(msg);
     }
 
+    /**
+     * @see Exception#Exception(String, Throwable)
+     */
     public URNSyntaxException(String msg, Throwable t) {
         super(msg, t);
     }

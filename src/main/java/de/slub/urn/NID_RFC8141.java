@@ -22,16 +22,35 @@ import java.util.regex.Pattern;
 import static de.slub.urn.RFC.RFC_8141;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
+/**
+ * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN) according to RFC 8141.
+ *
+ * {@code NamespaceIdentifier} instances are immutable and comparable by using {@code equals()}.
+ *
+ * @author Ralf Claussnitzer
+ * @see <a href="https://tools.ietf.org/html/rfc8141">URN Syntax</a>
+ * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
+ * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
+ */
 public final class NID_RFC8141 extends NamespaceIdentifier {
 
     private static final Pattern allowedNID         = Pattern.compile("^[0-9a-z][0-9a-z-]{0,30}[0-9a-z]$", CASE_INSENSITIVE);
     private static final Pattern formalExclusionNID = Pattern.compile("^([a-z]{2}-{1,2}|X-).*", CASE_INSENSITIVE);
     private static final Pattern informalNID        = Pattern.compile("^(urn-[1-9][0-9]*).*", CASE_INSENSITIVE);
 
+    /**
+     * Creates a new {@link NID_RFC8141} instance.
+     *
+     * @param nid The Namespace Identifier literal
+     * @throws URNSyntaxException if the given value is <pre>null</pre>, empty or invalid according to RFC8141.
+     */
     public NID_RFC8141(String nid) throws URNSyntaxException {
         super(nid);
     }
 
+    /**
+     * @see NamespaceIdentifier#NamespaceIdentifier(NamespaceIdentifier)
+     */
     public NID_RFC8141(NamespaceIdentifier instanceForCopying) {
         super(instanceForCopying);
     }
@@ -66,14 +85,23 @@ public final class NID_RFC8141 extends NamespaceIdentifier {
         return informalNID.matcher(toString()).matches();
     }
 
-    @Override
-    protected boolean isValidNamespaceIdentifier(String nid) {
-        return allowedNID.matcher(nid).matches();
-    }
-
+    /**
+     * @see RFCSupport#supportedRFC()
+     */
     @Override
     public RFC supportedRFC() {
         return RFC_8141;
+    }
+
+    /**
+     * Check if a given literal is a valid namespace identifier according to RFC 8141
+     *
+     * @param nid Namespace identifier literal
+     * @return True, if the given string complies to the rules for valid namespace identifiers. False, if not.
+     */
+    @Override
+    protected boolean isValidNamespaceIdentifier(String nid) {
+        return allowedNID.matcher(nid).matches();
     }
 
 }

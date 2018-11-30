@@ -21,8 +21,17 @@ import java.net.URI;
 
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 
+/**
+ * Implements a parser for URNs according to RFC 2141.
+ *
+ * @author Ralf Claussnitzer
+ * @see URN_2141
+ */
 public class RFC2141Parser implements URNParser<URN_2141> {
 
+    /**
+     * @see URNParser#parse(String)
+     */
     @Override
     public URN_2141 parse(String str) throws URNSyntaxException {
         if ((str == null) || (str.isEmpty())) {
@@ -41,6 +50,9 @@ public class RFC2141Parser implements URNParser<URN_2141> {
                 new NSS_RFC2141(str.substring(str.indexOf(parts[1]) + parts[1].length() + 1), URL_ENCODED));
     }
 
+    /**
+     * @see URNParser#parse(URI)
+     */
     @Override
     public URN_2141 parse(URI uri) throws URNSyntaxException {
         if (uri == null) {

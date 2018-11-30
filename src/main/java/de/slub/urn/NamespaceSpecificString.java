@@ -57,7 +57,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
                 throw new URNSyntaxException(
                         String.format("Not allowed characters in Namespace Specific String '%s'", nss));
             }
-            encoded = lowerCaseOctedPairs(nss);
+            encoded = lowerCaseOctetPairs(nss);
             raw = decode(encoded);
         } else {
             encoded = encode(nss);
@@ -68,14 +68,14 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     /**
      * Check if a given URL encoded NSS literal is valid.
      * <p>
-     * Implementions must validate according to the RFC they represent.
+     * Implementations must validate according to the RFC they represent.
      *
      * @param encoded The URL encoded NSS literal
      * @return True, if the literal is valid according to the RFC.
      */
     protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
 
-    private static String lowerCaseOctedPairs(String s) {
+    private static String lowerCaseOctetPairs(String s) {
         StringBuilder sb = new StringBuilder(s.length());
         try (StringReader sr = new StringReader(s)) {
             int i;
@@ -174,11 +174,23 @@ abstract public class NamespaceSpecificString implements RFCSupport {
         return this.raw;
     }
 
+    /**
+     * Calculates hash code based on the URL-encoded string representation of this namespace specific string.
+     *
+     * @return This namespace specific strings hash code
+     */
     @Override
     public int hashCode() {
         return encoded.hashCode();
     }
 
+    /**
+     * Checks for equality with a given object.
+     *
+     * @param obj Object to check equality with
+     * @return True, if the given object is a {@code NamespaceSpecificString} instance and is lexically equivalent to
+     * this instance.
+     */
     @Override
     public boolean equals(Object obj) {
         return obj instanceof NamespaceSpecificString
@@ -197,6 +209,10 @@ abstract public class NamespaceSpecificString implements RFCSupport {
 
     /**
      * Represents the state of encoding for a string literal.
+     *
+     * {@link Encoding#URL_ENCODED} means that a string is URL encoded.
+     * {@link Encoding#NOT_ENCODED} means that a string is <b>not</b> URL encoded and might contain characters that
+     * not allowed in URIs.
      */
     public enum Encoding {
         URL_ENCODED, NOT_ENCODED

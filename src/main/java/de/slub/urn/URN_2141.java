@@ -58,14 +58,6 @@ public final class URN_2141 extends URN {
         }
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return (obj instanceof URN_2141)
-                && namespaceIdentifier.equals(((URN_2141) obj).namespaceIdentifier)
-                && namespaceSpecificString.equals(((URN_2141) obj).namespaceSpecificString)
-                && supportedRfc.equals(((URN_2141) obj).supportedRfc);
-    }
-
     /**
      * Return a URN serialization in URN syntax:
      * <pre>&lt;URN&gt; ::= &quot;urn:&quot; &lt;NID&gt; &quot;:&quot; &lt;NSS&gt;</pre>
@@ -77,16 +69,25 @@ public final class URN_2141 extends URN {
         return String.format("%s:%s:%s", SCHEME, namespaceIdentifier, namespaceSpecificString);
     }
 
+    /**
+     * @see URN#namespaceIdentifier()
+     */
     @Override
     public String namespaceIdentifier() {
         return namespaceIdentifier.toString();
     }
 
+    /**
+     * @see URN#namespaceSpecificString()
+     */
     @Override
     public String namespaceSpecificString() {
         return namespaceSpecificString.toString();
     }
 
+    /**
+     * @see RFCSupport#supportedRFC()
+     */
     @Override
     public RFC supportedRFC() {
         return supportedRfc;

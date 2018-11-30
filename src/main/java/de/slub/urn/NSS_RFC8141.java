@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 /**
- * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN).
+ * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN) according to RFC 8141.
  * <p>
  * The class takes care of all RFC8141 defined encoding and decoding in order to generate valid Namespace Specific
  * Strings.
@@ -75,8 +75,12 @@ public final class NSS_RFC8141 extends NamespaceSpecificString {
         return allowedCharacters.matcher(encoded).matches();
     }
 
+    /**
+     * @see NamespaceSpecificString#supportedRFC()
+     */
     @Override
     public RFC supportedRFC() {
         return RFC.RFC_8141;
     }
+
 }

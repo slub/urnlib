@@ -73,6 +73,11 @@ abstract public class NamespaceIdentifier implements RFCSupport {
         nid = instanceForCopying.nid;
     }
 
+    /**
+     * Calculates hash code based on the string representation of this namespace identifier.
+     *
+     * @return The hash code for this namespace identifier instance.
+     */
     @Override
     public int hashCode() {
         return nid.hashCode();
@@ -99,6 +104,5 @@ abstract public class NamespaceIdentifier implements RFCSupport {
     public String toString() {
         return nid;
     }
-
 
 }

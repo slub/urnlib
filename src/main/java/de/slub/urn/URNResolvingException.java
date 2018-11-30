@@ -23,11 +23,19 @@ package de.slub.urn;
  * @author Ralf Claussnitzer
  */
 public class URNResolvingException extends Exception {
+
+    /**
+     * @see Exception#Exception(String)
+     */
     public URNResolvingException(String message) {
         super(message);
     }
 
+    /**
+     * @see Exception#Exception(String, Throwable)
+     */
     public URNResolvingException(String message, Throwable cause) {
         super(message, cause);
     }
+
 }

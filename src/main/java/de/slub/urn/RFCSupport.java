@@ -17,10 +17,15 @@
 
 package de.slub.urn;
 
+/**
+ * Defines an interface for classes which need to report about the RFC they are implementing.
+ *
+ * @author Ralf Claussnitzer
+ */
 public interface RFCSupport {
 
     /**
-     * Return RFC supported by this namespace identifier instance
+     * Return RFC supported by this instance.
      *
      * @return The supported RFC
      */

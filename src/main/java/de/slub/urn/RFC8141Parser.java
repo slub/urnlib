@@ -28,8 +28,17 @@ import java.util.regex.Pattern;
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 import static java.util.Collections.EMPTY_LIST;
 
+/**
+ * Implements a parser for URNs according to RFC 8141.
+ *
+ * @author Ralf Claussnitzer
+ * @see URN_8141
+ */
 public class RFC8141Parser implements URNParser<URN_8141> {
 
+    /**
+     * @see URNParser#parse(String)
+     */
     @Override
     public URN_8141 parse(String urnLiteral) throws URNSyntaxException {
         if ((urnLiteral == null) || (urnLiteral.isEmpty())) {
@@ -78,6 +87,9 @@ public class RFC8141Parser implements URNParser<URN_8141> {
         return new URN_8141(nid, nss, rqfComponents);
     }
 
+    /**
+     * @see URNParser#parse(URI)
+     */
     @Override
     public URN_8141 parse(URI uri) throws URNSyntaxException {
         if (uri == null) {

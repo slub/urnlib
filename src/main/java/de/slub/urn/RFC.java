@@ -29,6 +29,11 @@ public enum RFC {
         this.url = url;
     }
 
+    /**
+     * Return the URL of specification document for a particular RFC.
+     *
+     * @return URL string literal
+     */
     public String url() {
         return url;
     }

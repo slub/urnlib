@@ -23,11 +23,18 @@ import java.util.Map;
 import static java.util.Collections.EMPTY_MAP;
 
 /**
- * Class for representing and parsing a URNs RQF (resolution, query, fragment) parameters
+ * Class for representing and parsing optional resolution, query and fragment components
  * and making them accessible via unmodifiable maps.
+ *
+ * @see <a href="https://tools.ietf.org/html/rfc8141#page-12">2.3 Optional Components</a>
  */
 public final class RQF_RFC8141 {
 
+    /**
+     * Instance representing a the absense of RQF components.
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/Null_object_pattern">Null object pattern</a>
+     */
     public static final RQF_RFC8141 NULL = new RQF_RFC8141(EMPTY_MAP, EMPTY_MAP, "");
 
     private final Map<String, String> resolutionParameters;
@@ -36,9 +43,11 @@ public final class RQF_RFC8141 {
     private final String              stringRepresentation;
 
     /**
-     * @param resolutionParameters
-     * @param queryParameters
-     * @param fragment
+     * Construct a RQF component.
+     *
+     * @param resolutionParameters Map of resolution parameters
+     * @param queryParameters Map of query parameters
+     * @param fragment The fragment
      * @throws IllegalArgumentException if any of the parameters are null
      */
     public RQF_RFC8141(
@@ -60,6 +69,14 @@ public final class RQF_RFC8141 {
         this.stringRepresentation = initialToString();
     }
 
+    /**
+     * Checks for equality with a given object.
+     * <p>
+     * Two RQF objects are considered equal if their resolution parameters, query parameters and fragment are equal.
+     *
+     * @param obj Object to check equality with
+     * @return True, if the given object is a {@code RQF_RFC8141} instance and is equivalent to this instance.
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof RQF_RFC8141) {
@@ -91,24 +108,49 @@ public final class RQF_RFC8141 {
         return sb.toString();
     }
 
+    /**
+     * Calculates hash code based on the string representation of this RQF instance.
+     *
+     * @return This namespace specific strings hash code
+     */
     @Override
     public int hashCode() {
         return toString().hashCode();
     }
 
+    /**
+     * Return the request, query and fragment components as a string literal.
+     *
+     * @return Encoded Namespace Specific String literal
+     */
     @Override
     public String toString() {
         return stringRepresentation;
     }
 
+    /**
+     * Return a map of resolution parameters where the key is a parameter name and the value a parameter value.
+     *
+     * @return Map of resolution parameters
+     */
     public Map<String, String> resolutionParameters() {
         return resolutionParameters;
     }
 
+    /**
+     * Return a map of query parameters where the key is a parameter name and the value a parameter value.
+     *
+     * @return Map of query parameters
+     */
     public Map<String, String> queryParameters() {
         return queryParameters;
     }
 
+    /**
+     * Return the fragment component string.
+     *
+     * @return Fragment component
+     */
     public String fragment() {
         return fragment;
     }

@@ -19,6 +19,19 @@ package de.slub.urn;
 
 import java.util.Map;
 
+/**
+ * Represents a Uniform Resource Name (URN) according to RFC 8141.
+ * <p>
+ * A new URN instance can be created via the constructor if provided with proper {@link NamespaceIdentifier},
+ * {@link NamespaceSpecificString} and {@link RQF_RFC8141} instances. For creating URNs from string literals or URIs,
+ * use a {@link URNParser} for RFC 8141 which can be obtained via the {@code URN.rfc8141()} method.
+ * <p>
+ *
+ * @author Ralf Claussnitzer
+ * @see <a href="https://tools.ietf.org/html/rfc8141">URN Syntax</a>
+ * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
+ * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
+ */
 public final class URN_8141 extends URN {
 
     protected final RFC supportedRfc = RFC.RFC_8141;
@@ -36,24 +49,25 @@ public final class URN_8141 extends URN {
         this.rqfComponents = rqfComponents;
     }
 
+    /**
+     * @see RQF_RFC8141#resolutionParameters()
+     */
     public Map<String, String> resolutionParameters() {
         return rqfComponents.resolutionParameters();
     }
 
+    /**
+     * @see RQF_RFC8141#queryParameters()
+     */
     public Map<String, String> queryParameters() {
         return rqfComponents.queryParameters();
     }
 
+    /**
+     * @see RQF_RFC8141#fragment()
+     */
     public String fragment() {
         return rqfComponents.fragment();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (obj instanceof URN_8141)
-                && namespaceIdentifier.equals(((URN_8141) obj).namespaceIdentifier)
-                && namespaceSpecificString.equals(((URN_8141) obj).namespaceSpecificString)
-                && supportedRfc.equals(((URN_8141) obj).supportedRfc);
     }
 
     /**
@@ -67,16 +81,25 @@ public final class URN_8141 extends URN {
         return String.format("%s:%s:%s%s", SCHEME, namespaceIdentifier, namespaceSpecificString, rqfComponents);
     }
 
+    /**
+     * @see URN#namespaceIdentifier()
+     */
     @Override
     public String namespaceIdentifier() {
         return namespaceIdentifier.toString();
     }
 
+    /**
+     * @see URN#namespaceSpecificString()
+     */
     @Override
     public String namespaceSpecificString() {
         return namespaceSpecificString.toString();
     }
 
+    /**
+     * @see RFCSupport#supportedRFC()
+     */
     @Override
     public RFC supportedRFC() {
         return supportedRfc;

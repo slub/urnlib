@@ -19,6 +19,14 @@ package de.slub.urn;
 
 import java.net.URI;
 
+/**
+ * Defines an interface for URN parsers.
+ * <p>
+ * It supports parsing URNs from string literals as well as parsing from URIs.
+ *
+ * @param <T> Type of URN the parser will produce
+ * @author Ralf Claussnitzer
+ */
 public interface URNParser<T extends URN> {
 
     /**

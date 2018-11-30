@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import static de.slub.urn.RFC.RFC_2141;
 
 /**
- * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN).
+ * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN) according to RFC 2141.
  * <p>
  * The class takes care of all RFC2141 defined encoding and decoding in order to generate valid Namespace Specific
  * Strings.
