@@ -50,9 +50,9 @@ There are two ways of getting releases of this library. Binaries are obtained th
 The recommended way is of course declaring a dependency, for example in your projects POM file:
 ```xml
 <dependency>
-    <groupId>de.slub</groupId>
-    <artifactId>urnlib</artifactId>
-    <version>2.0.0</version>
+  <groupId>de.slub-dresden</groupId>
+  <artifactId>urnlib</artifactId>
+  <version>2.0.0</version>
 </dependency>
 ```
 
