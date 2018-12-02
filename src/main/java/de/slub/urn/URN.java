@@ -107,4 +107,12 @@ public abstract class URN implements RFCSupport {
                 && supportedRFC().equals(((URN) obj).supportedRFC());
     }
 
+    /**
+     * @see RFCSupport#supports(RFC)
+     */
+    @Override
+    public boolean supports(RFC rfc) {
+        return supportedRFC().equals(rfc);
+    }
+
 }

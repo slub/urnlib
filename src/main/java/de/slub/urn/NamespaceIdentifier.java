@@ -105,4 +105,12 @@ abstract public class NamespaceIdentifier implements RFCSupport {
         return nid;
     }
 
+    /**
+     * @see RFCSupport#supports(RFC)
+     */
+    @Override
+    public boolean supports(RFC rfc) {
+        return supportedRFC().equals(rfc);
+    }
+
 }

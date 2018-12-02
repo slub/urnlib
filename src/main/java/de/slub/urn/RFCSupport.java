@@ -31,4 +31,12 @@ public interface RFCSupport {
      */
     RFC supportedRFC();
 
+    /**
+     * Tells whether a given RFC is supported.
+     *
+     * @param rfc The RFC to check if it is supported
+     * @return True, if the given RFC is supported
+     */
+    boolean supports(RFC rfc);
+
 }

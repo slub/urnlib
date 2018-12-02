@@ -210,6 +210,14 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     }
 
     /**
+     * @see RFCSupport#supports(RFC)
+     */
+    @Override
+    public boolean supports(RFC rfc) {
+        return supportedRFC().equals(rfc);
+    }
+
+    /**
      * Represents the state of encoding for a string literal.
      *
      * {@link Encoding#URL_ENCODED} means that a string is URL encoded.

@@ -30,6 +30,12 @@ abstract class NamespaceSpecificStringTest {
 
     abstract NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException;
 
+    @Test
+    public void Supports_the_reported_RFC() throws URNSyntaxException {
+        RFCSupport nss = newTestInstance("abc", NOT_ENCODED);
+        assertTrue(nss.supports(nss.supportedRFC()));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void Empty_namespace_specific_string_throws_exception() throws URNSyntaxException {
         final String empty = "";

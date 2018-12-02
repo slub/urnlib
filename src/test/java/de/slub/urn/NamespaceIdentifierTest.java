@@ -21,13 +21,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
-
-    @Test(expected = IllegalArgumentException.class)
-    public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
-        newTestInstance("");
-    }
 
     /**
      * Return instance of the {@code NamespaceIdentifier} implementation under test
@@ -36,6 +32,17 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
      * @return Instance for testing
      */
     abstract T newTestInstance(String nid) throws URNSyntaxException;
+
+    @Test
+    public void Supports_the_reported_RFC() throws URNSyntaxException {
+        RFCSupport nid = newTestInstance("abc");
+        assertTrue(nid.supports(nid.supportedRFC()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
+        newTestInstance("");
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void Passing_null_string_to_constructor_throws_exception() throws URNSyntaxException {

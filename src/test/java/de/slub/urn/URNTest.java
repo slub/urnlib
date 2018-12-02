@@ -22,8 +22,10 @@ import org.junit.Test;
 import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 
+import static de.slub.urn.NamespaceSpecificString.Encoding.NOT_ENCODED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public abstract class URNTest {
 
@@ -44,6 +46,12 @@ public abstract class URNTest {
      * @throws URNSyntaxException if parsing fails
      */
     abstract URN getSample(String urnLiteral) throws URNSyntaxException;
+
+    @Test
+    final public void Supports_the_reported_RFC() throws URNSyntaxException {
+        RFCSupport urn = getSample("urn:abc:123");
+        assertTrue(urn.supports(urn.supportedRFC()));
+    }
 
     @Test
     final public void Returns_namespace_specific_string() throws URNSyntaxException {
