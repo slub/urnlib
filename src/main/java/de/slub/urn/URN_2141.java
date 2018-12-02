@@ -73,16 +73,16 @@ public final class URN_2141 extends URN {
      * @see URN#namespaceIdentifier()
      */
     @Override
-    public String namespaceIdentifier() {
-        return namespaceIdentifier.toString();
+    public NamespaceIdentifier namespaceIdentifier() {
+        return namespaceIdentifier;
     }
 
     /**
      * @see URN#namespaceSpecificString()
      */
     @Override
-    public String namespaceSpecificString() {
-        return namespaceSpecificString.toString();
+    public NamespaceSpecificString namespaceSpecificString() {
+        return namespaceSpecificString;
     }
 
     /**

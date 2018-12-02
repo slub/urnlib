@@ -29,9 +29,9 @@ public abstract class URNTest {
 
     @Test
     final public void Returns_namespace_identifier() throws URNSyntaxException {
-        URN    urn = getSample("urn:isbn:irrelevant");
-        String nid = urn.namespaceIdentifier();
-        assertEquals("isbn", nid);
+        URN                 urn = getSample("urn:isbn:irrelevant");
+        NamespaceIdentifier nid = urn.namespaceIdentifier();
+        assertEquals("isbn", nid.toString());
     }
 
     /**
@@ -47,9 +47,9 @@ public abstract class URNTest {
 
     @Test
     final public void Returns_namespace_specific_string() throws URNSyntaxException {
-        URN    urn = getSample("urn:foo:0451450523");
-        String nss = urn.namespaceSpecificString();
-        assertEquals("0451450523", nss);
+        URN                     urn = getSample("urn:foo:0451450523");
+        NamespaceSpecificString nss = urn.namespaceSpecificString();
+        assertEquals("0451450523", nss.toString());
     }
 
     @Test
@@ -106,7 +106,6 @@ public abstract class URNTest {
     final public void URNs_with_percent_encoding_but_different_case_are_equal_to_each_other() throws URNSyntaxException {
         final String message = "URNs with percent encoding should be equivalent each other";
         assertEquals(message, getSample("urn:foo:a123%2C456"), getSample("URN:FOO:a123%2c456"));
-        assertEquals(message, getSample("URN:EXAMPLE:a123%2cz456"), getSample("urn:example:a123%2cz456"));
     }
 
     @Test

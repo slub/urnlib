@@ -168,9 +168,11 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     /**
      * Return the decoded Namespace Specific String literal.
      *
+     * Use {@link NamespaceSpecificString#toString()} to get an encoded string representation.
+     *
      * @return Decoded Namespace Specific String literal
      */
-    public String raw() {
+    public String unencoded() {
         return this.raw;
     }
 

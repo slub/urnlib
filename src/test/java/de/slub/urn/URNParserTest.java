@@ -53,8 +53,8 @@ abstract class URNParserTest {
         final String nid = "isbn";
         final String nss = "0451450523";
         final URN    urn = getURNParser().parse(new URI(String.format("urn:%s:%s", nid, nss)));
-        assertEquals("Wrong NID ", nid, urn.namespaceIdentifier());
-        assertEquals("Wrong NSS", nss, urn.namespaceSpecificString());
+        assertEquals("Wrong NID ", nid, urn.namespaceIdentifier().toString());
+        assertEquals("Wrong NSS", nss, urn.namespaceSpecificString().toString());
     }
 
     @Test(expected = URNSyntaxException.class)
@@ -80,7 +80,7 @@ abstract class URNParserTest {
     @Test
     public void Can_parse_URN_with_NSS_having_colons() throws URNSyntaxException {
         URN urn = getURNParser().parse("urn:foo:bar:baz");
-        assertEquals("bar:baz", urn.namespaceSpecificString());
+        assertEquals("bar:baz", urn.namespaceSpecificString().toString());
     }
 
 }

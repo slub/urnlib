@@ -95,13 +95,13 @@ abstract class NamespaceSpecificStringTest {
         final String                  encodedNss = "%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D";
         final String                  decodedNss = "ÄÜÖ[]&<>^`{|}";
         final NamespaceSpecificString subject    = newTestInstance(encodedNss, URL_ENCODED);
-        assertEquals(decodedNss, subject.raw());
+        assertEquals(decodedNss, subject.unencoded());
     }
 
     @Test
     public void Decodes_three_byte_UTF8_encoding() throws URNSyntaxException {
         final NamespaceSpecificString subject = newTestInstance("a123-%e0%a4%8b-456", URL_ENCODED);
-        assertEquals("Expected decoded `DEVANAGARI LETTER VOCALIC R`", "a123-\u090b-456", subject.raw());
+        assertEquals("Expected decoded `DEVANAGARI LETTER VOCALIC R`", "a123-\u090b-456", subject.unencoded());
     }
 
     @Test
@@ -133,7 +133,7 @@ abstract class NamespaceSpecificStringTest {
     @Test
     public void Characters_which_are_not_reserved_but_encoded_get_decoded_regardless() throws URNSyntaxException {
         final NamespaceSpecificString subject = newTestInstance("%c3%84%2c", URL_ENCODED);
-        assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", subject.raw());
+        assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", subject.unencoded());
     }
 
 }

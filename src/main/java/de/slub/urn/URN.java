@@ -63,14 +63,14 @@ public abstract class URN implements RFCSupport {
      *
      * @return The Namespace Identifier
      */
-    public abstract String namespaceIdentifier();
+    public abstract NamespaceIdentifier namespaceIdentifier();
 
     /**
      * Return the URNs Namespace Specific String part.
      *
      * @return The URL decoded Namespace Specific String
      */
-    public abstract String namespaceSpecificString();
+    public abstract NamespaceSpecificString namespaceSpecificString();
 
     /**
      * Return a URI instance for this URN.

@@ -17,8 +17,6 @@
 
 package de.slub.urn;
 
-import java.util.Map;
-
 /**
  * Represents a Uniform Resource Name (URN) according to RFC 8141.
  * <p>
@@ -38,6 +36,7 @@ public final class URN_8141 extends URN {
 
     private final NID_RFC8141 namespaceIdentifier;
     private final NSS_RFC8141 namespaceSpecificString;
+
     private final RQF_RFC8141 rqfComponents;
 
     URN_8141(NID_RFC8141 namespaceIdentifier, NSS_RFC8141 namespaceSpecificString, RQF_RFC8141 rqfComponents) {
@@ -50,24 +49,12 @@ public final class URN_8141 extends URN {
     }
 
     /**
-     * @see RQF_RFC8141#resolutionParameters()
+     * Return this URNs optional RQF components.
+     *
+     * @return This URNs RQF components
      */
-    public Map<String, String> resolutionParameters() {
-        return rqfComponents.resolutionParameters();
-    }
-
-    /**
-     * @see RQF_RFC8141#queryParameters()
-     */
-    public Map<String, String> queryParameters() {
-        return rqfComponents.queryParameters();
-    }
-
-    /**
-     * @see RQF_RFC8141#fragment()
-     */
-    public String fragment() {
-        return rqfComponents.fragment();
+    public RQF_RFC8141 getRQFComponents() {
+        return rqfComponents;
     }
 
     /**
@@ -85,16 +72,16 @@ public final class URN_8141 extends URN {
      * @see URN#namespaceIdentifier()
      */
     @Override
-    public String namespaceIdentifier() {
-        return namespaceIdentifier.toString();
+    public NamespaceIdentifier namespaceIdentifier() {
+        return namespaceIdentifier;
     }
 
     /**
      * @see URN#namespaceSpecificString()
      */
     @Override
-    public String namespaceSpecificString() {
-        return namespaceSpecificString.toString();
+    public NamespaceSpecificString namespaceSpecificString() {
+        return namespaceSpecificString;
     }
 
     /**
