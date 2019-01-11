@@ -46,19 +46,24 @@ abstract public class NamespaceIdentifier implements RFCSupport {
             throw new URNSyntaxException(
                     String.format("Namespace identifier can not be '%s'", SCHEME));
         }
-        if (!isValidNamespaceIdentifier(nid)) {
-            throw new URNSyntaxException(String.format("Not allowed characters in Namespace Identifier '%s'", nid));
+        if (nid.length() > 32) {
+            throw new URNSyntaxException(String.format(
+                    "Namespace Identifier '%s' is too long. Only 32 characters are allowed.", nid));
+        }
+        final String validationError = validateNamespaceIdentifier(nid);
+        if (validationError != null) {
+            throw new URNSyntaxException(validationError);
         }
         this.nid = nid;
     }
 
     /**
-     * Check if a given literal is a valid namespace identifier
+     * Check if a given literal is a valid namespace identifier and return an error message if not.
      *
      * @param nid Namespace identifier literal
-     * @return True, if the given string complies to the rules for valid namespace identifiers. False, if not.
+     * @return Error message, if the given string violates the rules for valid namespace identifiers. Null, if not.
      */
-    abstract protected boolean isValidNamespaceIdentifier(String nid);
+    abstract protected String validateNamespaceIdentifier(String nid);
 
     /**
      * Create a new {@code NamespaceIdentifier} instance that is an exact copy of the given instance.

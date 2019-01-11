@@ -42,6 +42,12 @@ public class NID_RFC8141Test extends NamespaceIdentifierTest<NID_RFC8141> {
         return new NID_RFC8141(nid);
     }
 
+    @Test(expected = URNSyntaxException.class)
+    public void Does_not_allow_single_letter_namespace_identifier() throws URNSyntaxException {
+        // While RFC 2141 allows single letter NIDs, RFC 8141 syntax rules do not
+        newTestInstance("A");
+    }
+
     @Test
     public void Identifier_starting_with_alpha_alpha_hyphen_qualifies_not_formal() throws URNSyntaxException {
         final String informal = "ab-a";

@@ -22,6 +22,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
 
@@ -42,6 +43,16 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     @Test(expected = IllegalArgumentException.class)
     public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
         newTestInstance("");
+    }
+
+    @Test
+    public void Too_long_namespace_identifier_throws_exception() {
+        try {
+            newTestInstance("abcdefghijklmnopqrstuvwxyzABCDEFG");
+            fail("Expected exception" + URNSyntaxException.class.getName());
+        } catch (URNSyntaxException e) {
+            assertTrue(e.getMessage().contains("too long"));
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)

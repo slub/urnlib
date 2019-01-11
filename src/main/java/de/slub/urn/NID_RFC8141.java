@@ -97,11 +97,17 @@ public final class NID_RFC8141 extends NamespaceIdentifier {
      * Check if a given literal is a valid namespace identifier according to RFC 8141
      *
      * @param nid Namespace identifier literal
-     * @return True, if the given string complies to the rules for valid namespace identifiers. False, if not.
+     * @return Error message, if the given string violates the rules for valid namespace identifiers. Null, if not.
      */
     @Override
-    protected boolean isValidNamespaceIdentifier(String nid) {
-        return allowedNID.matcher(nid).matches();
+    protected String validateNamespaceIdentifier(String nid) {
+        if (nid.length() < 2) {
+            return String.format("Namespace Identifier '%s' is too short.", nid);
+        }
+        if (!allowedNID.matcher(nid).matches()) {
+            return String.format("Not allowed characters in Namespace Identifier '%s'", nid);
+        }
+        return null;
     }
 
 }
