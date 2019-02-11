@@ -27,6 +27,7 @@ import java.util.Set;
  * @param <T> Type of object the resolver resolves to
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141#appendix-A">Handling of URNs by URL resolvers/browsers</a>
+ * @see <a href="https://tools.ietf.org/html/rfc2276">Architectural Principles of Uniform Resource Name Resolution</a>
  */
 public interface URNResolver<T> {
 
