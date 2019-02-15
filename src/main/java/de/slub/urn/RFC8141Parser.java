@@ -106,12 +106,12 @@ public class RFC8141Parser implements URNParser<URN_8141> {
     }
 
     private Map<String, String> parseResolutionParameters(String s) {
-        final Pattern rComponentPattern = Pattern.compile("\\?\\+([^?#]*)");
+        final Pattern rComponentPattern = Pattern.compile("\\?+.*((?=\\?=)|(?=#))?");
         return parseComponentsFromMatcher(rComponentPattern.matcher(s));
     }
 
     private Map<String, String> parseQueryParameters(String s) {
-        final Pattern qComponentPattern = Pattern.compile("\\?=([^?#]*)");
+        final Pattern qComponentPattern = Pattern.compile("\\?=.*((?=\\?\\+)|(?=#))?");
         return parseComponentsFromMatcher(qComponentPattern.matcher(s));
     }
 
@@ -124,7 +124,7 @@ public class RFC8141Parser implements URNParser<URN_8141> {
     private Map<String, String> parseComponentsFromMatcher(Matcher rComponentMatcher) {
         List<String> components = EMPTY_LIST;
         if (rComponentMatcher.find()) {
-            final String params = rComponentMatcher.toMatchResult().group(1);
+            final String params = rComponentMatcher.toMatchResult().group().substring(2);
             components = Arrays.asList(params.split("&"));
         }
 
