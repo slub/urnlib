@@ -42,9 +42,9 @@ public final class NID_RFC8141 extends NamespaceIdentifier {
      * Creates a new {@link NID_RFC8141} instance.
      *
      * @param nid The Namespace Identifier literal
-     * @throws URNSyntaxException if the given value is <pre>null</pre>, empty or invalid according to RFC8141.
+     * @throws URNSyntaxError if the given value is <pre>null</pre>, empty or invalid according to RFC8141.
      */
-    public NID_RFC8141(String nid) throws URNSyntaxException {
+    public NID_RFC8141(String nid) throws URNSyntaxError {
         super(nid);
     }
 

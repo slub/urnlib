@@ -24,14 +24,14 @@ import static org.junit.Assert.assertEquals;
 
 public class NID_RFC2141Test extends NamespaceIdentifierTest {
 
-    @Test(expected = URNSyntaxException.class)
-    public void Invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void Invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxError {
         final String badNamespaceIdentifier = "-is!bn";
         newTestInstance(badNamespaceIdentifier);
     }
 
     @Override
-    NamespaceIdentifier newTestInstance(String nid) throws URNSyntaxException {
+    NamespaceIdentifier newTestInstance(String nid) throws URNSyntaxError {
         return new NID_RFC2141(nid);
     }
 
@@ -41,13 +41,13 @@ public class NID_RFC2141Test extends NamespaceIdentifierTest {
     }
 
     @Test
-    public void Supports_RFC_2141() throws URNSyntaxException {
+    public void Supports_RFC_2141() throws URNSyntaxError {
         NamespaceIdentifier nid = newTestInstance("foo");
         assertEquals(RFC_2141, nid.supportedRFC());
     }
 
     @Test
-    public void Allows_single_letter_namespace_identifier() throws URNSyntaxException {
+    public void Allows_single_letter_namespace_identifier() throws URNSyntaxError {
         newTestInstance("A");
     }
 

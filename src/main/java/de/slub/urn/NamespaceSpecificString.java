@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import static de.slub.urn.URNSyntaxError.syntaxError;
 import static java.lang.Character.forDigit;
 import static java.lang.Character.toLowerCase;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -45,16 +46,16 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      *
      * @param nss      The namespace specific string literal
      * @param encoding Telling whether the given literal is URL encoded or not
-     * @throws URNSyntaxException Thrown if the given literal is not valid according to {@code
+     * @throws URNSyntaxError Thrown if the given literal is not valid according to {@code
      *                            isValidURLEncodedNamespaceSpecificString()}
      */
-    public NamespaceSpecificString(String nss, Encoding encoding) throws URNSyntaxException {
+    public NamespaceSpecificString(String nss, Encoding encoding) throws URNSyntaxError {
         if ((nss == null) || (nss.isEmpty())) {
             throw new IllegalArgumentException("Namespace Specific String part cannot be null or empty");
         }
         if (encoding == Encoding.URL_ENCODED) {
             if (!isValidURLEncodedNamespaceSpecificString(nss)) {
-                throw new URNSyntaxException(
+                throw syntaxError(supportedRFC(),
                         String.format("Not allowed characters in Namespace Specific String '%s'", nss));
             }
             encoded = lowerCaseOctetPairs(nss);
@@ -97,7 +98,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
         return sb.toString();
     }
 
-    private static String decode(String s) {
+    private String decode(String s) {
         try {
             return URLDecoder.decode(s, UTF_8.name());
         } catch (UnsupportedEncodingException | IllegalArgumentException e) {
@@ -118,13 +119,13 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      *
      * @param s A string
      * @return URL encoded string according to RFC
-     * @throws URNSyntaxException Thrown if the string contains illegal character `0`.
+     * @throws URNSyntaxError Thrown if the string contains illegal character `0`.
      */
-    protected static String encode(String s) throws URNSyntaxException {
+    private String encode(String s) throws URNSyntaxError {
         StringBuilder sb = new StringBuilder();
         for (char c : s.toCharArray()) {
             if (c == 0) {
-                throw new URNSyntaxException("Illegal character `0` found");
+                throw syntaxError(supportedRFC(), "Illegal character `0` found");
             }
             if (isReservedCharacter(c)) {
                 appendEncoded(sb, c);
@@ -136,7 +137,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     }
 
     // Encode reserved character set (RFC 2141, 2.3) and explicitly excluded characters (RFC 2141, 2.4)
-    private static boolean isReservedCharacter(char c) {
+    private boolean isReservedCharacter(char c) {
         return (c > 0x80)
                 || ((c >= 0x01) && (c <= 0x20) || ((c >= 0x7F)) && (c <= 0xFF))
                 || c == '%' || c == '/' || c == '?' || c == '#' || c == '<' || c == '"' || c == '&' || c == '\\'
@@ -147,7 +148,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
     // http://www.utf8-chartable.de/
     // http://www.ascii-code.com/
-    private static void appendEncoded(StringBuilder sb, char c) {
+    private void appendEncoded(StringBuilder sb, char c) {
         for (byte b : String.valueOf(c).getBytes(UTF_8)) {
             sb.append('%');
             sb.append(toLowerCase(forDigit((b >> 4) & 0xF, 16)));

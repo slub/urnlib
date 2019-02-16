@@ -25,13 +25,13 @@ import static org.junit.Assert.assertEquals;
 public class NSS_RFC2141Test extends NamespaceSpecificStringTest {
 
     @Test
-    public void Returns_supported_RFC_2141() throws URNSyntaxException {
+    public void Returns_supported_RFC_2141() throws URNSyntaxError {
         NamespaceSpecificString nss = newTestInstance("abc", Encoding.NOT_ENCODED);
         assertEquals(RFC.RFC_2141, nss.supportedRFC());
     }
 
-    @Test(expected = URNSyntaxException.class)
-    public void Initializing_with_illegal_character_throws_exception() throws URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void Initializing_with_illegal_character_throws_exception() throws URNSyntaxError {
         String illegalNss = "ill/eg&al";
         newTestInstance(illegalNss, Encoding.URL_ENCODED);
     }
@@ -42,7 +42,7 @@ public class NSS_RFC2141Test extends NamespaceSpecificStringTest {
     }
 
     @Override
-    NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException {
+    NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxError {
         return new NSS_RFC2141(nss, encoding);
     }
 }

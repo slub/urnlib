@@ -39,7 +39,7 @@ public class URNResolverDemoTest {
     private        DemoURNResolver    subject;
 
     @BeforeClass
-    public static void createDemoUriMap() throws URNSyntaxException, MalformedURLException {
+    public static void createDemoUriMap() throws URNSyntaxError, MalformedURLException {
         URL_A = new URL("http://demo.org/a/1234");
         URL_B = new URL("http://demo.org/b/5678");
 

@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
+import static de.slub.urn.URNSyntaxError.syntaxError;
 import static java.util.Collections.EMPTY_LIST;
 
 /**
@@ -40,7 +41,7 @@ public class RFC8141Parser implements URNParser<URN_8141> {
      * @see URNParser#parse(String)
      */
     @Override
-    public URN_8141 parse(String urnLiteral) throws URNSyntaxException {
+    public URN_8141 parse(String urnLiteral) throws URNSyntaxError {
         if ((urnLiteral == null) || (urnLiteral.isEmpty())) {
             throw new IllegalArgumentException("URN cannot be null or empty");
         }
@@ -48,7 +49,7 @@ public class RFC8141Parser implements URNParser<URN_8141> {
         final String[] parts = urnLiteral.split(":");
 
         if (parts.length < 3 || !URN.SCHEME.equalsIgnoreCase(parts[0])) {
-            throw new URNSyntaxException(
+            throw syntaxError(RFC.RFC_8141,
                     String.format("Invalid format `%s` is probably not a URN", urnLiteral));
         }
 
@@ -91,7 +92,7 @@ public class RFC8141Parser implements URNParser<URN_8141> {
      * @see URNParser#parse(URI)
      */
     @Override
-    public URN_8141 parse(URI uri) throws URNSyntaxException {
+    public URN_8141 parse(URI uri) throws URNSyntaxError {
         if (uri == null) {
             throw new IllegalArgumentException("URI cannot be null");
         }

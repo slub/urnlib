@@ -32,16 +32,16 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
      * @param nid Namespace identifier literal
      * @return Instance for testing
      */
-    abstract T newTestInstance(String nid) throws URNSyntaxException;
+    abstract T newTestInstance(String nid) throws URNSyntaxError;
 
     @Test
-    public void Supports_the_reported_RFC() throws URNSyntaxException {
+    public void Supports_the_reported_RFC() throws URNSyntaxError {
         RFCSupport nid = newTestInstance("abc");
         assertTrue(nid.supports(nid.supportedRFC()));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Empty_namespace_identifier_throws_exception() throws URNSyntaxException {
+    public void Empty_namespace_identifier_throws_exception() throws URNSyntaxError {
         newTestInstance("");
     }
 
@@ -49,14 +49,14 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     public void Too_long_namespace_identifier_throws_exception() {
         try {
             newTestInstance("abcdefghijklmnopqrstuvwxyzABCDEFG");
-            fail("Expected exception" + URNSyntaxException.class.getName());
-        } catch (URNSyntaxException e) {
+            fail("Expected exception" + URNSyntaxError.class.getName());
+        } catch (URNSyntaxError e) {
             assertTrue(e.getMessage().contains("too long"));
         }
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Passing_null_string_to_constructor_throws_exception() throws URNSyntaxException {
+    public void Passing_null_string_to_constructor_throws_exception() throws URNSyntaxError {
         newTestInstance((String) null);
     }
 
@@ -74,20 +74,20 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     abstract T newTestInstance(T nid);
 
     @Test
-    public void Calling_toString_returns_namespace_identifier() throws URNSyntaxException {
+    public void Calling_toString_returns_namespace_identifier() throws URNSyntaxError {
         final String              expected = "isbn";
         final NamespaceIdentifier subject  = newTestInstance(expected);
         assertEquals(expected, subject.toString());
     }
 
-    @Test(expected = URNSyntaxException.class)
-    public void URN_as_namespace_identifier_throws_exception() throws URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void URN_as_namespace_identifier_throws_exception() throws URNSyntaxError {
         final String badNamespaceIdentifier = "urn";
         newTestInstance(badNamespaceIdentifier);
     }
 
     @Test
-    public void Identically_initialized_NamespaceIdentifiers_are_equal() throws URNSyntaxException {
+    public void Identically_initialized_NamespaceIdentifiers_are_equal() throws URNSyntaxError {
         final String              nid  = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance(nid);
@@ -95,7 +95,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     }
 
     @Test
-    public void NamespaceIdentifiers_equality_check_is_case_insensitive() throws URNSyntaxException {
+    public void NamespaceIdentifiers_equality_check_is_case_insensitive() throws URNSyntaxError {
         final String              nid  = "A-Valid-Nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid.toUpperCase());
         final NamespaceIdentifier nid2 = newTestInstance(nid.toLowerCase());
@@ -103,7 +103,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     }
 
     @Test
-    public void Copied_NamespaceIdentifier_is_equal_to_orignal() throws URNSyntaxException {
+    public void Copied_NamespaceIdentifier_is_equal_to_orignal() throws URNSyntaxError {
         final String              nid  = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance((T) nid1);
@@ -111,7 +111,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     }
 
     @Test
-    public void Copied_NamespaceIdentifier_is_not_identical_to_original() throws URNSyntaxException {
+    public void Copied_NamespaceIdentifier_is_not_identical_to_original() throws URNSyntaxError {
         final String              nid  = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance((T) nid1);
@@ -119,15 +119,15 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     }
 
     @Test
-    public void Identically_initialized_NamespaceIdentifiers_have_same_hash_code() throws URNSyntaxException {
+    public void Identically_initialized_NamespaceIdentifiers_have_same_hash_code() throws URNSyntaxError {
         final String              nid  = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance(nid);
         assertEquals(nid1.hashCode(), nid2.hashCode());
     }
 
-    @Test(expected = URNSyntaxException.class)
-    public void Identifier_must_not_be_longer_than_32_characters() throws URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void Identifier_must_not_be_longer_than_32_characters() throws URNSyntaxError {
         final String tooLong = "abcdefghijklmnopqrstuvwxyz-1234567";
         newTestInstance(tooLong);
     }

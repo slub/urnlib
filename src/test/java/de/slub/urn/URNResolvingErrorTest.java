@@ -21,13 +21,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class URNResolvingExceptionTest {
+public class URNResolvingErrorTest {
 
     @Test
     public void GetMessage_returns_message_passed_when_constructed() {
         String message = "The Message";
 
-        URNResolvingException subject = new URNResolvingException(message);
+        URNResolvingError subject = new URNResolvingError(message);
 
         assertEquals(message, subject.getMessage());
     }
@@ -36,17 +36,17 @@ public class URNResolvingExceptionTest {
     public void GetCause_returns_root_cause_exception() {
         Exception cause = new Exception("The Cause");
 
-        URNResolvingException subject = new URNResolvingException("message-doesn't-matter", cause);
+        URNResolvingError subject = new URNResolvingError("message-doesn't-matter", cause);
 
         assertEquals(cause, subject.getCause());
     }
 
     @Test
-    public void Returns_failed_URN() throws URNSyntaxException {
+    public void Returns_failed_URN() throws URNSyntaxError {
         String anyMessage = "The Message";
         URN    urn        = URN.rfc8141().parse("urn:error:1234");
 
-        URNResolvingException subject = new URNResolvingException(anyMessage, urn);
+        URNResolvingError subject = new URNResolvingError(anyMessage, urn);
 
         assertEquals(urn, subject.failedUrn());
     }

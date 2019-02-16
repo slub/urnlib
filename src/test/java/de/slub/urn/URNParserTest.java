@@ -27,24 +27,24 @@ import static org.junit.Assert.assertEquals;
 abstract class URNParserTest {
 
     @Test(expected = IllegalArgumentException.class)
-    public void Null_string_argument_throws_exception() throws URNSyntaxException {
+    public void Null_string_argument_throws_exception() throws URNSyntaxError {
         getURNParser().parse((String) null);
     }
 
     abstract URNParser<?> getURNParser();
 
     @Test(expected = IllegalArgumentException.class)
-    public void Null_URI_argument_throws_exception() throws URNSyntaxException {
+    public void Null_URI_argument_throws_exception() throws URNSyntaxError {
         getURNParser().parse((URI) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void Empty_string_throws_IllegalArgumentException() throws URNSyntaxException {
+    public void Empty_string_throws_IllegalArgumentException() throws URNSyntaxError {
         getURNParser().parse("");
     }
 
-    @Test(expected = URNSyntaxException.class)
-    public void Parsing_non_URN_URIs_throws_exception() throws URISyntaxException, URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void Parsing_non_URN_URIs_throws_exception() throws URISyntaxException, URNSyntaxError {
         getURNParser().parse(new URI("http://foo"));
     }
 
@@ -57,28 +57,28 @@ abstract class URNParserTest {
         assertEquals("Wrong NSS", nss, urn.namespaceSpecificString().toString());
     }
 
-    @Test(expected = URNSyntaxException.class)
-    public void Non_URN_URI_throws_exception() throws URISyntaxException, URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void Non_URN_URI_throws_exception() throws URISyntaxException, URNSyntaxError {
         getURNParser().parse(new URI("urn:invalid-urn-part"));
     }
 
-    @Test(expected = URNSyntaxException.class)
-    public void URN_string_containing_null_throws_exception() throws URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void URN_string_containing_null_throws_exception() throws URNSyntaxError {
         getURNParser().parse("urn:foo:a123-\u0000-456-%2c");
     }
 
-    @Test(expected = URNSyntaxException.class)
-    public void String_containing_empty_URN_parts_throws_exception() throws URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void String_containing_empty_URN_parts_throws_exception() throws URNSyntaxError {
         getURNParser().parse("urn::");
     }
 
-    @Test(expected = URNSyntaxException.class)
-    public void Parsing_throws_exception_when_NSS_part_is_missing() throws URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void Parsing_throws_exception_when_NSS_part_is_missing() throws URNSyntaxError {
         getURNParser().parse("urn:foo");
     }
 
     @Test
-    public void Can_parse_URN_with_NSS_having_colons() throws URNSyntaxException {
+    public void Can_parse_URN_with_NSS_having_colons() throws URNSyntaxError {
         URN urn = getURNParser().parse("urn:foo:bar:baz");
         assertEquals("bar:baz", urn.namespaceSpecificString().toString());
     }

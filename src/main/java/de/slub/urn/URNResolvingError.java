@@ -22,21 +22,21 @@ package de.slub.urn;
  *
  * @author Ralf Claussnitzer
  */
-public class URNResolvingException extends Exception {
+public class URNResolvingError extends Exception {
 
     private URN failedUrn;
 
     /**
      * @see Exception#Exception(String)
      */
-    public URNResolvingException(String message) {
+    public URNResolvingError(String message) {
         super(message);
     }
 
     /**
      * @see Exception#Exception(String, Throwable)
      */
-    public URNResolvingException(String message, Throwable cause) {
+    public URNResolvingError(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -46,7 +46,7 @@ public class URNResolvingException extends Exception {
      * @param message Exception message
      * @param urn     URN causing the resolving error
      */
-    public URNResolvingException(String message, URN urn) {
+    public URNResolvingError(String message, URN urn) {
         super(message);
         this.failedUrn = urn;
     }

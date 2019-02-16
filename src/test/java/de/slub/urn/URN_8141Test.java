@@ -29,13 +29,13 @@ import static org.junit.Assert.assertTrue;
 public class URN_8141Test extends URNTest {
 
     @Test
-    public void Returns_supported_RFC_8141() throws URNSyntaxException {
+    public void Returns_supported_RFC_8141() throws URNSyntaxError {
         URN urn = getSample("urn:foo:bar");
         assertEquals(RFC.RFC_8141, urn.supportedRFC());
     }
 
     @Override
-    URN_8141 getSample(String urnLiteral) throws URNSyntaxException {
+    URN_8141 getSample(String urnLiteral) throws URNSyntaxError {
         return URN.rfc8141().parse(urnLiteral);
     }
 
@@ -45,7 +45,7 @@ public class URN_8141Test extends URNTest {
     }
 
     @Test
-    public void URNs_are_equivalent_despite_different_RQF_components() throws URNSyntaxException {
+    public void URNs_are_equivalent_despite_different_RQF_components() throws URNSyntaxError {
         final String message = "RQF components should be ignored when comparing URNs";
         final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:a123,z456"));
@@ -61,7 +61,7 @@ public class URN_8141Test extends URNTest {
     }
 
     @Test
-    public void URNs_with_different_NSS_path_parts_are_not_equivalent() throws URNSyntaxException {
+    public void URNs_with_different_NSS_path_parts_are_not_equivalent() throws URNSyntaxError {
         final String message = "URNs with different NSS should not be equivalent";
         final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:a123,z456"));
@@ -80,14 +80,14 @@ public class URN_8141Test extends URNTest {
     }
 
     @Test
-    public void Slashes_can_be_data_in_query_component() throws URNSyntaxException {
+    public void Slashes_can_be_data_in_query_component() throws URNSyntaxError {
         URN_8141            urn = getSample("urn:example:a123,z456?=s=/");
         Map<String, String> qps = urn.getRQFComponents().queryParameters();
         assertTrue(qps.containsKey("s") && qps.get("s").equals("/"));
     }
 
     @Test
-    public void Questionmark_can_be_data_in_query_component() throws URNSyntaxException {
+    public void Questionmark_can_be_data_in_query_component() throws URNSyntaxError {
         URN_8141            urn = getSample("urn:example:a123,z456?=q=a?b");
         Map<String, String> qps = urn.getRQFComponents().queryParameters();
         assertTrue(qps.containsKey("q") && qps.get("q").equals("a?b"));

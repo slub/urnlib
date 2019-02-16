@@ -18,6 +18,9 @@
 package de.slub.urn;
 
 import static de.slub.urn.URN.SCHEME;
+import static de.slub.urn.URNSyntaxError.syntaxError;
+import static de.slub.urn.URNSyntaxError.lengthError;
+import static de.slub.urn.URNSyntaxError.reservedIdentifier;
 
 /**
  * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN).
@@ -34,25 +37,23 @@ abstract public class NamespaceIdentifier implements RFCSupport {
      * Creates a new {@code NamespaceIdentifier} instance.
      *
      * @param nid The Namespace Identifier literal
-     * @throws URNSyntaxException       if the given value is <pre>null</pre>, empty or invalid according to the
+     * @throws URNSyntaxError       if the given value is <pre>null</pre>, empty or invalid according to the
      *                                  {@code isValidNamespaceIdentifier()} method.
      * @throws IllegalArgumentException if the parameter is null or empty
      */
-    public NamespaceIdentifier(String nid) throws URNSyntaxException {
+    public NamespaceIdentifier(String nid) throws URNSyntaxError {
         if ((nid == null) || (nid.isEmpty())) {
             throw new IllegalArgumentException("Namespace identifier part cannot be null or empty");
         }
         if (SCHEME.equalsIgnoreCase(nid)) {
-            throw new URNSyntaxException(
-                    String.format("Namespace identifier can not be '%s'", SCHEME));
+            throw reservedIdentifier(supportedRFC(), nid);
         }
         if (nid.length() > 32) {
-            throw new URNSyntaxException(String.format(
-                    "Namespace Identifier '%s' is too long. Only 32 characters are allowed.", nid));
+            throw lengthError(supportedRFC(), nid);
         }
         final String validationError = validateNamespaceIdentifier(nid);
         if (validationError != null) {
-            throw new URNSyntaxException(validationError);
+            throw syntaxError(supportedRFC(), validationError);
         }
         this.nid = nid;
     }

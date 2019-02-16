@@ -20,7 +20,7 @@ The library is compiled for Java 7.
 
 ```java
 import de.slub.urn.URN;
-import de.slub.urn.URNSyntaxException;
+import de.slub.urn.URNSyntaxError;
 import de.slub.urn.URN_8141;
 
 import static de.slub.urn.RFC.RFC_8141;

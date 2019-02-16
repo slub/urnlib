@@ -49,9 +49,9 @@ public final class NSS_RFC8141 extends NamespaceSpecificString {
      *
      * @param nss      The namespace specific string literal
      * @param encoding Telling whether the given literal is URL encoded or not
-     * @throws URNSyntaxException Thrown if the given literal is not valid according to RFC 8141
+     * @throws URNSyntaxError Thrown if the given literal is not valid according to RFC 8141
      */
-    public NSS_RFC8141(String nss, Encoding encoding) throws URNSyntaxException {
+    public NSS_RFC8141(String nss, Encoding encoding) throws URNSyntaxError {
         super(nss, encoding);
     }
 

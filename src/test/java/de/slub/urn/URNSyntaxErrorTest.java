@@ -21,22 +21,34 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class URNSyntaxExceptionTest {
+public class URNSyntaxErrorTest {
 
     @Test
     public void GetMessage_returns_message_passed_when_constructed() {
-        String             message = "The Message";
-        URNSyntaxException subject = new URNSyntaxException(message);
+        String         message = "The Message";
+        URNSyntaxError subject = new URNSyntaxError(message);
 
         assertEquals(message, subject.getMessage());
     }
 
     @Test
     public void GetCause_returns_root_cause_exception() {
-        Exception          cause   = new Exception("The Cause");
-        URNSyntaxException subject = new URNSyntaxException("message-doesn't-matter", cause);
+        Exception      cause   = new Exception("The Cause");
+        URNSyntaxError subject = new URNSyntaxError("message-doesn't-matter", cause);
 
         assertEquals(cause, subject.getCause());
+    }
+
+    @Test
+    public void Stores_violated_RFC() {
+        URNSyntaxError subject = URNSyntaxError.syntaxError(RFC.RFC_2141, "bla");
+        assertEquals(RFC.RFC_2141, subject.getViolatedRfc());
+    }
+
+    @Test
+    public void Stores_error_code() {
+        URNSyntaxError subject = URNSyntaxError.syntaxError(RFC.RFC_2141, "bla");
+        assertEquals(URNSyntaxError.ErrorTypes.SYNTAX_ERROR, subject.getError());
     }
 
 }

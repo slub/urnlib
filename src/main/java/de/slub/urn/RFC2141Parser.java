@@ -20,6 +20,7 @@ package de.slub.urn;
 import java.net.URI;
 
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
+import static de.slub.urn.URNSyntaxError.syntaxError;
 
 /**
  * Implements a parser for URNs according to RFC 2141.
@@ -33,7 +34,7 @@ public class RFC2141Parser implements URNParser<URN_2141> {
      * @see URNParser#parse(String)
      */
     @Override
-    public URN_2141 parse(String str) throws URNSyntaxException {
+    public URN_2141 parse(String str) throws URNSyntaxError {
         if ((str == null) || (str.isEmpty())) {
             throw new IllegalArgumentException("URN cannot be null or empty");
         }
@@ -41,7 +42,7 @@ public class RFC2141Parser implements URNParser<URN_2141> {
         final String[] parts = str.split(":");
 
         if (parts.length < 3 || !URN.SCHEME.equalsIgnoreCase(parts[0])) {
-            throw new URNSyntaxException(
+            throw syntaxError(RFC.RFC_2141,
                     String.format("Invalid format `%s` is probably not a URN", str));
         }
 
@@ -54,7 +55,7 @@ public class RFC2141Parser implements URNParser<URN_2141> {
      * @see URNParser#parse(URI)
      */
     @Override
-    public URN_2141 parse(URI uri) throws URNSyntaxException {
+    public URN_2141 parse(URI uri) throws URNSyntaxError {
         if (uri == null) {
             throw new IllegalArgumentException("URI cannot be null");
         }

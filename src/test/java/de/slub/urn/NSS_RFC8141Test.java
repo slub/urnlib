@@ -26,37 +26,37 @@ import static org.junit.Assert.assertEquals;
 public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
 
     @Test
-    public void Returns_supported_RFC_8141() throws URNSyntaxException {
+    public void Returns_supported_RFC_8141() throws URNSyntaxError {
         NamespaceSpecificString nss = newTestInstance("abc", Encoding.NOT_ENCODED);
         assertEquals(RFC.RFC_8141, nss.supportedRFC());
     }
 
     @Test
-    public void Slashes_are_allowed() throws URNSyntaxException {
+    public void Slashes_are_allowed() throws URNSyntaxError {
         String nss = "1/406/47452/2";
         newTestInstance(nss, Encoding.NOT_ENCODED);
     }
 
     @Test
-    public void Questionmark_chracter_is_allowed() throws URNSyntaxException {
+    public void Questionmark_chracter_is_allowed() throws URNSyntaxError {
         String nss = "1?q";
         newTestInstance(nss, Encoding.NOT_ENCODED);
     }
 
     @Test
-    public void Tilde_character_is_allowed() throws URNSyntaxException {
+    public void Tilde_character_is_allowed() throws URNSyntaxError {
         String nss = "1~q";
         newTestInstance(nss, Encoding.NOT_ENCODED);
     }
 
     @Test
-    public void Ampersand_character_is_allowed() throws URNSyntaxException {
+    public void Ampersand_character_is_allowed() throws URNSyntaxError {
         String nss = "1&q";
         newTestInstance(nss, Encoding.NOT_ENCODED);
     }
 
     @Test
-    public void At_sign_character_is_allowed() throws URNSyntaxException {
+    public void At_sign_character_is_allowed() throws URNSyntaxError {
         String nss = "1@q";
         newTestInstance(nss, Encoding.NOT_ENCODED);
     }
@@ -67,7 +67,7 @@ public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
     }
 
     @Override
-    NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxException {
+    NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxError {
         return new NSS_RFC8141(nss, encoding);
     }
 }

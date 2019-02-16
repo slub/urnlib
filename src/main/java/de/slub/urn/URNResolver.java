@@ -40,8 +40,8 @@ public interface URNResolver<T> {
      * @param urn The URN to be resolved
      * @return Set of objects that describe a location or identifier for the resource referenced by the given URN.
      * It should return an empty set, if URN can not be resolved.
-     * @throws URNResolvingException If some error prevents the resolving
+     * @throws URNResolvingError If some error prevents the resolving
      */
-    Set<T> resolve(URN urn) throws URNResolvingException;
+    Set<T> resolve(URN urn) throws URNResolvingError;
 
 }

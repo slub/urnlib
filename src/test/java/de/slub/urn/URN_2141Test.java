@@ -24,13 +24,13 @@ import static org.junit.Assert.assertEquals;
 public class URN_2141Test extends URNTest {
 
     @Test
-    public void Returns_supported_RFC_2141() throws URNSyntaxException {
+    public void Returns_supported_RFC_2141() throws URNSyntaxError {
         URN urn = getSample("urn:foo:bar");
         assertEquals(RFC.RFC_2141, urn.supportedRFC());
     }
 
     @Override
-    URN_2141 getSample(String urnLiteral) throws URNSyntaxException {
+    URN_2141 getSample(String urnLiteral) throws URNSyntaxError {
         return URN.rfc2141().parse(urnLiteral);
     }
 

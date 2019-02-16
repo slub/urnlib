@@ -24,8 +24,8 @@ import java.net.URISyntaxException;
 
 public class RFC2141ParserTest extends URNParserTest {
 
-    @Test(expected = URNSyntaxException.class)
-    public void Invalid_NID_part_in_URI_throws_exception() throws URISyntaxException, URNSyntaxException {
+    @Test(expected = URNSyntaxError.class)
+    public void Invalid_NID_part_in_URI_throws_exception() throws URISyntaxException, URNSyntaxError {
         getURNParser().parse(new URI("urn:!?:1234"));
     }
 
