@@ -22,7 +22,10 @@ import java.util.Set;
 /**
  * Defines an interface for URN resolvers.
  * <p>
- * URN resolvers map a given URN to a set of objects of type T.
+ * URN resolvers map a given URN to a set of objects of type T. According to RFC 2276 resolvers should deliver
+ * a set of `hints` on how to find resources. These hints can have different metadata. The returned set of hints
+ * might be ordered by hint priority so that it is safe for clients to assume that the first entry in the set is
+ * the most relevant resolution result.
  *
  * @param <T> Type of object the resolver resolves to
  * @author Ralf Claussnitzer

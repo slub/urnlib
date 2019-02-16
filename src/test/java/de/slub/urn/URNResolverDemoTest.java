@@ -77,7 +77,7 @@ public class URNResolverDemoTest {
                 expectedNumberOfUrls, urls.size());
     }
 
-    private class DemoURNResolver implements URNResolver {
+    private class DemoURNResolver implements URNResolver<URL> {
 
         private final Map<URN, Set<URL>> map;
 
