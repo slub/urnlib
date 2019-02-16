@@ -18,11 +18,13 @@
 package de.slub.urn;
 
 /**
- * An Exception which is thrown in case of unrecoverable errors in an URN resolver.
+ * Base class Exception for unrecoverable errors in an URN resolver.
  *
  * @author Ralf Claussnitzer
  */
 public class URNResolvingException extends Exception {
+
+    private URN failedUrn;
 
     /**
      * @see Exception#Exception(String)
@@ -38,4 +40,23 @@ public class URNResolvingException extends Exception {
         super(message, cause);
     }
 
+    /**
+     * Create an exception with message and a reference to the URN that needed to be resolved.
+     *
+     * @param message Exception message
+     * @param urn     URN causing the resolving error
+     */
+    public URNResolvingException(String message, URN urn) {
+        super(message);
+        this.failedUrn = urn;
+    }
+
+    /**
+     * Return URN causing the resolving error.
+     *
+     * @return The URN causing the resolving error
+     */
+    public URN failedUrn() {
+        return failedUrn;
+    }
 }
