@@ -18,16 +18,10 @@
 package de.slub.urn;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 import static de.slub.urn.URNSyntaxError.syntaxError;
-import static java.util.Collections.EMPTY_LIST;
 
 /**
  * Implements a parser for URNs according to RFC 8141.
@@ -57,33 +51,14 @@ public class RFC8141Parser implements URNParser<URN_8141> {
         final NID_RFC8141 nid = new NID_RFC8141(parts[1]);
 
         // assemble rest of the parts for NSS parsing
-        String schemeSpecificPart = urnLiteral.substring(urnLiteral.indexOf(parts[1]) + parts[1].length() + 1);
+        final String schemeSpecificPart = urnLiteral.substring(urnLiteral.indexOf(parts[1]) + parts[1].length() + 1);
 
         // copy NSS part by cutting out RQF components from NSS
-        int rComponentIndex = schemeSpecificPart.indexOf("?+");
-        int qComponentIndex = schemeSpecificPart.indexOf("?=");
-        int fragmentIndex   = schemeSpecificPart.indexOf("#");
+        final String nssString = substringUntilAny(schemeSpecificPart, "?+", "?=", "#");
+        final NSS_RFC8141 nss = new NSS_RFC8141(nssString, URL_ENCODED);
 
-        // find end of NSS (just before RQF part)
-        int endOfNSS = schemeSpecificPart.length();
-        if (rComponentIndex > 0 && rComponentIndex < endOfNSS) {
-            endOfNSS = rComponentIndex;
-        }
-        if (qComponentIndex > 0 && qComponentIndex < endOfNSS) {
-            endOfNSS = qComponentIndex;
-        }
-        if (fragmentIndex > 0 && fragmentIndex < endOfNSS) {
-            endOfNSS = fragmentIndex;
-        }
-
-        final NSS_RFC8141 nss = new NSS_RFC8141(schemeSpecificPart.substring(0, endOfNSS), URL_ENCODED);
-
-        // remove trailing # if necessary
-        if (fragmentIndex == schemeSpecificPart.length() - 1) {
-            schemeSpecificPart = schemeSpecificPart.substring(0, schemeSpecificPart.length() - 2);
-        }
-
-        final RQF_RFC8141 rqfComponents = parseRQFComponents(schemeSpecificPart);
+        final String rqfComponentsString = schemeSpecificPart.substring(nssString.length());
+        final RQF_RFC8141 rqfComponents = parseRQFComponents(rqfComponentsString);
 
         return new URN_8141(nid, nss, rqfComponents);
     }
@@ -99,44 +74,57 @@ public class RFC8141Parser implements URNParser<URN_8141> {
         return parse(uri.toASCIIString());
     }
 
-    private RQF_RFC8141 parseRQFComponents(String s) {
-        return new RQF_RFC8141(
-                parseResolutionParameters(s),
-                parseQueryParameters(s),
-                parseFragment(s));
+    private RQF_RFC8141 parseRQFComponents(String rqfComponents) {
+        final String rComponent = substringUntilAny(substringFrom(rqfComponents, "?+"), "?=", "#");
+        final String qComponent = substringUntilAny(substringFrom(rqfComponents, "?="), "#");
+        final String fComponent = substringFrom(rqfComponents, "#");
+        return new RQF_RFC8141(parseParameters(rComponent), parseParameters(qComponent), fComponent);
     }
 
-    private Map<String, String> parseResolutionParameters(String s) {
-        final Pattern rComponentPattern = Pattern.compile("\\?+.*((?=\\?=)|(?=#))?");
-        return parseComponentsFromMatcher(rComponentPattern.matcher(s));
-    }
-
-    private Map<String, String> parseQueryParameters(String s) {
-        final Pattern qComponentPattern = Pattern.compile("\\?=.*((?=\\?\\+)|(?=#))?");
-        return parseComponentsFromMatcher(qComponentPattern.matcher(s));
-    }
-
-    private String parseFragment(String s) {
-        final Pattern fragment = Pattern.compile("#(.*)$");
-        Matcher       matcher  = fragment.matcher(s);
-        return matcher.find() ? matcher.group(1) : "";
-    }
-
-    private Map<String, String> parseComponentsFromMatcher(Matcher rComponentMatcher) {
-        List<String> components = EMPTY_LIST;
-        if (rComponentMatcher.find()) {
-            final String params = rComponentMatcher.toMatchResult().group().substring(2);
-            components = Arrays.asList(params.split("&"));
+    /**
+     * Returns a substring of <code>str</code> starting after <code>startDelimiter</code>.
+     *
+     * @param str
+     * @param startDelimiter
+     * @return a substring or empty string if <code>startDelimiter</code> could not be found.
+     */
+    private String substringFrom(String str, String startDelimiter) {
+        final int startIndex = str.indexOf(startDelimiter);
+        if (startIndex < 0) {
+            return "";
         }
+        return str.substring(startIndex + startDelimiter.length());
+    }
 
-        Map<String, String> parameters = new HashMap<>();
-        for (String rComponent : components) {
-            final String[] kv  = rComponent.split("=");
-            final String   key = kv[0];
-            final String   val = (kv.length == 2) ? kv[1] : "";
-            parameters.put(key, val);
+    /**
+     * Returns a substring of <code>str</code> ending before the first occurrence of any of the
+     * <code>endDelimiters</code>.
+     *
+     * @param str
+     * @param endDelimiters
+     * @return a substring or <code>str</code> if none of <code>endDelimiters</code> could be found.
+     */
+    private String substringUntilAny(String str, String... endDelimiters) {
+        int endIndex = str.length();
+        for (String endDelimiter : endDelimiters) {
+            int currentEnd = str.indexOf(endDelimiter);
+            if (currentEnd >= 0 && currentEnd < endIndex) {
+                endIndex = currentEnd;
+            }
         }
+        return str.substring(0, endIndex);
+    }
 
+    private Map<String, String> parseParameters(String component) {
+        final Map<String, String> parameters = new HashMap<>();
+        if (!component.isEmpty()) {
+            for (String rComponent : component.split("&")) {
+                final String[] kv = rComponent.split("=");
+                final String key = kv[0];
+                final String val = (kv.length == 2) ? kv[1] : "";
+                parameters.put(key, val);
+            }
+        }
         return parameters;
     }
 
