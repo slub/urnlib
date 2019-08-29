@@ -1,11 +1,5 @@
 language: java
 
-# test with multiple JDKs
-jdk:
-    - openjdk7
-    - openjdk8
-    - oraclejdk8
-
 # use container-based infrastructure
 sudo: false
 
