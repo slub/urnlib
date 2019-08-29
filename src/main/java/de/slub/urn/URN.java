@@ -19,6 +19,7 @@ package de.slub.urn;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 /**
  * Represents the base for Uniform Resource Name (URN) implementations.
@@ -89,7 +90,7 @@ public abstract class URN implements RFCSupport {
      */
     @Override
     public int hashCode() {
-        return this.toString().hashCode();
+        return Objects.hash(namespaceIdentifier(), namespaceSpecificString(), supportedRFC());
     }
 
     /**
