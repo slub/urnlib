@@ -81,31 +81,16 @@ public class RFC8141Parser implements URNParser<URN_8141> {
         return new RQF_RFC8141(parseParameters(rComponent), parseParameters(qComponent), fComponent);
     }
 
-    /**
-     * Returns a substring of <code>str</code> starting after <code>startDelimiter</code>.
-     *
-     * @param str
-     * @param startDelimiter
-     * @return a substring or empty string if <code>startDelimiter</code> could not be found.
-     */
     private String substringFrom(String str, String startDelimiter) {
         final int startIndex = str.indexOf(startDelimiter);
         if (startIndex < 0) {
-            return "";
+            return ""; // Default to empty string if no occurrence of start delimiter is found.
         }
         return str.substring(startIndex + startDelimiter.length());
     }
 
-    /**
-     * Returns a substring of <code>str</code> ending before the first occurrence of any of the
-     * <code>endDelimiters</code>.
-     *
-     * @param str
-     * @param endDelimiters
-     * @return a substring or <code>str</code> if none of <code>endDelimiters</code> could be found.
-     */
     private String substringUntilAny(String str, String... endDelimiters) {
-        int endIndex = str.length();
+        int endIndex = str.length(); // Default to whole string if no occurrence of end delimiter is found.
         for (String endDelimiter : endDelimiters) {
             int currentEnd = str.indexOf(endDelimiter);
             if (currentEnd >= 0 && currentEnd < endIndex) {
