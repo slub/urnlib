@@ -46,7 +46,8 @@ public class URN_8141Test extends URNTest {
 
     @Test
     public void URNs_are_equivalent_despite_different_RQF_components() throws URNSyntaxError {
-        final String message = "RQF components should be ignored when comparing URNs";
+        final String equalsMessage = "RQF components should be ignored when comparing URNs";
+        final String hashCodeMessage = "RQF components should be ignored when computing URN hashCodes";
         final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("urn:example:a123,z456?+abc"));
@@ -55,7 +56,8 @@ public class URN_8141Test extends URNTest {
         }};
         for (URN urn1 : equivalent) {
             for (URN urn2 : equivalent) {
-                assertEquals(message, urn1, urn2);
+                assertEquals(equalsMessage, urn1, urn2);
+                assertEquals(hashCodeMessage, urn1.hashCode(), urn2.hashCode());
             }
         }
     }
