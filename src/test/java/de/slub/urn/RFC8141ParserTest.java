@@ -166,4 +166,37 @@ public class RFC8141ParserTest extends URNParserTest {
         assertEquals("bar", rqf.fragment());
     }
 
+    @Test
+    public void Parses_RQF_components() throws URNSyntaxError {
+        URN_8141 urn = getURNParser().parse("urn:example:foo-bar-baz-qux?+CCResolve:cc=uk?=op=map#somepart");
+
+        RQF_RFC8141 rqf = urn.getRQFComponents();
+
+        Map<String, String> resolutionParameters = rqf.resolutionParameters();
+        assertTrue("r-component should contain key", resolutionParameters.containsKey("CCResolve:cc"));
+        assertEquals("r-component value not as expected", "uk", resolutionParameters.get("CCResolve:cc"));
+
+        Map<String, String> queryParameters = rqf.queryParameters();
+        assertTrue("q-component should contain key", queryParameters.containsKey("op"));
+        assertEquals("q-component value not as expected", "map", queryParameters.get("op"));
+
+        assertEquals("Missing fragment `somepart`", "somepart", rqf.fragment());
+    }
+
+    @Test
+    public void Parses_RQF_components_with_empty_R() throws URNSyntaxError {
+        URN_8141 urn = getURNParser().parse("urn:example:foo-bar-baz-qux?+?=op=map#somepart");
+
+        RQF_RFC8141 rqf = urn.getRQFComponents();
+
+        Map<String, String> resolutionParameters = rqf.resolutionParameters();
+        assertTrue("r-component should be empty", resolutionParameters.isEmpty());
+
+        Map<String, String> queryParameters = rqf.queryParameters();
+        assertTrue("q-component should contain key", queryParameters.containsKey("op"));
+        assertEquals("q-component value not as expected", "map", queryParameters.get("op"));
+
+        assertEquals("Missing fragment `somepart`", "somepart", rqf.fragment());
+    }
+
 }
