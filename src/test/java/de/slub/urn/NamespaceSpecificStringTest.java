@@ -119,7 +119,7 @@ abstract class NamespaceSpecificStringTest {
     }
 
     @Test
-    public void Unescaped_whitespace_in_NamespaceSpecificString_throws_exception() throws Exception {
+    public void Unescaped_whitespace_in_NamespaceSpecificString_throws_exception() {
         // https://en.wikipedia.org/wiki/Whitespace_character
         String[] whitespaceStrings = new String[]{
                 "\u0009", "\u000B", "\u000C", "\u0020", "\u0085", "\u00A0", "\u1680", "\u2000", "\u2001", "\u2002",
