@@ -14,7 +14,7 @@ Resource Name (URN) and its parts Namespace Identifier (NID), Namespace Specific
 
 Further it defines and interface `de.slub.urn.URNResolver` for URN resolving implementations.
 
-The library is compiled for Java 7.
+The library is compiled for Java 11.
 
 ## Usage
 
