@@ -1,0 +1,31 @@
+name: Java CI with Maven
+
+on: [ push, pull_request ]
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        java-version: [ 8, 11 ]
+    name: Java ${{ matrix.java-version }} compile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ matrix.java-version }}
+          java-package: jdk
+          distribution: 'adopt'
+
+      - name: Cache the Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Integration test
+        run: mvn -B verify

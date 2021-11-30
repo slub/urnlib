@@ -1,7 +1,6 @@
 # urnlib
 
-[![Build Status](https://travis-ci.org/slub/urnlib.png?branch=master)](https://travis-ci.org/slub/urnlib)
-[![Coverage Status](https://coveralls.io/repos/github/slub/urnlib/badge.svg?branch=master)](https://coveralls.io/github/slub/urnlib?branch=master)
+![Build](https://github.com/slub/urnlib/actions/workflows/ci.yml/badge.svg)
 [![Maven
 Central](https://maven-badges.herokuapp.com/maven-central/de.slub-dresden/urnlib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.slub-dresden/urnlib)
 
