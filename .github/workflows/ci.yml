@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        java-version: [ 8, 11 ]
+        java-version: [ 9 ]
     name: Java ${{ matrix.java-version }} compile
     steps:
       - name: Checkout
