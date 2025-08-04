@@ -19,6 +19,7 @@ package de.slub.urn;
 
 import org.junit.Test;
 
+import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -93,6 +94,14 @@ public class URN_8141Test extends URNTest {
         URN_8141            urn = getSample("urn:example:a123,z456?=q=a?b");
         Map<String, String> qps = urn.getRQFComponents().queryParameters();
         assertTrue(qps.containsKey("q") && qps.get("q").equals("a?b"));
+    }
+
+    @Test
+    public void Ampersand_separates_multiple_query_components() throws URNSyntaxError {
+        URN_8141 urn = getSample("urn:XY:ORDER:111111?=x=y&z=c");
+        Map<String, String> qps = urn.getRQFComponents().queryParameters();
+        assertTrue(qps.containsKey("x") && qps.get("x").equals("y"));
+        assertTrue(qps.containsKey("z") && qps.get("z").equals("c"));
     }
 
 }
