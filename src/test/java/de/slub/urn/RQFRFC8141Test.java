@@ -82,7 +82,7 @@ public class RQFRFC8141Test {
 
 		String actual = urn.toString();
 
-		assertEquals(actual, expected);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class RQFRFC8141Test {
 
 		String actual = urn.toString();
 
-		assertEquals(actual, expected);
+		assertEquals(expected, actual);
 	}
     
 }
