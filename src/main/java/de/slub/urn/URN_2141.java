@@ -32,10 +32,10 @@ package de.slub.urn;
  */
 public final class URN_2141 extends URN {
 
-    protected final RFC supportedRfc = RFC.RFC_2141;
+    private final RFC supportedRfc = RFC.RFC_2141;
 
-    protected final NID_RFC2141 namespaceIdentifier;
-    protected final NSS_RFC2141 namespaceSpecificString;
+    private final NID_RFC2141 namespaceIdentifier;
+    private final NSS_RFC2141 namespaceSpecificString;
 
     /**
      * Creates a new {@code URN} instance from a {@code NamespaceIdentifier} (NID) and

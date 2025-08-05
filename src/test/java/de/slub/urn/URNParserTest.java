@@ -52,7 +52,7 @@ abstract class URNParserTest {
     public void URN_string_can_be_parsed_into_its_components() throws Exception {
         final String nid = "isbn";
         final String nss = "0451450523";
-        final URN    urn = getURNParser().parse(new URI(String.format("urn:%s:%s", nid, nss)));
+        final URN urn = getURNParser().parse(new URI(String.format("urn:%s:%s", nid, nss)));
         assertEquals("Wrong NID ", nid, urn.namespaceIdentifier().toString());
         assertEquals("Wrong NSS", nss, urn.namespaceSpecificString().toString());
     }

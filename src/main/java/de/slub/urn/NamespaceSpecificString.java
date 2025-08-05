@@ -47,7 +47,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      * @param nss      The namespace specific string literal
      * @param encoding Telling whether the given literal is URL encoded or not
      * @throws URNSyntaxError Thrown if the given literal is not valid according to {@code
-     *                            isValidURLEncodedNamespaceSpecificString()}
+     *                        isValidURLEncodedNamespaceSpecificString()}
      */
     public NamespaceSpecificString(String nss, Encoding encoding) throws URNSyntaxError {
         if ((nss == null) || (nss.isEmpty())) {
@@ -67,14 +67,14 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     }
 
     /**
-     * Check if a given URL encoded NSS literal is valid.
-     * <p>
-     * Implementations must validate according to the RFC they represent.
+     * Create a new {@code NamespaceSpecificString} instance that is an exact copy of the given instance.
      *
-     * @param encoded The URL encoded NSS literal
-     * @return True, if the literal is valid according to the RFC.
+     * @param instanceForCopying Base instance for copying
      */
-    protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
+    public NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
+        this.encoded = instanceForCopying.encoded;
+        this.raw = instanceForCopying.raw;
+    }
 
     private static String lowerCaseOctetPairs(String s) {
         StringBuilder sb = new StringBuilder(s.length());
@@ -97,6 +97,16 @@ abstract public class NamespaceSpecificString implements RFCSupport {
         }
         return sb.toString();
     }
+
+    /**
+     * Check if a given URL encoded NSS literal is valid.
+     * <p>
+     * Implementations must validate according to the RFC they represent.
+     *
+     * @param encoded The URL encoded NSS literal
+     * @return True, if the literal is valid according to the RFC.
+     */
+    protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
 
     private String decode(String s) {
         try {
@@ -154,16 +164,6 @@ abstract public class NamespaceSpecificString implements RFCSupport {
             sb.append(toLowerCase(forDigit((b >> 4) & 0xF, 16)));
             sb.append(toLowerCase(forDigit((b & 0xF), 16)));
         }
-    }
-
-    /**
-     * Create a new {@code NamespaceSpecificString} instance that is an exact copy of the given instance.
-     *
-     * @param instanceForCopying Base instance for copying
-     */
-    public NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
-        this.encoded = instanceForCopying.encoded;
-        this.raw = instanceForCopying.raw;
     }
 
     /**

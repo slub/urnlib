@@ -49,14 +49,14 @@ abstract class NamespaceSpecificStringTest {
 
     @Test
     public void Calling_toString_returns_namespace_specific_string() throws URNSyntaxError {
-        final String                  expected = "a-valid-nss";
-        final NamespaceSpecificString subject  = newTestInstance(expected, URL_ENCODED);
+        final String expected = "a-valid-nss";
+        final NamespaceSpecificString subject = newTestInstance(expected, URL_ENCODED);
         assertEquals(expected, subject.toString());
     }
 
     @Test
     public void Identically_initialized_NamespaceSpecificStrings_are_equal() throws URNSyntaxError {
-        final String                  nss  = "a-valid-nss";
+        final String nss = "a-valid-nss";
         final NamespaceSpecificString nss1 = newTestInstance(nss, URL_ENCODED);
         final NamespaceSpecificString nss2 = newTestInstance(nss, URL_ENCODED);
         assertEquals(nss1, nss2);
@@ -64,7 +64,7 @@ abstract class NamespaceSpecificStringTest {
 
     @Test
     public void Copied_NamespaceSpecificString_is_equal_to_orignal() throws URNSyntaxError {
-        final String                  nss  = "a-valid-nss";
+        final String nss = "a-valid-nss";
         final NamespaceSpecificString nss1 = newTestInstance(nss, URL_ENCODED);
         final NamespaceSpecificString nss2 = newTestInstance(nss1);
         assertEquals(nss1, nss2);
@@ -72,7 +72,7 @@ abstract class NamespaceSpecificStringTest {
 
     @Test
     public void Copied_NamespaceSpecificString_is_not_identical_to_original() throws URNSyntaxError {
-        final String                  nss  = "a-valid-nss";
+        final String nss = "a-valid-nss";
         final NamespaceSpecificString nss1 = newTestInstance(nss, URL_ENCODED);
         final NamespaceSpecificString nss2 = newTestInstance(nss1);
         assertNotSame(nss1, nss2);
@@ -80,7 +80,7 @@ abstract class NamespaceSpecificStringTest {
 
     @Test
     public void Identically_initialized_NamespaceSpecificStrings_have_same_hash_code() throws URNSyntaxError {
-        final String                  nss  = "a-valid-nss";
+        final String nss = "a-valid-nss";
         final NamespaceSpecificString nss1 = newTestInstance(nss, URL_ENCODED);
         final NamespaceSpecificString nss2 = newTestInstance(nss, URL_ENCODED);
         assertEquals(nss1.hashCode(), nss2.hashCode());
@@ -98,9 +98,9 @@ abstract class NamespaceSpecificStringTest {
 
     @Test
     public void URN_encoded_namespace_specific_string_gets_decoded() throws URNSyntaxError {
-        final String                  encodedNss = "%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D";
-        final String                  decodedNss = "ÄÜÖ[]&<>^`{|}";
-        final NamespaceSpecificString subject    = newTestInstance(encodedNss, URL_ENCODED);
+        final String encodedNss = "%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D";
+        final String decodedNss = "ÄÜÖ[]&<>^`{|}";
+        final NamespaceSpecificString subject = newTestInstance(encodedNss, URL_ENCODED);
         assertEquals(decodedNss, subject.unencoded());
     }
 
@@ -112,9 +112,9 @@ abstract class NamespaceSpecificStringTest {
 
     @Test
     public void Unencoded_NamespaceSpecificString_get_encoded() throws URNSyntaxError {
-        final String                  decodedNss = "ÄÜÖ[]&<>^`{|}";
-        final String                  encodedNss = "%c3%84%c3%9c%c3%96%5b%5d%26%3c%3e%5e%60%7b%7c%7d";
-        final NamespaceSpecificString subject    = newTestInstance(decodedNss, NOT_ENCODED);
+        final String decodedNss = "ÄÜÖ[]&<>^`{|}";
+        final String encodedNss = "%c3%84%c3%9c%c3%96%5b%5d%26%3c%3e%5e%60%7b%7c%7d";
+        final NamespaceSpecificString subject = newTestInstance(decodedNss, NOT_ENCODED);
         assertEquals(encodedNss, subject.toString());
     }
 

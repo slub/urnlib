@@ -20,6 +20,7 @@ package de.slub.urn;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 import static de.slub.urn.URNSyntaxError.syntaxError;
 

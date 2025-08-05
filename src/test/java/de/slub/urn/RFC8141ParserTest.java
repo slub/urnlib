@@ -22,9 +22,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class RFC8141ParserTest extends URNParserTest {
 
@@ -86,8 +84,8 @@ public class RFC8141ParserTest extends URNParserTest {
             put("datetime", "1969-07-21T02:56:15Z");
         }}.entrySet()) {
             assertTrue(String.format("q-component should have entry for `%s` with value `%s`",
-                    me.getKey(),
-                    me.getValue()),
+                            me.getKey(),
+                            me.getValue()),
                     queryParameters.containsKey(me.getKey())
                             && queryParameters.get(me.getKey()).equals(me.getValue()));
         }
@@ -95,7 +93,7 @@ public class RFC8141ParserTest extends URNParserTest {
 
     @Test
     public void Trailing_dash_is_ignored() throws URNSyntaxError {
-        URN_8141    urn = getURNParser().parse("urn:foo:bar#");
+        URN_8141 urn = getURNParser().parse("urn:foo:bar#");
         RQF_RFC8141 rqf = urn.getRQFComponents();
         assertTrue(rqf.fragment().isEmpty());
     }
@@ -132,7 +130,7 @@ public class RFC8141ParserTest extends URNParserTest {
 
     @Test
     public void Parses_individual_resolution_parameters() throws URNSyntaxError {
-        String   str = "urn:foo:bar?+a=b&c=d";
+        String str = "urn:foo:bar?+a=b&c=d";
         URN_8141 urn = getURNParser().parse(str);
 
         RQF_RFC8141 rqf = urn.getRQFComponents();
@@ -146,7 +144,7 @@ public class RFC8141ParserTest extends URNParserTest {
 
     @Test
     public void Parses_individual_query_parameters() throws URNSyntaxError {
-        String   str = "urn:foo:bar?=q=v&u=w";
+        String str = "urn:foo:bar?=q=v&u=w";
         URN_8141 urn = getURNParser().parse(str);
 
         RQF_RFC8141 rqf = urn.getRQFComponents();
@@ -160,8 +158,8 @@ public class RFC8141ParserTest extends URNParserTest {
 
     @Test
     public void Parses_fragment_part() throws URNSyntaxError {
-        String      str = "urn:foo:bar#bar";
-        URN_8141    urn = getURNParser().parse(str);
+        String str = "urn:foo:bar#bar";
+        URN_8141 urn = getURNParser().parse(str);
         RQF_RFC8141 rqf = urn.getRQFComponents();
         assertEquals("bar", rqf.fragment());
     }

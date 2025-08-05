@@ -17,15 +17,13 @@
 
 package de.slub.urn;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class RQFRFC8141Test {
 
@@ -68,34 +66,34 @@ public class RQFRFC8141Test {
     }
 
 
-	@Test
-	public void ToString_With_Parameters_And_Fragment() {
-		Map<String, String> resolutionParameters = new HashMap<>();
-		resolutionParameters.put("resolutionParameter0", "foo0");
-		resolutionParameters.put("resolutionParameter1", "foo1");
-		Map<String, String> queryParameters = new HashMap<>();
-		queryParameters.put("queryParameter0", "bar0");
-		queryParameters.put("queryParameters1", "bar1");
-		String fragment = "fragment0";
-		RQF_RFC8141 urn = new RQF_RFC8141(resolutionParameters, queryParameters, fragment);
-		String expected = "?+resolutionParameter1=foo1&resolutionParameter0=foo0?=queryParameter0=bar0&queryParameters1=bar1#fragment0";
+    @Test
+    public void ToString_With_Parameters_And_Fragment() {
+        Map<String, String> resolutionParameters = new HashMap<>();
+        resolutionParameters.put("resolutionParameter0", "foo0");
+        resolutionParameters.put("resolutionParameter1", "foo1");
+        Map<String, String> queryParameters = new HashMap<>();
+        queryParameters.put("queryParameter0", "bar0");
+        queryParameters.put("queryParameters1", "bar1");
+        String fragment = "fragment0";
+        RQF_RFC8141 urn = new RQF_RFC8141(resolutionParameters, queryParameters, fragment);
+        String expected = "?+resolutionParameter1=foo1&resolutionParameter0=foo0?=queryParameter0=bar0&queryParameters1=bar1#fragment0";
 
-		String actual = urn.toString();
+        String actual = urn.toString();
 
-		assertEquals(expected, actual);
-	}
+        assertEquals(expected, actual);
+    }
 
-	@Test
-	public void ToString_Without_Parameter_And_Fragment() {
-		Map<String, String> resolutionParameters = new HashMap<>();
-		Map<String, String> queryParameters = new HashMap<>();
-		String fragment = "";
-		RQF_RFC8141 urn = new RQF_RFC8141(resolutionParameters, queryParameters, fragment);
-		String expected = "";
+    @Test
+    public void ToString_Without_Parameter_And_Fragment() {
+        Map<String, String> resolutionParameters = new HashMap<>();
+        Map<String, String> queryParameters = new HashMap<>();
+        String fragment = "";
+        RQF_RFC8141 urn = new RQF_RFC8141(resolutionParameters, queryParameters, fragment);
+        String expected = "";
 
-		String actual = urn.toString();
+        String actual = urn.toString();
 
-		assertEquals(expected, actual);
-	}
-    
+        assertEquals(expected, actual);
+    }
+
 }

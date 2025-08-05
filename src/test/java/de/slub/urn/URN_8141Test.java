@@ -19,13 +19,10 @@ package de.slub.urn;
 
 import org.junit.Test;
 
-import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class URN_8141Test extends URNTest {
 
@@ -84,14 +81,14 @@ public class URN_8141Test extends URNTest {
 
     @Test
     public void Slashes_can_be_data_in_query_component() throws URNSyntaxError {
-        URN_8141            urn = getSample("urn:example:a123,z456?=s=/");
+        URN_8141 urn = getSample("urn:example:a123,z456?=s=/");
         Map<String, String> qps = urn.getRQFComponents().queryParameters();
         assertTrue(qps.containsKey("s") && qps.get("s").equals("/"));
     }
 
     @Test
     public void Question_mark_can_be_data_in_query_component() throws URNSyntaxError {
-        URN_8141            urn = getSample("urn:example:a123,z456?=q=a?b");
+        URN_8141 urn = getSample("urn:example:a123,z456?=q=a?b");
         Map<String, String> qps = urn.getRQFComponents().queryParameters();
         assertTrue(qps.containsKey("q") && qps.get("q").equals("a?b"));
     }

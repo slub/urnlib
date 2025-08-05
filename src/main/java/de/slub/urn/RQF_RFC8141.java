@@ -17,12 +17,12 @@
 
 package de.slub.urn;
 
-import static java.util.Collections.EMPTY_MAP;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.EMPTY_MAP;
 
 /**
  * Class for representing and parsing optional resolution, query and fragment components
@@ -48,8 +48,8 @@ public final class RQF_RFC8141 {
      * Construct a RQF component.
      *
      * @param resolutionParameters Map of resolution parameters
-     * @param queryParameters Map of query parameters
-     * @param fragment The fragment
+     * @param queryParameters      Map of query parameters
+     * @param fragment             The fragment
      * @throws IllegalArgumentException if any of the parameters are null
      */
     public RQF_RFC8141(
@@ -104,7 +104,7 @@ public final class RQF_RFC8141 {
             sb.append("?=");
             final List<String> acc = new ArrayList<>();
             for (Map.Entry<String, String> kv : queryParameters.entrySet()) {
-            	acc.add(kv.getKey() + "=" + kv.getValue());
+                acc.add(kv.getKey() + "=" + kv.getValue());
             }
             sb.append(String.join("&", acc));
         }

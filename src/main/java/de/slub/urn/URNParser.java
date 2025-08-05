@@ -35,7 +35,7 @@ public interface URNParser<T extends URN> {
      * @param str String to be parsed into an URN instance
      * @return New URN instance
      * @throws IllegalArgumentException If the given string is null
-     * @throws URNSyntaxError       If the given string cannot be parsed into a URN
+     * @throws URNSyntaxError           If the given string cannot be parsed into a URN
      */
     T parse(String str) throws URNSyntaxError;
 
@@ -45,7 +45,7 @@ public interface URNParser<T extends URN> {
      * @param uri The URI to be parsed into a URN
      * @return A new URN instance
      * @throws IllegalArgumentException If the given URI is null
-     * @throws URNSyntaxError       If the given URI cannot be parsed into a URN
+     * @throws URNSyntaxError           If the given URI cannot be parsed into a URN
      */
     T parse(URI uri) throws URNSyntaxError;
 

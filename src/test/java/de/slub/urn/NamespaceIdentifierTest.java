@@ -19,10 +19,7 @@ package de.slub.urn;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
 
@@ -75,8 +72,8 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
 
     @Test
     public void Calling_toString_returns_namespace_identifier() throws URNSyntaxError {
-        final String              expected = "isbn";
-        final NamespaceIdentifier subject  = newTestInstance(expected);
+        final String expected = "isbn";
+        final NamespaceIdentifier subject = newTestInstance(expected);
         assertEquals(expected, subject.toString());
     }
 
@@ -88,7 +85,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
 
     @Test
     public void Identically_initialized_NamespaceIdentifiers_are_equal() throws URNSyntaxError {
-        final String              nid  = "a-valid-nid";
+        final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance(nid);
         assertEquals(nid1, nid2);
@@ -96,7 +93,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
 
     @Test
     public void NamespaceIdentifiers_equality_check_is_case_insensitive() throws URNSyntaxError {
-        final String              nid  = "A-Valid-Nid";
+        final String nid = "A-Valid-Nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid.toUpperCase());
         final NamespaceIdentifier nid2 = newTestInstance(nid.toLowerCase());
         assertEquals(nid1, nid2);
@@ -104,7 +101,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
 
     @Test
     public void Copied_NamespaceIdentifier_is_equal_to_original() throws URNSyntaxError {
-        final String              nid  = "a-valid-nid";
+        final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance((T) nid1);
         assertEquals(nid1, nid2);
@@ -112,7 +109,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
 
     @Test
     public void Copied_NamespaceIdentifier_is_not_identical_to_original() throws URNSyntaxError {
-        final String              nid  = "a-valid-nid";
+        final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance((T) nid1);
         assertNotSame(nid1, nid2);
@@ -120,7 +117,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
 
     @Test
     public void Identically_initialized_NamespaceIdentifiers_have_same_hash_code() throws URNSyntaxError {
-        final String              nid  = "a-valid-nid";
+        final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance(nid);
         assertEquals(nid1.hashCode(), nid2.hashCode());

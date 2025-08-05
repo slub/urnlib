@@ -44,7 +44,7 @@ public class URNResolvingErrorTest {
     @Test
     public void Returns_failed_URN() throws URNSyntaxError {
         String anyMessage = "The Message";
-        URN    urn        = URN.rfc8141().parse("urn:error:1234");
+        URN urn = URN.rfc8141().parse("urn:error:1234");
 
         URNResolvingError subject = new URNResolvingError(anyMessage, urn);
 

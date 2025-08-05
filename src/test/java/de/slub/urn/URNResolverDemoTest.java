@@ -70,8 +70,8 @@ public class URNResolverDemoTest {
 
     @Test
     public void Demonstrate_intended_use_of_resolve_method_returning_multiple_URLs() {
-        Set<URL> urls                 = subject.resolve(URN_AB);
-        int      expectedNumberOfUrls = 2;
+        Set<URL> urls = subject.resolve(URN_AB);
+        int expectedNumberOfUrls = 2;
         assertEquals(
                 String.format("%s should resolve to %d URLs", URN_AB, expectedNumberOfUrls),
                 expectedNumberOfUrls, urls.size());

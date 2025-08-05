@@ -18,9 +18,7 @@
 package de.slub.urn;
 
 import static de.slub.urn.URN.SCHEME;
-import static de.slub.urn.URNSyntaxError.syntaxError;
-import static de.slub.urn.URNSyntaxError.lengthError;
-import static de.slub.urn.URNSyntaxError.reservedIdentifier;
+import static de.slub.urn.URNSyntaxError.*;
 
 /**
  * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN).
@@ -37,7 +35,7 @@ abstract public class NamespaceIdentifier implements RFCSupport {
      * Creates a new {@code NamespaceIdentifier} instance.
      *
      * @param nid The Namespace Identifier literal
-     * @throws URNSyntaxError       if the given value is <pre>null</pre>, empty or invalid according to the
+     * @throws URNSyntaxError           if the given value is <pre>null</pre>, empty or invalid according to the
      *                                  {@code isValidNamespaceIdentifier()} method.
      * @throws IllegalArgumentException if the parameter is null or empty
      */
@@ -59,14 +57,6 @@ abstract public class NamespaceIdentifier implements RFCSupport {
     }
 
     /**
-     * Check if a given literal is a valid namespace identifier and return an error message if not.
-     *
-     * @param nid Namespace identifier literal
-     * @return Error message, if the given string violates the rules for valid namespace identifiers. Null, if not.
-     */
-    abstract protected String validateNamespaceIdentifier(String nid);
-
-    /**
      * Create a new {@code NamespaceIdentifier} instance that is an exact copy of the given instance.
      *
      * @param instanceForCopying Base instance for copying
@@ -78,6 +68,14 @@ abstract public class NamespaceIdentifier implements RFCSupport {
         }
         nid = instanceForCopying.nid;
     }
+
+    /**
+     * Check if a given literal is a valid namespace identifier and return an error message if not.
+     *
+     * @param nid Namespace identifier literal
+     * @return Error message, if the given string violates the rules for valid namespace identifiers. Null, if not.
+     */
+    abstract protected String validateNamespaceIdentifier(String nid);
 
     /**
      * Calculates hash code based on the string representation of this namespace identifier.

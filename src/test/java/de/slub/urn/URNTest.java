@@ -22,15 +22,13 @@ import org.junit.Test;
 import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public abstract class URNTest {
 
     @Test
     final public void Returns_namespace_identifier() throws URNSyntaxError {
-        URN                 urn = getSample("urn:isbn:irrelevant");
+        URN urn = getSample("urn:isbn:irrelevant");
         NamespaceIdentifier nid = urn.namespaceIdentifier();
         assertEquals("isbn", nid.toString());
     }
@@ -54,14 +52,14 @@ public abstract class URNTest {
 
     @Test
     final public void Returns_namespace_specific_string() throws URNSyntaxError {
-        URN                     urn = getSample("urn:foo:0451450523");
+        URN urn = getSample("urn:foo:0451450523");
         NamespaceSpecificString nss = urn.namespaceSpecificString();
         assertEquals("0451450523", nss.toString());
     }
 
     @Test
     final public void Generates_valid_URI() throws URISyntaxException, URNSyntaxError {
-        URN    urn         = getSample("urn:isbn:0451450523");
+        URN urn = getSample("urn:isbn:0451450523");
         String asciiString = urn.toURI().toASCIIString();
         assertEquals("urn:isbn:0451450523", asciiString);
     }

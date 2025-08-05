@@ -32,7 +32,7 @@ package de.slub.urn;
  */
 public final class URN_8141 extends URN {
 
-    protected final RFC supportedRfc = RFC.RFC_8141;
+    private final RFC supportedRfc = RFC.RFC_8141;
 
     private final NID_RFC8141 namespaceIdentifier;
     private final NSS_RFC8141 namespaceSpecificString;
@@ -46,6 +46,12 @@ public final class URN_8141 extends URN {
         this.namespaceIdentifier = namespaceIdentifier;
         this.namespaceSpecificString = namespaceSpecificString;
         this.rqfComponents = rqfComponents;
+    }
+
+    private static void assertNotNull(Object o, String message) {
+        if (o == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 
     /**
@@ -90,12 +96,6 @@ public final class URN_8141 extends URN {
     @Override
     public RFC supportedRFC() {
         return supportedRfc;
-    }
-
-    private static void assertNotNull(Object o, String message) {
-        if (o == null) {
-            throw new IllegalArgumentException(message);
-        }
     }
 
 }

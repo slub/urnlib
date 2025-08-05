@@ -20,9 +20,7 @@ package de.slub.urn;
 import org.junit.Test;
 
 import static de.slub.urn.RFC.RFC_8141;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class NID_RFC8141Test extends NamespaceIdentifierTest<NID_RFC8141> {
 
@@ -51,21 +49,21 @@ public class NID_RFC8141Test extends NamespaceIdentifierTest<NID_RFC8141> {
     @Test
     public void Identifier_starting_with_alpha_alpha_hyphen_qualifies_not_formal() throws URNSyntaxError {
         final String informal = "ab-a";
-        NID_RFC8141  nid      = newTestInstance(informal);
+        NID_RFC8141 nid = newTestInstance(informal);
         assertFalse(nid.isFormal());
     }
 
     @Test
     public void Identifier_starting_with_alpha_alpha_hyphen_hyphen_qualifies_not_formal() throws URNSyntaxError {
         final String informal = "ab--a";
-        NID_RFC8141  nid      = newTestInstance(informal);
+        NID_RFC8141 nid = newTestInstance(informal);
         assertFalse(nid.isFormal());
     }
 
     @Test
     public void Identifier_starting_with_X_hyphen_qualifies_not_formal() throws URNSyntaxError {
         final String informal = "X-a";
-        NID_RFC8141  nid      = newTestInstance(informal);
+        NID_RFC8141 nid = newTestInstance(informal);
         assertFalse(nid.isFormal());
     }
 
@@ -78,21 +76,21 @@ public class NID_RFC8141Test extends NamespaceIdentifierTest<NID_RFC8141> {
     @Test
     public void Identifier_starting_with_urn_hyphen_qualifies_informal() throws URNSyntaxError {
         final String informal = "urn-1";
-        NID_RFC8141  nid      = newTestInstance(informal);
+        NID_RFC8141 nid = newTestInstance(informal);
         assertTrue(nid.isInformal());
     }
 
     @Test
     public void Identifier_starting_with_urn_hyphen_qualifies_not_formal() throws URNSyntaxError {
         final String informal = "urn-1";
-        NID_RFC8141  nid      = newTestInstance(informal);
+        NID_RFC8141 nid = newTestInstance(informal);
         assertFalse(nid.isFormal());
     }
 
     @Test
     public void Identifier_may_be_both_not_formal_and_not_informal() throws URNSyntaxError {
         final String informal = "xn--a";
-        NID_RFC8141  nid      = newTestInstance(informal);
+        NID_RFC8141 nid = newTestInstance(informal);
         assertFalse(nid.isFormal());
         assertFalse(nid.isInformal());
     }
