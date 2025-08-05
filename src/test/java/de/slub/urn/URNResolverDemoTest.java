@@ -21,8 +21,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,26 +32,26 @@ import static org.junit.Assert.assertTrue;
 
 public class URNResolverDemoTest {
 
-    private static URL URL_A, URL_B;
+    private static URI URI_A, URI_B;
     private static URN URN_A, URN_AB;
-    private static Map<URN, Set<URL>> URIMAP;
+    private static Map<URN, Set<URI>> URIMAP;
     private        DemoURNResolver    subject;
 
     @BeforeClass
-    public static void createDemoUriMap() throws URNSyntaxError, MalformedURLException {
-        URL_A = new URL("http://demo.org/a/1234");
-        URL_B = new URL("http://demo.org/b/5678");
+    public static void createDemoUriMap() throws URNSyntaxError {
+        URI_A = URI.create("http://demo.org/a/1234");
+        URI_B = URI.create("http://demo.org/b/5678");
 
         URN_A = URN.rfc2141().parse("urn:demo:a-1234");
         URN_AB = URN.rfc2141().parse("urn:demo:ab-12");
 
         URIMAP = new HashMap<>();
-        URIMAP.put(URN_A, new HashSet<URL>(1) {{
-            add(URL_A);
+        URIMAP.put(URN_A, new HashSet<>(1) {{
+            add(URI_A);
         }});
-        URIMAP.put(URN_AB, new HashSet<URL>(2) {{
-            add(URL_A);
-            add(URL_B);
+        URIMAP.put(URN_AB, new HashSet<>(2) {{
+            add(URI_A);
+            add(URI_B);
         }});
     }
 
@@ -64,30 +63,30 @@ public class URNResolverDemoTest {
     @Test
     public void Demonstrate_intended_use_of_resolve_method_returning_a_URL() {
         assertTrue(
-                String.format("%s should resolve to %s", URN_A, URL_A),
-                subject.resolve(URN_A).contains(URL_A));
+                String.format("%s should resolve to %s", URN_A, URI_A),
+                subject.resolve(URN_A).contains(URI_A));
     }
 
     @Test
     public void Demonstrate_intended_use_of_resolve_method_returning_multiple_URLs() {
-        Set<URL> urls = subject.resolve(URN_AB);
+        Set<URI> urls = subject.resolve(URN_AB);
         int expectedNumberOfUrls = 2;
         assertEquals(
                 String.format("%s should resolve to %d URLs", URN_AB, expectedNumberOfUrls),
                 expectedNumberOfUrls, urls.size());
     }
 
-    private class DemoURNResolver implements URNResolver<URL> {
+    private static class DemoURNResolver implements URNResolver<URI> {
 
-        private final Map<URN, Set<URL>> map;
+        private final Map<URN, Set<URI>> map;
 
-        DemoURNResolver(Map<URN, Set<URL>> map) {
+        DemoURNResolver(Map<URN, Set<URI>> map) {
             this.map = new HashMap<>();
             this.map.putAll(map);
         }
 
         @Override
-        public Set<URL> resolve(final URN urn) {
+        public Set<URI> resolve(final URN urn) {
             return map.get(urn);
         }
     }
