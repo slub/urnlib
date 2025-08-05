@@ -46,7 +46,7 @@ public class URN_8141Test extends URNTest {
     public void URNs_are_equivalent_despite_different_RQF_components() throws URNSyntaxError {
         final String equalsMessage = "RQF components should be ignored when comparing URNs";
         final String hashCodeMessage = "RQF components should be ignored when computing URN hashCodes";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("urn:example:a123,z456?+abc"));
             add(getSample("urn:example:a123,z456?=xyz"));
@@ -63,7 +63,7 @@ public class URN_8141Test extends URNTest {
     @Test
     public void URNs_with_different_NSS_path_parts_are_not_equivalent() throws URNSyntaxError {
         final String message = "URNs with different NSS should not be equivalent";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("urn:example:a123,z456/foo"));
             add(getSample("urn:example:a123,z456/bar"));

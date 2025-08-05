@@ -74,7 +74,7 @@ public abstract class URNTest {
     @Test
     final public void Lexical_equivalent_URNs_generate_equivalent_representations() throws URNSyntaxError {
         final String message = "Lexical equivalent URNs should be equal";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("URN:example:a123,z456"));
             add(getSample("urn:EXAMPLE:a123,z456"));
@@ -89,7 +89,7 @@ public abstract class URNTest {
     @Test
     final public void Identical_URNs_generate_equivalent_representations() throws URNSyntaxError {
         final String message = "Identical URNs should be equal";
-        final LinkedHashSet<String> equivalent = new LinkedHashSet<String>() {{
+        final LinkedHashSet<String> equivalent = new LinkedHashSet<>() {{
             add("urn:foo:bar");
             add("URN:foo:a123,456");
             add("urn:foo:a123,456");
@@ -116,12 +116,12 @@ public abstract class URNTest {
     @Test
     final public void URNs_with_different_NSS_case_are_not_equal_to_each_other() throws URNSyntaxError {
         final String message = "URNs with different case in NSS should not be equal";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("URN:example:a123,z456"));
             add(getSample("urn:EXAMPLE:a123,z456"));
         }};
-        final LinkedHashSet<URN> notEquivalent = new LinkedHashSet<URN>() {{
+        final LinkedHashSet<URN> notEquivalent = new LinkedHashSet<>() {{
             add(getSample("urn:example:A123,z456"));
             add(getSample("urn:example:a123,Z456"));
         }};
@@ -135,7 +135,7 @@ public abstract class URNTest {
     @Test
     final public void URN_with_cyrillic_letter_is_not_equal_to_URN_with_latin_letter() throws URNSyntaxError {
         final String message = "URNs with cyrillic letter should not be equal to URN with latin letter";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
+        final LinkedHashSet<URN> equivalent = new LinkedHashSet<>() {{
             add(getSample("urn:example:a123,z456"));
             add(getSample("URN:example:a123,z456"));
             add(getSample("urn:EXAMPLE:a123,z456"));

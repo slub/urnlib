@@ -22,7 +22,7 @@ import org.junit.Test;
 import static de.slub.urn.RFC.RFC_2141;
 import static org.junit.Assert.assertEquals;
 
-public class NID_RFC2141Test extends NamespaceIdentifierTest {
+public class NID_RFC2141Test extends NamespaceIdentifierTest<NID_RFC2141> {
 
     @Test(expected = URNSyntaxError.class)
     public void Invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxError {
@@ -31,12 +31,12 @@ public class NID_RFC2141Test extends NamespaceIdentifierTest {
     }
 
     @Override
-    NamespaceIdentifier newTestInstance(String nid) throws URNSyntaxError {
+    NID_RFC2141 newTestInstance(String nid) throws URNSyntaxError {
         return new NID_RFC2141(nid);
     }
 
     @Override
-    NamespaceIdentifier newTestInstance(NamespaceIdentifier nid) {
+    NID_RFC2141 newTestInstance(NamespaceIdentifier nid) {
         return new NID_RFC2141(nid);
     }
 
