@@ -39,7 +39,7 @@ public final class URN_8141 extends URN {
 
     private final RQF_RFC8141 rqfComponents;
 
-    URN_8141(NID_RFC8141 namespaceIdentifier, NSS_RFC8141 namespaceSpecificString, RQF_RFC8141 rqfComponents) {
+    public URN_8141(NID_RFC8141 namespaceIdentifier, NSS_RFC8141 namespaceSpecificString, RQF_RFC8141 rqfComponents) {
         assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
         assertNotNull(namespaceSpecificString, "Namespace specific string cannot be null");
         assertNotNull(rqfComponents, "Resolution-Query-Fragment component cannot be null");
