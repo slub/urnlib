@@ -36,7 +36,7 @@ public class NID_RFC8141Test extends NamespaceIdentifierTest<NID_RFC8141> {
     }
 
     @Override
-    NID_RFC8141 newTestInstance(NID_RFC8141 nid) {
+    NID_RFC8141 newTestInstance(NamespaceIdentifier nid) {
         return new NID_RFC8141(nid);
     }
 

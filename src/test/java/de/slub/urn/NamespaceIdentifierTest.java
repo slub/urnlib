@@ -31,6 +31,14 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
      */
     abstract T newTestInstance(String nid) throws URNSyntaxError;
 
+    /**
+     * Return instance of the {@code NamespaceIdentifier} implementation under test
+     *
+     * @param nid Namespace identifier
+     * @return Instance for testing
+     */
+    abstract T newTestInstance(NamespaceIdentifier nid);
+
     @Test
     public void Supports_the_reported_RFC() throws URNSyntaxError {
         RFCSupport nid = newTestInstance("abc");
@@ -61,14 +69,6 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     public void Passing_null_object_to_constructor_throws_exception() {
         newTestInstance((T) null);
     }
-
-    /**
-     * Return instance of the {@code NamespaceIdentifier} implementation under test
-     *
-     * @param nid Namespace identifier
-     * @return Instance for testing
-     */
-    abstract T newTestInstance(T nid);
 
     @Test
     public void Calling_toString_returns_namespace_identifier() throws URNSyntaxError {
@@ -103,7 +103,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     public void Copied_NamespaceIdentifier_is_equal_to_original() throws URNSyntaxError {
         final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
-        final NamespaceIdentifier nid2 = newTestInstance((T) nid1);
+        final NamespaceIdentifier nid2 = newTestInstance(nid1);
         assertEquals(nid1, nid2);
     }
 
@@ -111,7 +111,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     public void Copied_NamespaceIdentifier_is_not_identical_to_original() throws URNSyntaxError {
         final String nid = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
-        final NamespaceIdentifier nid2 = newTestInstance((T) nid1);
+        final NamespaceIdentifier nid2 = newTestInstance(nid1);
         assertNotSame(nid1, nid2);
     }
 
