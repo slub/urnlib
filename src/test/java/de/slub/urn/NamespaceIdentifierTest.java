@@ -103,7 +103,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     }
 
     @Test
-    public void Copied_NamespaceIdentifier_is_equal_to_orignal() throws URNSyntaxError {
+    public void Copied_NamespaceIdentifier_is_equal_to_original() throws URNSyntaxError {
         final String              nid  = "a-valid-nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance((T) nid1);

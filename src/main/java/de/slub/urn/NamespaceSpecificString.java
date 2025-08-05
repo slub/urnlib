@@ -168,7 +168,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
 
     /**
      * Return the decoded Namespace Specific String literal.
-     *
+     * <p>
      * Use {@link NamespaceSpecificString#toString()} to get an encoded string representation.
      *
      * @return Decoded Namespace Specific String literal
@@ -220,7 +220,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
 
     /**
      * Represents the state of encoding for a string literal.
-     *
+     * <p>
      * {@link Encoding#URL_ENCODED} means that a string is URL encoded.
      * {@link Encoding#NOT_ENCODED} means that a string is <b>not</b> URL encoded and might contain characters that
      * not allowed in URIs.

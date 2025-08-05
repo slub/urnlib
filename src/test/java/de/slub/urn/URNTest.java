@@ -116,7 +116,7 @@ public abstract class URNTest {
     }
 
     @Test
-    final public void URNs_with_diffenent_NSS_case_are_not_equal_to_each_other() throws URNSyntaxError {
+    final public void URNs_with_different_NSS_case_are_not_equal_to_each_other() throws URNSyntaxError {
         final String message = "URNs with different case in NSS should not be equal";
         final LinkedHashSet<URN> equivalent = new LinkedHashSet<URN>() {{
             add(getSample("urn:example:a123,z456"));

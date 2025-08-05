@@ -90,7 +90,7 @@ public class URN_8141Test extends URNTest {
     }
 
     @Test
-    public void Questionmark_can_be_data_in_query_component() throws URNSyntaxError {
+    public void Question_mark_can_be_data_in_query_component() throws URNSyntaxError {
         URN_8141            urn = getSample("urn:example:a123,z456?=q=a?b");
         Map<String, String> qps = urn.getRQFComponents().queryParameters();
         assertTrue(qps.containsKey("q") && qps.get("q").equals("a?b"));

@@ -23,7 +23,7 @@ import static de.slub.urn.RFC.RFC_2141;
 
 /**
  * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN) according to RFC 2141.
- *
+ * <p>
  * {@code NamespaceIdentifier} instances are immutable and comparable by using {@code equals()}.
  *
  * @author Ralf Claussnitzer

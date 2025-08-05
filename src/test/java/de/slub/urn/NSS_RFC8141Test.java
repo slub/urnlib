@@ -38,7 +38,7 @@ public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
     }
 
     @Test
-    public void Questionmark_chracter_is_allowed() throws URNSyntaxError {
+    public void Question_mark_character_is_allowed() throws URNSyntaxError {
         String nss = "1?q";
         newTestInstance(nss, Encoding.NOT_ENCODED);
     }
