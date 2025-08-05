@@ -52,17 +52,17 @@ public class RQFRFC8141Test {
 
     @Test(expected = IllegalArgumentException.class)
     public void Passing_null_as_resolutionParameterMap_throws_exception() {
-        new RQF_RFC8141(null, Collections.EMPTY_MAP, "");
+        new RQF_RFC8141(null, Collections.emptyMap(), "");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void Passing_null_as_queryParameterMap_throws_exception() {
-        new RQF_RFC8141(Collections.EMPTY_MAP, null, "");
+        new RQF_RFC8141(Collections.emptyMap(), null, "");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void Passing_null_as_fragment_throws_exception() {
-        new RQF_RFC8141(Collections.EMPTY_MAP, Collections.EMPTY_MAP, null);
+        new RQF_RFC8141(Collections.emptyMap(), Collections.emptyMap(), null);
     }
 
 

@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.EMPTY_MAP;
-
 /**
  * Class for representing and parsing optional resolution, query and fragment components
  * and making them accessible via unmodifiable maps.
@@ -37,7 +35,7 @@ public final class RQF_RFC8141 {
      *
      * @see <a href="https://en.wikipedia.org/wiki/Null_object_pattern">Null object pattern</a>
      */
-    public static final RQF_RFC8141 NULL = new RQF_RFC8141(EMPTY_MAP, EMPTY_MAP, "");
+    public static final RQF_RFC8141 NULL = new RQF_RFC8141(Collections.emptyMap(), Collections.emptyMap(), "");
 
     private final Map<String, String> resolutionParameters;
     private final Map<String, String> queryParameters;
