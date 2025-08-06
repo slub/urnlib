@@ -8,9 +8,14 @@ jobs:
     name: Integration test
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'temurin'
-      - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify
+
+      - name: Run the Maven verify phase and coverage report
+        run: mvn --batch-mode --update-snapshots verify jacoco:report
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
