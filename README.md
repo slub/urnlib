@@ -1,8 +1,10 @@
 # urnlib
 
 ![Build](https://github.com/slub/urnlib/actions/workflows/ci.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/slub/urnlib/badge.svg?branch=main)](https://coveralls.io/github/slub/urnlib?branch=main)
 [![Maven
 Central](https://maven-badges.herokuapp.com/maven-central/de.slub-dresden/urnlib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.slub-dresden/urnlib)
+
 
 Java library for representing, parsing and encoding URNs as specified in [RFC 2141] and [RFC 8141].
 
