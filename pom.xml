@@ -32,7 +32,7 @@
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -41,7 +41,7 @@
             <name>Ralf Claussnitzer</name>
             <email>ralf.claussnitzer@slub-dresden.de</email>
             <organization>Saxon State and University Library Dresden</organization>
-            <organizationUrl>http://www.slub-dresden.de/en/home/</organizationUrl>
+            <organizationUrl>https://www.slub-dresden.de/en/home/</organizationUrl>
         </developer>
     </developers>
 
