@@ -17,16 +17,17 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.net.URISyntaxException;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RFC2141ParserTest extends URNParserTest {
 
-    @Test(expected = URNSyntaxError.class)
-    public void Invalid_NID_part_in_URI_throws_exception() throws URISyntaxException, URNSyntaxError {
-        getURNParser().parse(new URI("urn:!?:1234"));
+    @Test
+    public void Invalid_NID_part_in_URI_throws_exception() {
+        assertThrows(URNSyntaxError.class, () -> getURNParser().parse(new URI("urn:!?:1234")));
     }
 
     @Override

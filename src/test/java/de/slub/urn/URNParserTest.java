@@ -17,35 +17,35 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 abstract class URNParserTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void Null_string_argument_throws_exception() throws URNSyntaxError {
-        getURNParser().parse((String) null);
+    @Test
+    public void Null_string_argument_throws_exception() {
+        assertThrows(IllegalArgumentException.class, () -> getURNParser().parse((String) null));
     }
 
     abstract URNParser<?> getURNParser();
 
-    @Test(expected = IllegalArgumentException.class)
-    public void Null_URI_argument_throws_exception() throws URNSyntaxError {
-        getURNParser().parse((URI) null);
+    @Test
+    public void Null_URI_argument_throws_exception() {
+        assertThrows(IllegalArgumentException.class, () -> getURNParser().parse((URI) null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void Empty_string_throws_IllegalArgumentException() throws URNSyntaxError {
-        getURNParser().parse("");
+    @Test
+    public void Empty_string_throws_IllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> getURNParser().parse(""));
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void Parsing_non_URN_URIs_throws_exception() throws URISyntaxException, URNSyntaxError {
-        getURNParser().parse(new URI("http://foo"));
+    @Test
+    public void Parsing_non_URN_URIs_throws_exception() {
+        assertThrows(URNSyntaxError.class, () -> getURNParser().parse(new URI("http://foo")));
     }
 
     @Test
@@ -53,28 +53,32 @@ abstract class URNParserTest {
         final String nid = "isbn";
         final String nss = "0451450523";
         final URN urn = getURNParser().parse(new URI(String.format("urn:%s:%s", nid, nss)));
-        assertEquals("Wrong NID ", nid, urn.namespaceIdentifier().toString());
-        assertEquals("Wrong NSS", nss, urn.namespaceSpecificString().toString());
+        assertEquals(nid, urn.namespaceIdentifier().toString(), "Wrong NID ");
+        assertEquals(nss, urn.namespaceSpecificString().toString(), "Wrong NSS");
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void Non_URN_URI_throws_exception() throws URISyntaxException, URNSyntaxError {
-        getURNParser().parse(new URI("urn:invalid-urn-part"));
+    @Test
+    public void Non_URN_URI_throws_exception() {
+        assertThrows(URNSyntaxError.class,
+                () -> getURNParser().parse(new URI("urn:invalid-urn-part")));
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void URN_string_containing_null_throws_exception() throws URNSyntaxError {
-        getURNParser().parse("urn:foo:a123-\u0000-456-%2c");
+    @Test
+    public void URN_string_containing_null_throws_exception() {
+        assertThrows(URNSyntaxError.class,
+                () -> getURNParser().parse("urn:foo:a123-\u0000-456-%2c"));
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void String_containing_empty_URN_parts_throws_exception() throws URNSyntaxError {
-        getURNParser().parse("urn::");
+    @Test
+    public void String_containing_empty_URN_parts_throws_exception() {
+        assertThrows(URNSyntaxError.class,
+                () -> getURNParser().parse("urn::"));
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void Parsing_throws_exception_when_NSS_part_is_missing() throws URNSyntaxError {
-        getURNParser().parse("urn:foo");
+    @Test
+    public void Parsing_throws_exception_when_NSS_part_is_missing() {
+        assertThrows(URNSyntaxError.class,
+                () -> getURNParser().parse("urn:foo"));
     }
 
     @Test

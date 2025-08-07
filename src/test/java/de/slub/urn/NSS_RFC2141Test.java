@@ -18,9 +18,10 @@
 package de.slub.urn;
 
 import de.slub.urn.NamespaceSpecificString.Encoding;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NSS_RFC2141Test extends NamespaceSpecificStringTest {
 
@@ -30,10 +31,10 @@ public class NSS_RFC2141Test extends NamespaceSpecificStringTest {
         assertEquals(RFC.RFC_2141, nss.supportedRFC());
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void Initializing_with_illegal_character_throws_exception() throws URNSyntaxError {
+    @Test
+    public void Initializing_with_illegal_character_throws_exception() {
         String illegalNss = "ill/eg&al";
-        newTestInstance(illegalNss, Encoding.URL_ENCODED);
+        assertThrows(URNSyntaxError.class, () -> newTestInstance(illegalNss, Encoding.URL_ENCODED));
     }
 
     @Override

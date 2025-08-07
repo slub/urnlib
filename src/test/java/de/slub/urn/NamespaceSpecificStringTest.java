@@ -18,11 +18,11 @@
 package de.slub.urn;
 
 import de.slub.urn.NamespaceSpecificString.Encoding;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static de.slub.urn.NamespaceSpecificString.Encoding.NOT_ENCODED;
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 abstract class NamespaceSpecificStringTest {
 
@@ -36,15 +36,15 @@ abstract class NamespaceSpecificStringTest {
         assertTrue(nss.supports(nss.supportedRFC()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void Empty_namespace_specific_string_throws_exception() throws URNSyntaxError {
+    @Test
+    public void Empty_namespace_specific_string_throws_exception() {
         final String empty = "";
-        newTestInstance(empty, URL_ENCODED);
+        assertThrows(IllegalArgumentException.class, () -> newTestInstance(empty, URL_ENCODED));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void Initializing_Namespace_specific_string_with_null_throws_exception() throws URNSyntaxError {
-        newTestInstance(null, URL_ENCODED);
+    @Test
+    public void Initializing_Namespace_specific_string_with_null_throws_exception() {
+        assertThrows(IllegalArgumentException.class, () -> newTestInstance(null, URL_ENCODED));
     }
 
     @Test
@@ -63,7 +63,7 @@ abstract class NamespaceSpecificStringTest {
     }
 
     @Test
-    public void Copied_NamespaceSpecificString_is_equal_to_orignal() throws URNSyntaxError {
+    public void Copied_NamespaceSpecificString_is_equal_to_original() throws URNSyntaxError {
         final String nss = "a-valid-nss";
         final NamespaceSpecificString nss1 = newTestInstance(nss, URL_ENCODED);
         final NamespaceSpecificString nss2 = newTestInstance(nss1);
@@ -86,14 +86,14 @@ abstract class NamespaceSpecificStringTest {
         assertEquals(nss1.hashCode(), nss2.hashCode());
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void Encoded_Namespace_specific_string_containing_null_throws_exception() throws URNSyntaxError {
-        new NSS_RFC2141("there-is-null-\u0000", URL_ENCODED);
+    @Test
+    public void Encoded_Namespace_specific_string_containing_null_throws_exception() {
+        assertThrows(URNSyntaxError.class, () -> new NSS_RFC2141("there-is-null-\u0000", URL_ENCODED));
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void Raw_Namespace_specific_string_containing_null_throws_exception() throws URNSyntaxError {
-        new NSS_RFC2141("there-is-null-\u0000", NOT_ENCODED);
+    @Test
+    public void Raw_Namespace_specific_string_containing_null_throws_exception() {
+        assertThrows(URNSyntaxError.class, () -> new NSS_RFC2141("there-is-null-\u0000", NOT_ENCODED));
     }
 
     @Test
@@ -107,7 +107,7 @@ abstract class NamespaceSpecificStringTest {
     @Test
     public void Decodes_three_byte_UTF8_encoding() throws URNSyntaxError {
         final NamespaceSpecificString subject = newTestInstance("a123-%e0%a4%8b-456", URL_ENCODED);
-        assertEquals("Expected decoded `DEVANAGARI LETTER VOCALIC R`", "a123-\u090b-456", subject.unencoded());
+        assertEquals("a123-\u090b-456", subject.unencoded(), "Expected decoded `DEVANAGARI LETTER VOCALIC R`");
     }
 
     @Test
@@ -139,7 +139,7 @@ abstract class NamespaceSpecificStringTest {
     @Test
     public void Characters_which_are_not_reserved_but_encoded_get_decoded_regardless() throws URNSyntaxError {
         final NamespaceSpecificString subject = newTestInstance("%c3%84%2c", URL_ENCODED);
-        assertEquals("Expected `%2c` to be decoded into `,`", "Ä,", subject.unencoded());
+        assertEquals("Ä,", subject.unencoded(), "Expected `%2c` to be decoded into `,`");
     }
 
 }

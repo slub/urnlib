@@ -17,9 +17,10 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class URN_2141Test extends URNTest {
 
@@ -34,9 +35,11 @@ public class URN_2141Test extends URNTest {
         return URN.rfc2141().parse(urnLiteral);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void Raises_exception_on_null_arguments() {
-        new URN_2141(null, null);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new URN_2141(null, null));
     }
 
 }

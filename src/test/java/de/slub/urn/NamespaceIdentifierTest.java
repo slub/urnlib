@@ -17,9 +17,9 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
 
@@ -45,9 +45,9 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         assertTrue(nid.supports(nid.supportedRFC()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void Empty_namespace_identifier_throws_exception() throws URNSyntaxError {
-        newTestInstance("");
+    @Test
+    public void Empty_namespace_identifier_throws_exception() {
+        assertThrows(IllegalArgumentException.class, () -> newTestInstance(""));
     }
 
     @Test
@@ -60,14 +60,15 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void Passing_null_string_to_constructor_throws_exception() throws URNSyntaxError {
-        newTestInstance((String) null);
+    @Test
+    public void Passing_null_string_to_constructor_throws_exception() {
+        assertThrows(IllegalArgumentException.class, () -> newTestInstance((String) null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void Passing_null_object_to_constructor_throws_exception() {
-        newTestInstance((T) null);
+        assertThrows(IllegalArgumentException.class, () -> newTestInstance((T) null));
+
     }
 
     @Test
@@ -77,10 +78,10 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         assertEquals(expected, subject.toString());
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void URN_as_namespace_identifier_throws_exception() throws URNSyntaxError {
+    @Test
+    public void URN_as_namespace_identifier_throws_exception() {
         final String badNamespaceIdentifier = "urn";
-        newTestInstance(badNamespaceIdentifier);
+        assertThrows(URNSyntaxError.class, () -> newTestInstance(badNamespaceIdentifier));
     }
 
     @Test
@@ -123,10 +124,10 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         assertEquals(nid1.hashCode(), nid2.hashCode());
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void Identifier_must_not_be_longer_than_32_characters() throws URNSyntaxError {
+    @Test
+    public void Identifier_must_not_be_longer_than_32_characters() {
         final String tooLong = "abcdefghijklmnopqrstuvwxyz-1234567";
-        newTestInstance(tooLong);
+        assertThrows(URNSyntaxError.class, () -> newTestInstance(tooLong));
     }
 
 }

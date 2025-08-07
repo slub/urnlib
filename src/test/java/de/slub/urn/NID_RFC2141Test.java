@@ -17,17 +17,18 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static de.slub.urn.RFC.RFC_2141;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NID_RFC2141Test extends NamespaceIdentifierTest<NID_RFC2141> {
 
-    @Test(expected = URNSyntaxError.class)
-    public void Invalid_char_in_namespace_identifier_throw_exception() throws URNSyntaxError {
+    @Test
+    public void Invalid_char_in_namespace_identifier_throw_exception() {
         final String badNamespaceIdentifier = "-is!bn";
-        newTestInstance(badNamespaceIdentifier);
+        assertThrows(URNSyntaxError.class, () -> newTestInstance(badNamespaceIdentifier));
     }
 
     @Override

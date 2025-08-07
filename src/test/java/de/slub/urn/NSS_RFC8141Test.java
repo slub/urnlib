@@ -19,9 +19,9 @@ package de.slub.urn;
 
 
 import de.slub.urn.NamespaceSpecificString.Encoding;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
 

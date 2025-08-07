@@ -17,12 +17,12 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RFC8141ParserTest extends URNParserTest {
 
@@ -49,8 +49,8 @@ public class RFC8141ParserTest extends URNParserTest {
         RQF_RFC8141 rqf = urn.getRQFComponents();
 
         Map<String, String> resolutionParameters = rqf.resolutionParameters();
-        assertTrue("r-component should contain key", resolutionParameters.containsKey("CCResolve:cc"));
-        assertEquals("r-component key not as expected", "uk", resolutionParameters.get("CCResolve:cc"));
+        assertTrue(resolutionParameters.containsKey("CCResolve:cc"), "r-component should contain key");
+        assertEquals("uk", resolutionParameters.get("CCResolve:cc"), "r-component key not as expected");
     }
 
     /**
@@ -63,8 +63,8 @@ public class RFC8141ParserTest extends URNParserTest {
         RQF_RFC8141 rqf = urn.getRQFComponents();
 
         Map<String, String> resolutionParameters = rqf.resolutionParameters();
-        assertTrue("r-component should contain key", resolutionParameters.containsKey("Foo"));
-        assertEquals("r-component key not as expected", "bar", resolutionParameters.get("Foo"));
+        assertTrue(resolutionParameters.containsKey("Foo"), "r-component should contain key");
+        assertEquals("bar", resolutionParameters.get("Foo"), "r-component key not as expected");
     }
 
     @Test
@@ -83,11 +83,12 @@ public class RFC8141ParserTest extends URNParserTest {
             put("lon", "-104.85");
             put("datetime", "1969-07-21T02:56:15Z");
         }}.entrySet()) {
-            assertTrue(String.format("q-component should have entry for `%s` with value `%s`",
+            assertTrue(queryParameters.containsKey(me.getKey())
+                            && queryParameters.get(me.getKey()).equals(me.getValue()),
+                    String.format("q-component should have entry for `%s` with value `%s`",
                             me.getKey(),
-                            me.getValue()),
-                    queryParameters.containsKey(me.getKey())
-                            && queryParameters.get(me.getKey()).equals(me.getValue()));
+                            me.getValue())
+            );
         }
     }
 
@@ -103,7 +104,7 @@ public class RFC8141ParserTest extends URNParserTest {
         URN_8141 urn = getURNParser()
                 .parse("urn:example:foo-bar-baz-qux#somepart");
         RQF_RFC8141 rqf = urn.getRQFComponents();
-        assertEquals("Missing fragment `somepart`", "somepart", rqf.fragment());
+        assertEquals("somepart", rqf.fragment(), "Missing fragment `somepart`");
     }
 
     @Test
@@ -171,14 +172,14 @@ public class RFC8141ParserTest extends URNParserTest {
         RQF_RFC8141 rqf = urn.getRQFComponents();
 
         Map<String, String> resolutionParameters = rqf.resolutionParameters();
-        assertTrue("r-component should contain key", resolutionParameters.containsKey("CCResolve:cc"));
-        assertEquals("r-component value not as expected", "uk", resolutionParameters.get("CCResolve:cc"));
+        assertTrue(resolutionParameters.containsKey("CCResolve:cc"), "r-component should contain key");
+        assertEquals("uk", resolutionParameters.get("CCResolve:cc"), "r-component value not as expected");
 
         Map<String, String> queryParameters = rqf.queryParameters();
-        assertTrue("q-component should contain key", queryParameters.containsKey("op"));
-        assertEquals("q-component value not as expected", "map", queryParameters.get("op"));
+        assertTrue(queryParameters.containsKey("op"), "q-component should contain key");
+        assertEquals("map", queryParameters.get("op"), "q-component value not as expected");
 
-        assertEquals("Missing fragment `somepart`", "somepart", rqf.fragment());
+        assertEquals("somepart", rqf.fragment(), "Missing fragment `somepart`");
     }
 
     @Test
@@ -188,13 +189,13 @@ public class RFC8141ParserTest extends URNParserTest {
         RQF_RFC8141 rqf = urn.getRQFComponents();
 
         Map<String, String> resolutionParameters = rqf.resolutionParameters();
-        assertTrue("r-component should be empty", resolutionParameters.isEmpty());
+        assertTrue(resolutionParameters.isEmpty(), "r-component should be empty");
 
         Map<String, String> queryParameters = rqf.queryParameters();
-        assertTrue("q-component should contain key", queryParameters.containsKey("op"));
-        assertEquals("q-component value not as expected", "map", queryParameters.get("op"));
+        assertTrue(queryParameters.containsKey("op"), "q-component should contain key");
+        assertEquals("map", queryParameters.get("op"), "q-component value not as expected");
 
-        assertEquals("Missing fragment `somepart`", "somepart", rqf.fragment());
+        assertEquals("somepart", rqf.fragment(), "Missing fragment `somepart`");
     }
 
 }

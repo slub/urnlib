@@ -17,10 +17,10 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static de.slub.urn.RFC.RFC_8141;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NID_RFC8141Test extends NamespaceIdentifierTest<NID_RFC8141> {
 
@@ -40,10 +40,10 @@ public class NID_RFC8141Test extends NamespaceIdentifierTest<NID_RFC8141> {
         return new NID_RFC8141(nid);
     }
 
-    @Test(expected = URNSyntaxError.class)
-    public void Does_not_allow_single_letter_namespace_identifier() throws URNSyntaxError {
+    @Test
+    public void Does_not_allow_single_letter_namespace_identifier() {
         // While RFC 2141 allows single letter NIDs, RFC 8141 syntax rules do not
-        newTestInstance("A");
+        assertThrows(URNSyntaxError.class, () -> newTestInstance("A"));
     }
 
     @Test

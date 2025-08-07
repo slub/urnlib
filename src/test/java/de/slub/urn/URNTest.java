@@ -17,12 +17,12 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class URNTest {
 
@@ -66,9 +66,10 @@ public abstract class URNTest {
 
     @Test
     final public void Equal_URNs_have_the_same_hash_code() throws URNSyntaxError {
-        assertEquals("Hashcode of identical URNs should be equal",
+        assertEquals(
                 getSample("urn:foo:bar").hashCode(),
-                getSample("urn:foo:bar").hashCode());
+                getSample("urn:foo:bar").hashCode(),
+                "Hashcode of identical URNs should be equal");
     }
 
     @Test
@@ -81,7 +82,7 @@ public abstract class URNTest {
         }};
         for (URN urn1 : equivalent) {
             for (URN urn2 : equivalent) {
-                assertEquals(message, urn1, urn2);
+                assertEquals(urn1, urn2, message);
             }
         }
     }
@@ -96,21 +97,27 @@ public abstract class URNTest {
             add("urn:foo:a123%2C456");
         }};
         for (String urn : equivalent) {
-            assertEquals(message, getSample(urn), getSample(urn));
+            assertEquals(getSample(urn), getSample(urn), message);
         }
     }
 
     @Test
     final public void URNs_with_percent_encoding_are_not_equal_to_URNs_without_encoding() throws URNSyntaxError {
         final String message = "URNs with percent encoding should not be equivalent to ones without encoding";
-        assertNotEquals(message, getSample("urn:example:a123%2Cz456"), getSample("urn:example:a123,z456"));
-        assertNotEquals(message, getSample("URN:EXAMPLE:a123%2cz456"), getSample("urn:example:a123,z456"));
+        assertNotEquals(
+                getSample("urn:example:a123%2Cz456"),
+                getSample("urn:example:a123,z456"),
+                message);
+        assertNotEquals(
+                getSample("URN:EXAMPLE:a123%2cz456"),
+                getSample("urn:example:a123,z456"),
+                message);
     }
 
     @Test
     final public void URNs_with_percent_encoding_but_different_case_are_equal_to_each_other() throws URNSyntaxError {
         final String message = "URNs with percent encoding should be equivalent each other";
-        assertEquals(message, getSample("urn:foo:a123%2C456"), getSample("URN:FOO:a123%2c456"));
+        assertEquals(getSample("urn:foo:a123%2C456"), getSample("URN:FOO:a123%2c456"), message);
     }
 
     @Test
@@ -127,7 +134,7 @@ public abstract class URNTest {
         }};
         for (URN urn1 : notEquivalent) {
             for (URN urn2 : equivalent) {
-                assertNotEquals(message, urn1, urn2);
+                assertNotEquals(urn1, urn2, message);
             }
         }
     }
@@ -142,7 +149,7 @@ public abstract class URNTest {
         }};
         URN cyrillicLetterA = getSample("urn:example:%D0%B0123,z456");
         for (URN urn1 : equivalent) {
-            assertNotEquals(message, urn1, cyrillicLetterA);
+            assertNotEquals(urn1, cyrillicLetterA, message);
         }
     }
 

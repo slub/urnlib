@@ -17,9 +17,9 @@
 
 package de.slub.urn;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class URNResolverDemoTest {
 
@@ -37,7 +37,7 @@ public class URNResolverDemoTest {
     private static Map<URN, Set<URI>> URIMAP;
     private        DemoURNResolver    subject;
 
-    @BeforeClass
+    @BeforeAll
     public static void createDemoUriMap() throws URNSyntaxError {
         URI_A = URI.create("http://demo.org/a/1234");
         URI_B = URI.create("http://demo.org/b/5678");
@@ -55,7 +55,7 @@ public class URNResolverDemoTest {
         }});
     }
 
-    @Before
+    @BeforeEach
     public void createDemoResolver() {
         this.subject = new DemoURNResolver(URIMAP);
     }
@@ -63,8 +63,8 @@ public class URNResolverDemoTest {
     @Test
     public void Demonstrate_intended_use_of_resolve_method_returning_a_URL() {
         assertTrue(
-                String.format("%s should resolve to %s", URN_A, URI_A),
-                subject.resolve(URN_A).contains(URI_A));
+                subject.resolve(URN_A).contains(URI_A),
+                String.format("%s should resolve to %s", URN_A, URI_A));
     }
 
     @Test
@@ -72,8 +72,8 @@ public class URNResolverDemoTest {
         Set<URI> urls = subject.resolve(URN_AB);
         int expectedNumberOfUrls = 2;
         assertEquals(
-                String.format("%s should resolve to %d URLs", URN_AB, expectedNumberOfUrls),
-                expectedNumberOfUrls, urls.size());
+                expectedNumberOfUrls, urls.size(),
+                String.format("%s should resolve to %d URLs", URN_AB, expectedNumberOfUrls));
     }
 
     private static class DemoURNResolver implements URNResolver<URI> {

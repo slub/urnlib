@@ -17,12 +17,12 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class URN_8141Test extends URNTest {
 
@@ -37,9 +37,11 @@ public class URN_8141Test extends URNTest {
         return URN.rfc8141().parse(urnLiteral);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void Raises_exception_on_null_arguments() {
-        new URN_8141(null, null, null);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new URN_8141(null, null, null));
     }
 
     @Test
@@ -54,8 +56,8 @@ public class URN_8141Test extends URNTest {
         }};
         for (URN urn1 : equivalent) {
             for (URN urn2 : equivalent) {
-                assertEquals(equalsMessage, urn1, urn2);
-                assertEquals(hashCodeMessage, urn1.hashCode(), urn2.hashCode());
+                assertEquals(urn1, urn2, equalsMessage);
+                assertEquals(urn1.hashCode(), urn2.hashCode(), hashCodeMessage);
             }
         }
     }
@@ -73,7 +75,7 @@ public class URN_8141Test extends URNTest {
             for (URN urn2 : equivalent) {
                 // avoid comparing objects with themselves
                 if (urn1 != urn2) {
-                    assertNotEquals(message, urn1, urn2);
+                    assertNotEquals(urn1, urn2, message);
                 }
             }
         }

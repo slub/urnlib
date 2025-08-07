@@ -17,13 +17,13 @@
 
 package de.slub.urn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RQFRFC8141Test {
 
@@ -50,19 +50,25 @@ public class RQFRFC8141Test {
         assertNotEquals(RQF_RFC8141.NULL, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void Passing_null_as_resolutionParameterMap_throws_exception() {
-        new RQF_RFC8141(null, Collections.emptyMap(), "");
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new RQF_RFC8141(null, Collections.emptyMap(), ""));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void Passing_null_as_queryParameterMap_throws_exception() {
-        new RQF_RFC8141(Collections.emptyMap(), null, "");
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new RQF_RFC8141(Collections.emptyMap(), null, ""));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void Passing_null_as_fragment_throws_exception() {
-        new RQF_RFC8141(Collections.emptyMap(), Collections.emptyMap(), null);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new RQF_RFC8141(Collections.emptyMap(), Collections.emptyMap(), null));
     }
 
 
