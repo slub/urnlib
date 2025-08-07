@@ -31,7 +31,11 @@
 
     <licenses>
         <license>
-            <name>The Apache License, Version 2.0</name>
+            <name>GPL-3.0-or-later</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+        </license>
+        <license>
+            <name>Apache-2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
