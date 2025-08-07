@@ -110,8 +110,8 @@ abstract public class NamespaceSpecificString implements RFCSupport {
 
     private String decode(String s) {
         try {
-            return URLDecoder.decode(s, UTF_8.name());
-        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
+            return URLDecoder.decode(s, UTF_8);
+        } catch (IllegalArgumentException e) {
             // Both Exceptions cannot happen because:
             //  1. the character set is hard-coded and always known
             //  2. the hex encoding has been checked by pattern matching before
