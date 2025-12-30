@@ -2,8 +2,7 @@
 
 ![Build](https://github.com/slub/urnlib/actions/workflows/ci.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/slub/urnlib/badge.svg?branch=main)](https://coveralls.io/github/slub/urnlib?branch=main)
-[![Maven
-Central](https://maven-badges.herokuapp.com/maven-central/de.slub-dresden/urnlib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.slub-dresden/urnlib)
+![Maven Central Version](https://img.shields.io/maven-central/v/de.slub-dresden/urnlib)
 
 
 Java library for representing, parsing and encoding URNs as specified in [RFC 2141] and [RFC 8141].
@@ -51,7 +50,7 @@ The recommended way is by declaring a dependency, for example in your projects P
 <dependency>
   <groupId>de.slub-dresden</groupId>
   <artifactId>urnlib</artifactId>
-  <version>[2.0,2.1)</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 ## Licensing
