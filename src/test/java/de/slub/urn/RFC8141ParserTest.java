@@ -198,4 +198,14 @@ public class RFC8141ParserTest extends URNParserTest {
         assertEquals("somepart", rqf.fragment(), "Missing fragment `somepart`");
     }
 
+    @Test
+    public void Long_URN_is_parsed_without_stack_overflow() throws URNSyntaxError {
+        final String nss = "a".repeat(100_000);
+        assertEquals(nss, getURNParser().parse("urn:example:" + nss).namespaceSpecificString().toString());
+    }
+
+    @Test
+    public void Bare_question_mark_in_NSS_throws_URNSyntaxError() {
+        assertThrows(URNSyntaxError.class, () -> getURNParser().parse("urn:example:a?b"));
+    }
 }
