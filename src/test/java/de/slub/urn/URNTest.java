@@ -20,7 +20,9 @@ package de.slub.urn;
 import org.junit.jupiter.api.Test;
 
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -70,6 +72,16 @@ public abstract class URNTest {
                 getSample("urn:foo:bar").hashCode(),
                 getSample("urn:foo:bar").hashCode(),
                 "Hashcode of identical URNs should be equal");
+    }
+
+    @Test
+    final public void Lexical_equivalent_URNs_have_the_same_hash_code() throws URNSyntaxError {
+        final URN reference = getSample("urn:example:a123,z456");
+        for (URN urn : List.of(getSample("URN:example:a123,z456"), getSample("urn:EXAMPLE:a123,z456"))) {
+            assertEquals(reference, urn);
+            assertEquals(reference.hashCode(), urn.hashCode(), "Hashcode of equal URNs should be equal: " + urn);
+            assertTrue(new HashSet<>(List.of(reference)).contains(urn), "Equal URN should be found in HashSet: " + urn);
+        }
     }
 
     @Test
