@@ -41,21 +41,17 @@ public class RFC8141Parser implements URNParser<URN_8141> {
             throw new IllegalArgumentException("URN cannot be null or empty");
         }
 
-        final String[] parts = urnLiteral.split(":");
-
-        if (parts.length < 3 || !URN.SCHEME.equalsIgnoreCase(parts[0])) {
-            throw syntaxError(RFC.RFC_8141,
-                    String.format("Invalid format `%s` is probably not a URN", urnLiteral));
-        }
-
+        final String[] parts = Parsing.splitNamespaceIdentifier(urnLiteral, RFC.RFC_8141);
         // NID is the first part after "urn:"
-        final NID_RFC8141 nid = new NID_RFC8141(parts[1]);
-
-        // assemble rest of the parts for NSS parsing
-        final String schemeSpecificPart = urnLiteral.substring(urnLiteral.indexOf(parts[1]) + parts[1].length() + 1);
-
+        final NID_RFC8141 nid = new NID_RFC8141(parts[0]);
+        // rest of the literal holds NSS and optional RQF components
+        final String schemeSpecificPart = parts[1];
         // copy NSS part by cutting out RQF components from NSS
         final String nssString = substringUntilAny(schemeSpecificPart, "?+", "?=", "#");
+        if (nssString.isEmpty()) {
+            throw syntaxError(RFC.RFC_8141,
+                    String.format("Empty Namespace Specific String in `%s`", urnLiteral));
+        }
         final NSS_RFC8141 nss = new NSS_RFC8141(nssString, URL_ENCODED);
 
         final String rqfComponentsString = schemeSpecificPart.substring(nssString.length());
