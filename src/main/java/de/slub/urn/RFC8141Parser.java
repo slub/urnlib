@@ -18,8 +18,6 @@
 package de.slub.urn;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 import static de.slub.urn.URNSyntaxError.syntaxError;
@@ -46,16 +44,22 @@ public class RFC8141Parser implements URNParser<URN_8141> {
         final NID_RFC8141 nid = new NID_RFC8141(parts[0]);
         // rest of the literal holds NSS and optional RQF components
         final String schemeSpecificPart = parts[1];
-        // copy NSS part by cutting out RQF components from NSS
-        final String nssString = substringUntilAny(schemeSpecificPart, "?+", "?=", "#");
+        // NSS = pchar *(pchar / "/") contains neither "?" nor "#", so the first of these starts the RQF components
+        int nssEnd = schemeSpecificPart.length();
+        for (int i = 0; i < schemeSpecificPart.length(); i++) {
+            final char c = schemeSpecificPart.charAt(i);
+            if (c == '?' || c == '#') {
+                nssEnd = i;
+                break;
+            }
+        }
+        final String nssString = schemeSpecificPart.substring(0, nssEnd);
         if (nssString.isEmpty()) {
             throw syntaxError(RFC.RFC_8141,
                     String.format("Empty Namespace Specific String in `%s`", urnLiteral));
         }
         final NSS_RFC8141 nss = new NSS_RFC8141(nssString, URL_ENCODED);
-
-        final String rqfComponentsString = schemeSpecificPart.substring(nssString.length());
-        final RQF_RFC8141 rqfComponents = parseRQFComponents(rqfComponentsString);
+        final RQF_RFC8141 rqfComponents = RQF_RFC8141.parse(schemeSpecificPart.substring(nssEnd));
 
         return new URN_8141(nid, nss, rqfComponents);
     }
@@ -69,45 +73,6 @@ public class RFC8141Parser implements URNParser<URN_8141> {
             throw new IllegalArgumentException("URI cannot be null");
         }
         return parse(uri.toASCIIString());
-    }
-
-    private RQF_RFC8141 parseRQFComponents(String rqfComponents) {
-        final String rComponent = substringUntilAny(substringFrom(rqfComponents, "?+"), "?=", "#");
-        final String qComponent = substringUntilAny(substringFrom(rqfComponents, "?="), "#");
-        final String fComponent = substringFrom(rqfComponents, "#");
-        return new RQF_RFC8141(parseParameters(rComponent), parseParameters(qComponent), fComponent);
-    }
-
-    private String substringFrom(String str, String startDelimiter) {
-        final int startIndex = str.indexOf(startDelimiter);
-        if (startIndex < 0) {
-            return ""; // Default to empty string if no occurrence of start delimiter is found.
-        }
-        return str.substring(startIndex + startDelimiter.length());
-    }
-
-    private String substringUntilAny(String str, String... endDelimiters) {
-        int endIndex = str.length(); // Default to whole string if no occurrence of end delimiter is found.
-        for (String endDelimiter : endDelimiters) {
-            int currentEnd = str.indexOf(endDelimiter);
-            if (currentEnd >= 0 && currentEnd < endIndex) {
-                endIndex = currentEnd;
-            }
-        }
-        return str.substring(0, endIndex);
-    }
-
-    private Map<String, String> parseParameters(String component) {
-        final Map<String, String> parameters = new HashMap<>();
-        if (!component.isEmpty()) {
-            for (String rComponent : component.split("&")) {
-                final String[] kv = rComponent.split("=");
-                final String key = kv[0];
-                final String val = (kv.length == 2) ? kv[1] : "";
-                parameters.put(key, val);
-            }
-        }
-        return parameters;
     }
 
 }
