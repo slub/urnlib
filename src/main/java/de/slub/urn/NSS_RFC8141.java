@@ -32,9 +32,6 @@ package de.slub.urn;
  */
 public final class NSS_RFC8141 extends NamespaceSpecificString {
 
-    // RFC 3986: sub-delims plus ":" and "@", which together with unreserved make up pchar
-    private static final String PCHAR_SYMBOLS = "-._~!$&'()*+,;=:@";
-
     /**
      * Creates a new {@code NamespaceSpecificString} instance according to RFC 8141.
      *
@@ -65,19 +62,7 @@ public final class NSS_RFC8141 extends NamespaceSpecificString {
     protected boolean isValidURLEncodedNamespaceSpecificString(String encoded) {
         // NSS = pchar *(pchar / "/")
         return !encoded.startsWith("/")
-                && PercentEncoding.isValid(encoded, c -> c == '/' || isPchar(c), true);
-    }
-
-    /**
-     * Check whether a character is a literal {@code pchar} (RFC 3986, section 3.3), i.e. unreserved, a sub-delim,
-     * colon or at sign. Percent-encoded octets are not covered by this check.
-     *
-     * @param c The character
-     * @return True if the character may appear literally as {@code pchar}
-     */
-    static boolean isPchar(int c) {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-                || PCHAR_SYMBOLS.indexOf(c) >= 0;
+                && PercentEncoding.isValid(encoded, c -> c == '/' || Parsing.isPchar(c), true);
     }
 
     /**

@@ -72,7 +72,7 @@ public final class RQF_RFC8141 {
                     "r-component `%s` must not contain `?=`, which would start the q-component", resolutionComponent));
         }
         // f-component = fragment = *( pchar / "/" / "?" ), see RFC 3986, 3.5
-        if (!RQComponent.isValidComponentContent(fragment)) {
+        if (!Parsing.isValidRqfComponentContent(fragment)) {
             throw syntaxError(RFC.RFC_8141, String.format("Not allowed characters in fragment `%s`", fragment));
         }
         this.resolutionComponent = resolutionComponent;

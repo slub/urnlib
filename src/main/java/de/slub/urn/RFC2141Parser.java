@@ -34,11 +34,7 @@ public class RFC2141Parser implements URNParser<URN_2141> {
      */
     @Override
     public URN_2141 parse(String str) throws URNSyntaxError {
-        if ((str == null) || (str.isEmpty())) {
-            throw new IllegalArgumentException("URN cannot be null or empty");
-        }
-
-        final String[] parts = Parsing.splitNamespaceIdentifier(str, RFC.RFC_2141);
+        final String[] parts = Parsing.splitNamespaceIdentifier(Parsing.requireURNLiteral(str), RFC.RFC_2141);
         return new URN_2141(
                 new NID_RFC2141(parts[0]),
                 new NSS_RFC2141(parts[1], URL_ENCODED));
@@ -49,9 +45,6 @@ public class RFC2141Parser implements URNParser<URN_2141> {
      */
     @Override
     public URN_2141 parse(URI uri) throws URNSyntaxError {
-        if (uri == null) {
-            throw new IllegalArgumentException("URI cannot be null");
-        }
-        return parse(uri.toASCIIString());
+        return parse(Parsing.literalOf(uri));
     }
 }

@@ -118,21 +118,10 @@ public final class RQComponent implements Iterable<RQComponent.Parameter> {
             throw syntaxError(RFC.RFC_8141,
                     String.format("Component `%s` must not start with `/` or `?`", component));
         }
-        if (!isValidComponentContent(component)) {
+        if (!Parsing.isValidRqfComponentContent(component)) {
             throw syntaxError(RFC.RFC_8141,
                     String.format("Not allowed characters in component `%s`", component));
         }
-    }
-
-    /**
-     * Check whether a string only contains characters allowed in r-, q- and f-components, that is
-     * {@code pchar}, {@code "/"} and {@code "?"}, with well-formed percent-encoding.
-     *
-     * @param s The string to check
-     * @return True, if the string is valid
-     */
-    static boolean isValidComponentContent(String s) {
-        return PercentEncoding.isValid(s, c -> c == '/' || c == '?' || NSS_RFC8141.isPchar(c), true);
     }
 
     /**
@@ -361,7 +350,7 @@ public final class RQComponent implements Iterable<RQComponent.Parameter> {
                         String.format("Parameter value `%s` must not contain `&`", value));
             }
             final Parameter parameter = new Parameter(name, value);
-            if (!isValidComponentContent(parameter.toString())) {
+            if (!Parsing.isValidRqfComponentContent(parameter.toString())) {
                 throw syntaxError(RFC.RFC_8141,
                         String.format("Not allowed characters in parameter `%s`", parameter));
             }

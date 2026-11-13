@@ -34,9 +34,6 @@ import static de.slub.urn.RFC.RFC_2141;
  */
 public final class NSS_RFC2141 extends NamespaceSpecificString {
 
-    // <trans> characters without the reserved set (RFC 2141, 2.2 and 2.3)
-    private static final String OTHER_CHARACTERS = "()+,-.:=@;$_!*'";
-
     /**
      * Creates a new {@code NamespaceSpecificString} instance according to RFC 2141.
      *
@@ -66,12 +63,7 @@ public final class NSS_RFC2141 extends NamespaceSpecificString {
     @Override
     protected boolean isValidURLEncodedNamespaceSpecificString(String encoded) {
         // RFC 2141, 2.4: octet 0 should never be used, in either unencoded or %-encoded form
-        return PercentEncoding.isValid(encoded, NSS_RFC2141::isAllowedLiteral, false);
-    }
-
-    private static boolean isAllowedLiteral(int c) {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-                || OTHER_CHARACTERS.indexOf(c) >= 0;
+        return PercentEncoding.isValid(encoded, Parsing::isRfc2141NssLiteral, false);
     }
 
     /**
