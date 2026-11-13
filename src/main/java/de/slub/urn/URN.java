@@ -37,6 +37,12 @@ import java.util.Objects;
 public abstract class URN implements RFCSupport {
 
     /**
+     * Constructor for subclasses.
+     */
+    protected URN() {
+    }
+
+    /**
      * The URI scheme for URNs.
      */
     public static final String SCHEME = "urn";

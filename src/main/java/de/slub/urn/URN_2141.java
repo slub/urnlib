@@ -23,7 +23,6 @@ package de.slub.urn;
  * A new URN instance can be created via the constructor if provided with proper {@link NamespaceIdentifier} and
  * {@link NamespaceSpecificString} instances. For creating URNs from string literals or URIs, use a {@link URNParser}
  * for RFC 2141 which can be obtained via the {@code URN.rfc2141()} method.
- * <p>
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>

@@ -23,7 +23,6 @@ package de.slub.urn;
  * A new URN instance can be created via the constructor if provided with proper {@link NamespaceIdentifier},
  * {@link NamespaceSpecificString} and {@link RQF_RFC8141} instances. For creating URNs from string literals or URIs,
  * use a {@link URNParser} for RFC 8141 which can be obtained via the {@code URN.rfc8141()} method.
- * <p>
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc8141">URN Syntax</a>
@@ -39,6 +38,14 @@ public final class URN_8141 extends URN {
 
     private final RQF_RFC8141 rqfComponents;
 
+    /**
+     * Create a new URN from its parts.
+     *
+     * @param namespaceIdentifier     The Namespace Identifier
+     * @param namespaceSpecificString The Namespace Specific String
+     * @param rqfComponents           The RQF components, use {@link RQF_RFC8141#NULL} if absent
+     * @throws IllegalArgumentException if any of the parameters is null
+     */
     public URN_8141(NID_RFC8141 namespaceIdentifier, NSS_RFC8141 namespaceSpecificString, RQF_RFC8141 rqfComponents) {
         assertNotNull(namespaceIdentifier, "Namespace identifier cannot be null");
         assertNotNull(namespaceSpecificString, "Namespace specific string cannot be null");

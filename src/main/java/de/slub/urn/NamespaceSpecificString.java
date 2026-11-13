@@ -175,7 +175,14 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      * not allowed in URIs.
      */
     public enum Encoding {
-        URL_ENCODED, NOT_ENCODED
+        /**
+         * The string is URL encoded (percent-encoded).
+         */
+        URL_ENCODED,
+        /**
+         * The string is not URL encoded and may contain characters that need encoding.
+         */
+        NOT_ENCODED
     }
 
 }
