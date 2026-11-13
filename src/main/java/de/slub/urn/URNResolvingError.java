@@ -24,9 +24,15 @@ package de.slub.urn;
  */
 public class URNResolvingError extends Exception {
 
+    /**
+     * The URN that could not be resolved, {@code null} if not specified.
+     */
     private URN failedUrn;
 
     /**
+     * Create an exception with a message.
+     *
+     * @param message Exception message
      * @see Exception#Exception(String)
      */
     public URNResolvingError(String message) {
@@ -34,6 +40,10 @@ public class URNResolvingError extends Exception {
     }
 
     /**
+     * Create an exception with a message and a cause.
+     *
+     * @param message Exception message
+     * @param cause   The cause of this error
      * @see Exception#Exception(String, Throwable)
      */
     public URNResolvingError(String message, Throwable cause) {

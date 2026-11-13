@@ -25,7 +25,13 @@ package de.slub.urn;
  * @author Ralf Claussnitzer
  */
 public class URNSyntaxError extends Exception {
+    /**
+     * The type of the identified violation, {@code null} if not specified.
+     */
     private final ErrorTypes error;
+    /**
+     * The violated RFC, {@code null} if not specified.
+     */
     private final RFC        violatedRfc;
 
     /**
@@ -42,6 +48,9 @@ public class URNSyntaxError extends Exception {
     }
 
     /**
+     * Construct a new syntax error exception without error type and violated RFC.
+     *
+     * @param msg Error message
      * @see Exception#Exception(String)
      */
     public URNSyntaxError(String msg) {
@@ -51,6 +60,10 @@ public class URNSyntaxError extends Exception {
     }
 
     /**
+     * Construct a new syntax error exception with a cause, but without error type and violated RFC.
+     *
+     * @param msg Error message
+     * @param t   The cause of this error
      * @see Exception#Exception(String, Throwable)
      */
     public URNSyntaxError(String msg, Throwable t) {
@@ -98,10 +111,20 @@ public class URNSyntaxError extends Exception {
                 rfc);
     }
 
+    /**
+     * Return the type of the identified violation.
+     *
+     * @return The error type, or {@code null} if this error was created without one
+     */
     public ErrorTypes getError() {
         return error;
     }
 
+    /**
+     * Return the RFC that has been violated.
+     *
+     * @return The violated RFC, or {@code null} if this error was created without one
+     */
     public RFC getViolatedRfc() {
         return violatedRfc;
     }
@@ -121,9 +144,22 @@ public class URNSyntaxError extends Exception {
         return sb.toString();
     }
 
+    /**
+     * Types of URN syntax violations, each with a numeric error code and the RFC section that defines the violated
+     * rule.
+     */
     public enum ErrorTypes {
+        /**
+         * The Namespace Identifier is reserved and must not be used.
+         */
         RESERVED(10, "2.1"),
+        /**
+         * The URN or one of its parts is syntactically invalid.
+         */
         SYNTAX_ERROR(15, ""),
+        /**
+         * The Namespace Identifier exceeds the maximum length.
+         */
         LENGTH_ERROR(20, "2");
 
         private final int    code;
@@ -134,10 +170,20 @@ public class URNSyntaxError extends Exception {
             this.violatedRfcSection = violatedRfcSection;
         }
 
+        /**
+         * Return the numeric error code.
+         *
+         * @return Error code
+         */
         public int getCode() {
             return code;
         }
 
+        /**
+         * Return the section of the RFC that defines the violated rule.
+         *
+         * @return RFC section number, or an empty string if no specific section applies
+         */
         public String getViolatedRfcSection() {
             return violatedRfcSection;
         }

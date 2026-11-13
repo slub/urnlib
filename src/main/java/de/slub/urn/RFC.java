@@ -20,7 +20,13 @@ package de.slub.urn;
  * Represents a supported RFC.
  */
 public enum RFC {
+    /**
+     * RFC 2141, URN Syntax (May 1997).
+     */
     RFC_2141("https://tools.ietf.org/html/rfc2141"),
+    /**
+     * RFC 8141, Uniform Resource Names (April 2017), superseding RFC 2141.
+     */
     RFC_8141("https://tools.ietf.org/html/rfc8141");
 
     private final String url;
