@@ -55,12 +55,11 @@ The recommended way is by declaring a dependency, for example in your projects P
 ```
 ## Licensing
 
-The **source code** is under [GNU GENERAL PUBLIC LICENSE, Version 3] (or later) as stated in the source file headers. So if you want to use the source code or a changed version, the source code and the source code using it is automatically licensed under this license.
+urnlib is licensed under the [GNU Lesser General Public License, Version 3] (or later), as stated in the source file headers. See [COPYING.LESSER](COPYING.LESSER) and [COPYING](COPYING) for the full license texts.
 
-The **binaries** (JAR artifacts) however are licensed under [The Apache License, Version 2.0] and can be used in commercial products without any licensing changes to that product.
+You can use the library (e.g. the JAR artifact) in any project, open source or proprietary, under any license. If you distribute a modified version of urnlib itself, you have to make the source code of your modifications available under the same license.
 
 [RFC 2141]: https://tools.ietf.org/html/rfc2141
 [RFC 8141]: https://tools.ietf.org/html/rfc8141
 [GitHub Releases download section]: https://github.com/slub/urnlib/releases
-[GNU GENERAL PUBLIC LICENSE, Version 3]: https://www.gnu.org/licenses/gpl-3.0.html
-[The Apache License, Version 2.0]: http://www.apache.org/licenses/LICENSE-2.0.txt
+[GNU Lesser General Public License, Version 3]: https://www.gnu.org/licenses/lgpl-3.0.html
