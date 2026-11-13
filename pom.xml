@@ -150,6 +150,7 @@
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <releaseProfiles>release</releaseProfiles>
                 </configuration>
             </plugin>
         </plugins>
@@ -165,14 +166,6 @@
                     <value>true</value>
                 </property>
             </activation>
-
-            <distributionManagement>
-                <repository>
-                    <id>sonatype</id>
-                    <name>Sonatype Central</name>
-                    <url>https://central.sonatype.com/maven2</url>
-                </repository>
-            </distributionManagement>
 
             <build>
                 <plugins>
