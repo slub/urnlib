@@ -171,7 +171,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      * Represents the state of encoding for a string literal.
      * <p>
      * {@link Encoding#URL_ENCODED} means that a string is URL encoded.
-     * {@link Encoding#NOT_ENCODED} means that a string is <b>not</b> URL encoded and might contain characters that
+     * {@link Encoding#NOT_ENCODED} means that a string is <b>not</b> URL encoded and might contain characters that are
      * not allowed in URIs.
      */
     public enum Encoding {
