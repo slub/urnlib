@@ -17,8 +17,6 @@
 
 package de.slub.urn;
 
-import java.util.regex.Pattern;
-
 import static de.slub.urn.RFC.RFC_2141;
 
 /**
@@ -35,8 +33,6 @@ import static de.slub.urn.RFC.RFC_2141;
  * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
  */
 public final class NSS_RFC2141 extends NamespaceSpecificString {
-
-    private static final Pattern allowedCharacters = Pattern.compile("^([0-9a-zA-Z()+,-.:=@;$_!*']|(%[0-9a-fA-F]{2}))+$");
 
     /**
      * Creates a new {@code NamespaceSpecificString} instance according to RFC 2141.
@@ -66,7 +62,8 @@ public final class NSS_RFC2141 extends NamespaceSpecificString {
      */
     @Override
     protected boolean isValidURLEncodedNamespaceSpecificString(String encoded) {
-        return allowedCharacters.matcher(encoded).matches();
+        // RFC 2141, 2.4: octet 0 should never be used, in either unencoded or %-encoded form
+        return PercentEncoding.isValid(encoded, Parsing::isRfc2141NssLiteral, false);
     }
 
     /**

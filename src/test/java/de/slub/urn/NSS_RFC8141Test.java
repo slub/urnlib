@@ -22,6 +22,7 @@ import de.slub.urn.NamespaceSpecificString.Encoding;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
 
@@ -69,5 +70,22 @@ public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
     @Override
     NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxError {
         return new NSS_RFC8141(nss, encoding);
+    }
+
+    @Test
+    public void Bare_question_mark_in_URL_encoded_NSS_throws_URNSyntaxError() {
+        // RFC 8141, 2: NSS = pchar *(pchar / "/")
+        assertThrows(URNSyntaxError.class, () -> newTestInstance("a?b", Encoding.URL_ENCODED));
+    }
+
+    @Test
+    public void Leading_slash_in_URL_encoded_NSS_throws_URNSyntaxError() {
+        assertThrows(URNSyntaxError.class, () -> newTestInstance("/ab", Encoding.URL_ENCODED));
+    }
+
+    @Test
+    public void All_pchar_characters_and_slash_are_allowed_in_URL_encoded_NSS() throws URNSyntaxError {
+        final String nss = "azAZ09-._~!$&'()*+,;=:@/%2F";
+        assertEquals("azAZ09-._~!$&'()*+,;=:@/%2f", newTestInstance(nss, Encoding.URL_ENCODED).toString());
     }
 }

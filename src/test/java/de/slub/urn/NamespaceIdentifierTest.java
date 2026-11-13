@@ -130,4 +130,12 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         assertThrows(URNSyntaxError.class, () -> newTestInstance(tooLong));
     }
 
+    @Test
+    public void NamespaceIdentifiers_differing_in_case_have_same_hash_code() throws URNSyntaxError {
+        final String nid = "A-Valid-Nid";
+        final NamespaceIdentifier nid1 = newTestInstance(nid.toUpperCase());
+        final NamespaceIdentifier nid2 = newTestInstance(nid.toLowerCase());
+        assertEquals(nid1.hashCode(), nid2.hashCode());
+    }
+
 }

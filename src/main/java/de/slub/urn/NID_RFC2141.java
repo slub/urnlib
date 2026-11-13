@@ -33,7 +33,7 @@ import static de.slub.urn.RFC.RFC_2141;
  */
 public final class NID_RFC2141 extends NamespaceIdentifier {
 
-    private static final Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z]?[0-9a-zA-Z-]{0,31}$");
+    private static final Pattern allowedNID = Pattern.compile("^[0-9a-zA-Z][0-9a-zA-Z-]{0,31}$");
 
     /**
      * Creates a new {@link NID_RFC2141} instance.

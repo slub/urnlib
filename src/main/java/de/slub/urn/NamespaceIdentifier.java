@@ -17,6 +17,8 @@
 
 package de.slub.urn;
 
+import java.util.Locale;
+
 import static de.slub.urn.URN.SCHEME;
 import static de.slub.urn.URNSyntaxError.*;
 
@@ -78,13 +80,14 @@ abstract public class NamespaceIdentifier implements RFCSupport {
     abstract protected String validateNamespaceIdentifier(String nid);
 
     /**
-     * Calculates hash code based on the string representation of this namespace identifier.
+     * Calculates hash code based on the case-insensitive string representation of this namespace identifier.
      *
      * @return The hash code for this namespace identifier instance.
      */
     @Override
     public int hashCode() {
-        return nid.hashCode();
+        // NIDs are ASCII-only and compared case-insensitively, so hash the lower-case form
+        return nid.toLowerCase(Locale.ROOT).hashCode();
     }
 
     /**

@@ -20,7 +20,9 @@ package de.slub.urn;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -196,6 +198,82 @@ public class RFC8141ParserTest extends URNParserTest {
         assertEquals("map", queryParameters.get("op"), "q-component value not as expected");
 
         assertEquals("somepart", rqf.fragment(), "Missing fragment `somepart`");
+    }
+
+    @Test
+    public void Long_URN_is_parsed_without_stack_overflow() throws URNSyntaxError {
+        final String nss = "a".repeat(100_000);
+        assertEquals(nss, getURNParser().parse("urn:example:" + nss).namespaceSpecificString().toString());
+    }
+
+    @Test
+    public void Bare_question_mark_in_NSS_throws_URNSyntaxError() {
+        assertThrows(URNSyntaxError.class, () -> getURNParser().parse("urn:example:a?b"));
+    }
+
+    @Test
+    public void Parsing_and_serializing_RFC_examples_round_trips() throws URNSyntaxError {
+        for (String urn : new String[]{
+                "urn:example:foo-bar-baz-qux?+CCResolve:cc=uk",
+                "urn:example:weather?=op=map&lat=39.56&lon=-104.85&datetime=1969-07-21T02:56:15Z",
+                "urn:example:1/406/47452/2"}) {
+            assertEquals(urn, getURNParser().parse(urn).toString());
+        }
+    }
+
+    @Test
+    public void Parameter_order_is_kept_in_string_representation() throws URNSyntaxError {
+        String str = "urn:ex:x?=zeta=1&alpha=2&mid=3&bb=4&aa=5";
+        assertEquals(str, getURNParser().parse(str).toString());
+    }
+
+    @Test
+    public void Query_parameter_value_may_contain_equals_sign() throws URNSyntaxError {
+        URN_8141 urn = getURNParser().parse("urn:ex:x?=a=b=c");
+        assertEquals(Optional.of("b=c"), urn.getRQFComponents().queryComponent().firstValue("a"));
+        assertEquals("b=c", urn.getRQFComponents().queryParameters().get("a"));
+    }
+
+    @Test
+    public void Duplicate_query_parameters_are_kept() throws URNSyntaxError {
+        URN_8141 urn = getURNParser().parse("urn:ex:x?=a=1&a=2");
+        assertEquals(List.of("1", "2"), urn.getRQFComponents().queryComponent().values("a"));
+    }
+
+    @Test
+    public void Delimiters_inside_fragment_are_fragment_data() throws URNSyntaxError {
+        RQF_RFC8141 rqf = getURNParser().parse("urn:ex:x#frag?=k=v").getRQFComponents();
+        assertEquals("frag?=k=v", rqf.fragment());
+        assertTrue(rqf.queryComponent().isEmpty());
+    }
+
+    @Test
+    public void R_component_delimiter_inside_q_component_is_q_component_data() throws URNSyntaxError {
+        // q-component ends only with "#" (RFC 8141, 2.3.2)
+        RQF_RFC8141 rqf = getURNParser().parse("urn:ex:x?=k=v?+r=1").getRQFComponents();
+        assertTrue(rqf.resolutionComponent().isEmpty());
+        assertEquals(Optional.of("v?+r=1"), rqf.queryComponent().firstValue("k"));
+    }
+
+    @Test
+    public void Invalid_characters_in_RQF_components_throw_URNSyntaxError() {
+        for (String urn : new String[]{"urn:ex:x?=a b", "urn:ex:x?+a<b", "urn:ex:x#f g", "urn:ex:x?=a%zz"}) {
+            assertThrows(URNSyntaxError.class, () -> getURNParser().parse(urn), urn);
+        }
+    }
+
+    @Test
+    public void Built_URN_equals_parsed_URN_including_RQF_components() throws URNSyntaxError {
+        URN_8141 built = new URN_8141(
+                new NID_RFC8141("example"),
+                new NSS_RFC8141("weather", NamespaceSpecificString.Encoding.URL_ENCODED),
+                new RQF_RFC8141(
+                        RQComponent.EMPTY,
+                        RQComponent.builder().add("op", "map").add("lat", "39.56").build(),
+                        ""));
+        URN_8141 parsed = getURNParser().parse(built.toString());
+        assertEquals("urn:example:weather?=op=map&lat=39.56", built.toString());
+        assertEquals(built.getRQFComponents(), parsed.getRQFComponents());
     }
 
 }

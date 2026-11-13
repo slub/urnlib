@@ -20,6 +20,7 @@ package de.slub.urn;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class URNSyntaxErrorTest {
 
@@ -49,6 +50,25 @@ public class URNSyntaxErrorTest {
     public void Stores_error_code() {
         URNSyntaxError subject = URNSyntaxError.syntaxError(RFC.RFC_2141, "bla");
         assertEquals(URNSyntaxError.ErrorTypes.SYNTAX_ERROR, subject.getError());
+    }
+
+    @Test
+    public void ToString_works_for_message_only_constructor() {
+        URNSyntaxError subject = new URNSyntaxError("The Message");
+        assertEquals(URNSyntaxError.class.getName() + ": The Message", subject.toString());
+    }
+
+    @Test
+    public void ToString_works_for_message_and_cause_constructor() {
+        URNSyntaxError subject = new URNSyntaxError("The Message", new Exception("The Cause"));
+        assertEquals(URNSyntaxError.class.getName() + ": The Message", subject.toString());
+    }
+
+    @Test
+    public void ToString_includes_violated_RFC_for_typed_errors() {
+        String str = URNSyntaxError.syntaxError(RFC.RFC_8141, "bla").toString();
+        assertTrue(str.contains("RFC_8141"), str);
+        assertTrue(str.contains(RFC.RFC_8141.url().toString()), str);
     }
 
 }

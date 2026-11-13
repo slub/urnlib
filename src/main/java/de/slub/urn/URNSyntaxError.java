@@ -25,8 +25,8 @@ package de.slub.urn;
  * @author Ralf Claussnitzer
  */
 public class URNSyntaxError extends Exception {
-    private ErrorTypes error;
-    private RFC        violatedRfc;
+    private final ErrorTypes error;
+    private final RFC        violatedRfc;
 
     /**
      * Construct a new syntax error exception.
@@ -46,6 +46,8 @@ public class URNSyntaxError extends Exception {
      */
     public URNSyntaxError(String msg) {
         super(msg);
+        this.error = null;
+        this.violatedRfc = null;
     }
 
     /**
@@ -53,6 +55,8 @@ public class URNSyntaxError extends Exception {
      */
     public URNSyntaxError(String msg, Throwable t) {
         super(msg, t);
+        this.error = null;
+        this.violatedRfc = null;
     }
 
     /**
@@ -104,6 +108,9 @@ public class URNSyntaxError extends Exception {
 
     @Override
     public String toString() {
+        if (error == null || violatedRfc == null) {
+            return super.toString();
+        }
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s [Error %3d]\n\nThis is probably a violation of %s",
                 getMessage(), error.getCode(), violatedRfc.name()));
