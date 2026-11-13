@@ -1,1 +1,78 @@
+# Build output
 target/
+
+# -----------------------------------------------------------------------------
+# Editor, IDE and operating system files
+#
+# Ignoring these is really the responsibility of each developer, e.g. via a
+# global ignore file (git config --global core.excludesFile ~/.gitignore_global).
+# The patterns below are only listed for convenience.
+# -----------------------------------------------------------------------------
+
+# Eclipse
+.settings/
+.project
+.classpath
+.factorypath
+.metadata/
+.apt_generated/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# NetBeans
+nbproject/private/
+nbbuild/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# Visual Studio Code
+.vscode/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+
+# Vim
+*.swp
+*.swo
+Session.vim
+.netrwhist
+tags
+
+# Emacs
+\#*\#
+.#*
+.dir-locals-2.el
+
+# Vim and Emacs backup files
+*~
+
+# Nano
+*.save
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Kate
+.kate-swp
+
+# Zed
+.zed/
+
+# JetBrains Fleet
+.fleet/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
