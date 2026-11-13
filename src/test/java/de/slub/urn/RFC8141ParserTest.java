@@ -97,10 +97,10 @@ public class RFC8141ParserTest extends URNParserTest {
     }
 
     @Test
-    public void Trailing_dash_is_ignored() throws URNSyntaxError {
+    public void Trailing_number_sign_is_an_empty_fragment() throws URNSyntaxError {
         URN_8141 urn = getURNParser().parse("urn:foo:bar#");
-        RQF_RFC8141 rqf = urn.getRQFComponents();
-        assertTrue(rqf.fragment().isEmpty());
+        assertEquals(Optional.of(""), urn.getRQFComponents().fragment());
+        assertEquals("urn:foo:bar#", urn.toString());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class RFC8141ParserTest extends URNParserTest {
         URN_8141 urn = getURNParser()
                 .parse("urn:example:foo-bar-baz-qux#somepart");
         RQF_RFC8141 rqf = urn.getRQFComponents();
-        assertEquals("somepart", rqf.fragment(), "Missing fragment `somepart`");
+        assertEquals(Optional.of("somepart"), rqf.fragment(), "Missing fragment `somepart`");
     }
 
     @Test
@@ -166,7 +166,7 @@ public class RFC8141ParserTest extends URNParserTest {
         String str = "urn:foo:bar#bar";
         URN_8141 urn = getURNParser().parse(str);
         RQF_RFC8141 rqf = urn.getRQFComponents();
-        assertEquals("bar", rqf.fragment());
+        assertEquals(Optional.of("bar"), rqf.fragment());
     }
 
     @Test
@@ -183,23 +183,14 @@ public class RFC8141ParserTest extends URNParserTest {
         assertTrue(queryParameters.containsKey("op"), "q-component should contain key");
         assertEquals("map", queryParameters.get("op"), "q-component value not as expected");
 
-        assertEquals("somepart", rqf.fragment(), "Missing fragment `somepart`");
+        assertEquals(Optional.of("somepart"), rqf.fragment(), "Missing fragment `somepart`");
     }
 
     @Test
-    public void Parses_RQF_components_with_empty_R() throws URNSyntaxError {
-        URN_8141 urn = getURNParser().parse("urn:example:foo-bar-baz-qux?+?=op=map#somepart");
-
-        RQF_RFC8141 rqf = urn.getRQFComponents();
-
-        Map<String, String> resolutionParameters = rqf.resolutionParameters();
-        assertTrue(resolutionParameters.isEmpty(), "r-component should be empty");
-
-        Map<String, String> queryParameters = rqf.queryParameters();
-        assertTrue(queryParameters.containsKey("op"), "q-component should contain key");
-        assertEquals("map", queryParameters.get("op"), "q-component value not as expected");
-
-        assertEquals("somepart", rqf.fragment(), "Missing fragment `somepart`");
+    public void Empty_R_component_throws_URNSyntaxError() {
+        // RFC 8141, 2: r-component = pchar *( pchar / "/" / "?" ), i.e. at least one character
+        assertThrows(URNSyntaxError.class,
+                () -> getURNParser().parse("urn:example:foo-bar-baz-qux?+?=op=map#somepart"));
     }
 
     @Test
@@ -245,7 +236,7 @@ public class RFC8141ParserTest extends URNParserTest {
     @Test
     public void Delimiters_inside_fragment_are_fragment_data() throws URNSyntaxError {
         RQF_RFC8141 rqf = getURNParser().parse("urn:ex:x#frag?=k=v").getRQFComponents();
-        assertEquals("frag?=k=v", rqf.fragment());
+        assertEquals(Optional.of("frag?=k=v"), rqf.fragment());
         assertTrue(rqf.queryComponent().isEmpty());
     }
 
@@ -265,7 +256,7 @@ public class RFC8141ParserTest extends URNParserTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"urn:ex:x?", "urn:ex:x?-a", "urn:ex:x??=a", "urn:ex:x?=a%", "urn:ex:x?+a%2", "urn:ex:x#f%",
-            "urn:ex:x#f%a"})
+            "urn:ex:x#f%a", "urn:ex:x?+", "urn:ex:x?=", "urn:ex:x?+?=q", "urn:ex:x?+r?=", "urn:ex:x?+#f", "urn:ex:x?=#f"})
     public void Malformed_RQF_components_throw_URNSyntaxError(String urn) {
         assertThrows(URNSyntaxError.class, () -> getURNParser().parse(urn));
     }
@@ -273,7 +264,8 @@ public class RFC8141ParserTest extends URNParserTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "urn:example:a:b:c", "urn:example:a%2fb", "urn:example:%c3%a4", "urn:example:1/406/47452/2",
-            "urn:rn:a/b?+r=1?=q=2#f", "urn:example:a?+r?=q#f", "urn:ex:x?+a?", "urn:ex:x?+a#f?+b"})
+            "urn:rn:a/b?+r=1?=q=2#f", "urn:example:a?+r?=q#f", "urn:ex:x?+a?", "urn:ex:x?+a#f?+b", "urn:ex:x#",
+            "urn:ex:x?+r#", "urn:ex:x?=q#"})
     public void Parsing_and_serializing_normalised_URNs_round_trips(String urn) throws URNSyntaxError {
         assertEquals(urn, getURNParser().parse(urn).toString());
     }
@@ -286,7 +278,7 @@ public class RFC8141ParserTest extends URNParserTest {
                 new RQF_RFC8141(
                         RQComponent.EMPTY,
                         RQComponent.builder().add("op", "map").add("lat", "39.56").build(),
-                        ""));
+                        Optional.empty()));
         URN_8141 parsed = getURNParser().parse(built.toString());
         assertEquals("urn:example:weather?=op=map&lat=39.56", built.toString());
         assertEquals(built.getRQFComponents(), parsed.getRQFComponents());

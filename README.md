@@ -23,6 +23,8 @@ import de.slub.urn.URN;
 import de.slub.urn.URNSyntaxError;
 import de.slub.urn.URN_8141;
 
+import java.util.Optional;
+
 import static de.slub.urn.RFC.RFC_8141;
 
 class Demo {
@@ -35,7 +37,7 @@ class Demo {
 
         // Access fragment part of a supposedly RFC 8141 compliant URN
         if (urn2.supports(RFC_8141)) {
-            String fragment = ((URN_8141) urn2).getRQFComponents().fragment();
+            Optional<String> fragment = ((URN_8141) urn2).getRQFComponents().fragment();
         }
     }
 }
