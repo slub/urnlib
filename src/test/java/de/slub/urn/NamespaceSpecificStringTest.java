@@ -142,4 +142,54 @@ abstract class NamespaceSpecificStringTest {
         assertEquals("Ä,", subject.unencoded(), "Expected `%2c` to be decoded into `,`");
     }
 
+    @Test
+    public void Long_URL_encoded_namespace_specific_string_is_validated_without_stack_overflow() throws URNSyntaxError {
+        final String nss = "a".repeat(100_000) + "%2c" + "b".repeat(100_000);
+        assertEquals(nss, newTestInstance(nss, URL_ENCODED).toString());
+    }
+
+    @Test
+    public void Long_invalid_URL_encoded_namespace_specific_string_throws_URNSyntaxError() {
+        assertThrows(URNSyntaxError.class, () -> newTestInstance("a".repeat(100_000) + "<", URL_ENCODED));
+    }
+
+    @Test
+    public void Plus_sign_is_not_decoded_as_space() throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance("a+b", URL_ENCODED);
+        assertEquals("a+b", subject.unencoded());
+        assertEquals(subject, newTestInstance(subject.unencoded(), NOT_ENCODED));
+    }
+
+    @Test
+    public void Malformed_UTF8_octets_throw_URNSyntaxError() {
+        for (String nss : new String[]{"%ff", "a%c3", "%c3%28", "%e2%82", "%ed%a0%80"}) {
+            assertThrows(URNSyntaxError.class, () -> newTestInstance(nss, URL_ENCODED), nss);
+        }
+    }
+
+    @Test
+    public void Truncated_percent_encoding_throws_URNSyntaxError() {
+        for (String nss : new String[]{"%", "a%2", "%g0", "%2g"}) {
+            assertThrows(URNSyntaxError.class, () -> newTestInstance(nss, URL_ENCODED), nss);
+        }
+    }
+
+    @Test
+    public void Supplementary_character_gets_encoded_as_four_UTF8_octets() throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance("a\uD83D\uDE00b", NOT_ENCODED);
+        assertEquals("a%f0%9f%98%80b", subject.toString());
+    }
+
+    @Test
+    public void Four_UTF8_octets_get_decoded_into_supplementary_character() throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance("a%F0%9F%98%80b", URL_ENCODED);
+        assertEquals("a\uD83D\uDE00b", subject.unencoded());
+        assertEquals(subject, newTestInstance(subject.unencoded(), NOT_ENCODED));
+    }
+
+    @Test
+    public void Unpaired_surrogate_throws_URNSyntaxError() {
+        assertThrows(URNSyntaxError.class, () -> newTestInstance("a\uD83Db", NOT_ENCODED));
+        assertThrows(URNSyntaxError.class, () -> newTestInstance("a\uDE00", NOT_ENCODED));
+    }
 }

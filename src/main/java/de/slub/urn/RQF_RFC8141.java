@@ -17,62 +17,171 @@
 
 package de.slub.urn;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import static de.slub.urn.URNSyntaxError.syntaxError;
 
 /**
- * Class for representing and parsing optional resolution, query and fragment components
- * and making them accessible via unmodifiable maps.
+ * Represents the optional resolution (r), query (q) and fragment (f) components of a URN according to RFC 8141.
+ * <p>
+ * The r- and q-components are modelled as {@link RQComponent}s, the f-component as a string. All of them are kept
+ * in percent-encoded form. Instances are immutable.
  *
- * @see <a href="https://tools.ietf.org/html/rfc8141#page-12">2.3 Optional Components</a>
+ * @see <a href="https://tools.ietf.org/html/rfc8141#section-2.3">RFC 8141, 2.3 Optional Components</a>
  */
 public final class RQF_RFC8141 {
 
     /**
-     * Instance representing a the absense of RQF components.
+     * Instance representing the absence of RQF components.
      *
      * @see <a href="https://en.wikipedia.org/wiki/Null_object_pattern">Null object pattern</a>
      */
-    public static final RQF_RFC8141 NULL = new RQF_RFC8141(Collections.emptyMap(), Collections.emptyMap(), "");
+    public static final RQF_RFC8141 NULL = createNull();
 
-    private final Map<String, String> resolutionParameters;
-    private final Map<String, String> queryParameters;
-    private final String              fragment;
-    private final String              stringRepresentation;
+    private final RQComponent resolutionComponent;
+    private final RQComponent queryComponent;
+    private final String      fragment;
+    private final String      stringRepresentation;
 
     /**
-     * Construct a RQF component.
+     * Construct RQF components.
+     * <p>
+     * Empty components are omitted from the string representation.
      *
-     * @param resolutionParameters Map of resolution parameters
-     * @param queryParameters      Map of query parameters
-     * @param fragment             The fragment
-     * @throws IllegalArgumentException if any of the parameters are null
+     * @param resolutionComponent The r-component, use {@link RQComponent#EMPTY} if absent
+     * @param queryComponent      The q-component, use {@link RQComponent#EMPTY} if absent
+     * @param fragment            The percent-encoded f-component, use an empty string if absent
+     * @throws IllegalArgumentException if any of the parameters is null
+     * @throws URNSyntaxError           if the r-component contains {@code ?=}, which would end it prematurely,
+     *                                  or the fragment contains characters not allowed by RFC 3986
      */
-    public RQF_RFC8141(
-            Map<String, String> resolutionParameters,
-            Map<String, String> queryParameters,
-            String fragment) {
-        if (queryParameters == null) {
-            throw new IllegalArgumentException("Resolution parameter map cannot be null");
+    public RQF_RFC8141(RQComponent resolutionComponent, RQComponent queryComponent, String fragment)
+            throws URNSyntaxError {
+        if (resolutionComponent == null) {
+            throw new IllegalArgumentException("Resolution component cannot be null");
+        }
+        if (queryComponent == null) {
+            throw new IllegalArgumentException("Query component cannot be null");
         }
         if (fragment == null) {
-            throw new IllegalArgumentException("Query parameter map cannot be null");
-        }
-        if (resolutionParameters == null) {
             throw new IllegalArgumentException("Fragment string cannot be null");
         }
-        this.resolutionParameters = Collections.unmodifiableMap(resolutionParameters);
-        this.queryParameters = Collections.unmodifiableMap(queryParameters);
+        if (resolutionComponent.toString().contains("?=")) {
+            throw syntaxError(RFC.RFC_8141, String.format(
+                    "r-component `%s` must not contain `?=`, which would start the q-component", resolutionComponent));
+        }
+        // f-component = fragment = *( pchar / "/" / "?" ), see RFC 3986, 3.5
+        if (!Parsing.isValidRqfComponentContent(fragment)) {
+            throw syntaxError(RFC.RFC_8141, String.format("Not allowed characters in fragment `%s`", fragment));
+        }
+        this.resolutionComponent = resolutionComponent;
+        this.queryComponent = queryComponent;
         this.fragment = fragment;
         this.stringRepresentation = initialToString();
+    }
+
+    private static RQF_RFC8141 createNull() {
+        try {
+            return new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, "");
+        } catch (URNSyntaxError e) {
+            throw new IllegalStateException("Cannot create empty RQF components", e);
+        }
+    }
+
+    /**
+     * Parse the RQF part of a URN literal, i.e. everything following the Namespace Specific String.
+     * <p>
+     * Components are recognized in the order defined by RFC 8141:
+     * {@code [ "?+" r-component ] [ "?=" q-component ] [ "#" f-component ]}. The f-component starts at the first
+     * {@code #}, the r-component ends at the first {@code ?=}. Within the q- and f-components, {@code ?+} and
+     * {@code ?=} are data.
+     *
+     * @param rqf The RQF part, either empty or starting with {@code ?+}, {@code ?=} or {@code #}
+     * @return The parsed components
+     * @throws URNSyntaxError if the components are not in the defined order or contain invalid characters
+     */
+    static RQF_RFC8141 parse(String rqf) throws URNSyntaxError {
+        if (rqf.isEmpty()) {
+            return NULL;
+        }
+        String rest = rqf;
+        String fragment = "";
+        final int hash = rest.indexOf('#');
+        if (hash >= 0) {
+            fragment = rest.substring(hash + 1);
+            rest = rest.substring(0, hash);
+        }
+        String rComponent = "";
+        if (rest.startsWith("?+")) {
+            final int q = rest.indexOf("?=", 2);
+            rComponent = q < 0 ? rest.substring(2) : rest.substring(2, q);
+            rest = q < 0 ? "" : rest.substring(q);
+        }
+        String qComponent = "";
+        if (rest.startsWith("?=")) {
+            qComponent = rest.substring(2);
+            rest = "";
+        }
+        if (!rest.isEmpty()) {
+            throw syntaxError(RFC.RFC_8141, String.format(
+                    "Invalid optional components `%s`, expected order is `?+` r-component, `?=` q-component, " +
+                            "`#` f-component", rqf));
+        }
+        return new RQF_RFC8141(RQComponent.parse(rComponent), RQComponent.parse(qComponent), fragment);
+    }
+
+    /**
+     * Return the r-component.
+     *
+     * @return The r-component, {@link RQComponent#EMPTY} if absent
+     */
+    public RQComponent resolutionComponent() {
+        return resolutionComponent;
+    }
+
+    /**
+     * Return the q-component.
+     *
+     * @return The q-component, {@link RQComponent#EMPTY} if absent
+     */
+    public RQComponent queryComponent() {
+        return queryComponent;
+    }
+
+    /**
+     * Return a simplified map view of the r-component.
+     *
+     * @return Map of resolution parameters
+     * @see RQComponent#toMap()
+     */
+    public Map<String, String> resolutionParameters() {
+        return resolutionComponent.toMap();
+    }
+
+    /**
+     * Return a simplified map view of the q-component.
+     *
+     * @return Map of query parameters
+     * @see RQComponent#toMap()
+     */
+    public Map<String, String> queryParameters() {
+        return queryComponent.toMap();
+    }
+
+    /**
+     * Return the fragment component string.
+     *
+     * @return Percent-encoded f-component, empty if absent
+     */
+    public String fragment() {
+        return fragment;
     }
 
     /**
      * Checks for equality with a given object.
      * <p>
-     * Two RQF objects are considered equal if their resolution parameters, query parameters and fragment are equal.
+     * Two RQF objects are considered equal if their r-components, q-components and fragments are equal.
      *
      * @param obj Object to check equality with
      * @return True, if the given object is a {@code RQF_RFC8141} instance and is equivalent to this instance.
@@ -80,83 +189,45 @@ public final class RQF_RFC8141 {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof RQF_RFC8141) {
-            RQF_RFC8141 that = (RQF_RFC8141) obj;
-            return this.resolutionParameters.equals(that.resolutionParameters)
-                    && this.queryParameters.equals(that.queryParameters)
+            final RQF_RFC8141 that = (RQF_RFC8141) obj;
+            return this.resolutionComponent.equals(that.resolutionComponent)
+                    && this.queryComponent.equals(that.queryComponent)
                     && this.fragment.equals(that.fragment);
         }
         return false;
     }
 
-    private String initialToString() {
-        StringBuilder sb = new StringBuilder();
-        if (!resolutionParameters.isEmpty()) {
-            sb.append("?+");
-            final List<String> acc = new ArrayList<>();
-            for (Map.Entry<String, String> kv : resolutionParameters.entrySet()) {
-                acc.add(kv.getKey() + "=" + kv.getValue());
-            }
-            sb.append(String.join("&", acc));
-        }
-        if (!queryParameters.isEmpty()) {
-            sb.append("?=");
-            final List<String> acc = new ArrayList<>();
-            for (Map.Entry<String, String> kv : queryParameters.entrySet()) {
-                acc.add(kv.getKey() + "=" + kv.getValue());
-            }
-            sb.append(String.join("&", acc));
-        }
-        if (!fragment.isEmpty()) {
-            sb.append('#').append(fragment);
-        }
-        return sb.toString();
-    }
-
     /**
-     * Calculates hash code based on the string representation of this RQF instance.
+     * Calculates hash code consistent with {@link #equals(Object)}.
      *
-     * @return This namespace specific strings hash code
+     * @return Hash code of this instance
      */
     @Override
     public int hashCode() {
-        return toString().hashCode();
+        return Objects.hash(resolutionComponent, queryComponent, fragment);
     }
 
     /**
-     * Return the request, query and fragment components as a string literal.
+     * Return the r-, q- and f-components in URN syntax, including their introducing sequences.
      *
-     * @return Encoded Namespace Specific String literal
+     * @return RQF string, empty if all components are empty
      */
     @Override
     public String toString() {
         return stringRepresentation;
     }
 
-    /**
-     * Return a map of resolution parameters where the key is a parameter name and the value a parameter value.
-     *
-     * @return Map of resolution parameters
-     */
-    public Map<String, String> resolutionParameters() {
-        return resolutionParameters;
+    private String initialToString() {
+        final StringBuilder sb = new StringBuilder();
+        if (!resolutionComponent.isEmpty()) {
+            sb.append("?+").append(resolutionComponent);
+        }
+        if (!queryComponent.isEmpty()) {
+            sb.append("?=").append(queryComponent);
+        }
+        if (!fragment.isEmpty()) {
+            sb.append('#').append(fragment);
+        }
+        return sb.toString();
     }
-
-    /**
-     * Return a map of query parameters where the key is a parameter name and the value a parameter value.
-     *
-     * @return Map of query parameters
-     */
-    public Map<String, String> queryParameters() {
-        return queryParameters;
-    }
-
-    /**
-     * Return the fragment component string.
-     *
-     * @return Fragment component
-     */
-    public String fragment() {
-        return fragment;
-    }
-
 }

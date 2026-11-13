@@ -46,4 +46,10 @@ public class NSS_RFC2141Test extends NamespaceSpecificStringTest {
     NamespaceSpecificString newTestInstance(String nss, Encoding encoding) throws URNSyntaxError {
         return new NSS_RFC2141(nss, encoding);
     }
+
+    @Test
+    public void Percent_encoded_null_octet_throws_URNSyntaxError() {
+        // RFC 2141, 2.4: octet 0 (0 hex) should NEVER be used, in either unencoded or %-encoded form
+        assertThrows(URNSyntaxError.class, () -> newTestInstance("a%00b", Encoding.URL_ENCODED));
+    }
 }

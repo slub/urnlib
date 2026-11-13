@@ -52,4 +52,14 @@ public class NID_RFC2141Test extends NamespaceIdentifierTest<NID_RFC2141> {
         newTestInstance("A");
     }
 
+    @Test
+    public void Namespace_identifier_starting_with_hyphen_throws_exception() {
+        // RFC 2141, 2: <NID> ::= <let-num> [ 1,31<let-num-hyp> ]
+        assertThrows(URNSyntaxError.class, () -> newTestInstance("-abc"));
+    }
+
+    @Test
+    public void Namespace_identifier_of_32_characters_is_allowed() throws URNSyntaxError {
+        newTestInstance("a" + "-".repeat(31));
+    }
 }

@@ -17,15 +17,9 @@
 
 package de.slub.urn;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.nio.charset.CharacterCodingException;
 
 import static de.slub.urn.URNSyntaxError.syntaxError;
-import static java.lang.Character.forDigit;
-import static java.lang.Character.toLowerCase;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN).
@@ -58,8 +52,13 @@ abstract public class NamespaceSpecificString implements RFCSupport {
                 throw syntaxError(supportedRFC(),
                         String.format("Not allowed characters in Namespace Specific String '%s'", nss));
             }
-            encoded = lowerCaseOctetPairs(nss);
-            raw = decode(encoded);
+            encoded = PercentEncoding.lowerCaseOctets(nss);
+            try {
+                raw = PercentEncoding.decode(encoded);
+            } catch (CharacterCodingException e) {
+                throw syntaxError(supportedRFC(),
+                        String.format("Percent-encoded octets in Namespace Specific String '%s' are not valid UTF-8", nss));
+            }
         } else {
             encoded = encode(nss);
             raw = nss;
@@ -76,28 +75,6 @@ abstract public class NamespaceSpecificString implements RFCSupport {
         this.raw = instanceForCopying.raw;
     }
 
-    private static String lowerCaseOctetPairs(String s) {
-        StringBuilder sb = new StringBuilder(s.length());
-        try (StringReader sr = new StringReader(s)) {
-            int i;
-            while ((i = sr.read()) != -1) {
-                char c = (char) i;
-                if (c == '%') {
-                    sb.append('%')
-                            .append(toLowerCase((char) sr.read()))
-                            .append(toLowerCase((char) sr.read()));
-                } else {
-                    sb.append(c);
-                }
-            }
-        } catch (IOException e) {
-            // IOException thrown by StringReader.read() should not happen when reading a string value.
-            // If so, it's a JDK bug or change of API.
-            throw new IllegalStateException(e);
-        }
-        return sb.toString();
-    }
-
     /**
      * Check if a given URL encoded NSS literal is valid.
      * <p>
@@ -107,20 +84,6 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      * @return True, if the literal is valid according to the RFC.
      */
     protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
-
-    private String decode(String s) {
-        try {
-            return URLDecoder.decode(s, UTF_8);
-        } catch (IllegalArgumentException e) {
-            // Both Exceptions cannot happen because:
-            //  1. the character set is hard-coded and always known
-            //  2. the hex encoding has been checked by pattern matching before
-            //
-            // Should something be wrong with the above mentioned check, throwing
-            // an RuntimeException signals programmer or JDK error.
-            throw new IllegalStateException("Error decoding Namespace Specific String part", e);
-        }
-    }
 
     /**
      * URL Encode all NSS reserved characters of a given string literal.
@@ -132,38 +95,24 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      * @throws URNSyntaxError Thrown if the string contains illegal character `0`.
      */
     private String encode(String s) throws URNSyntaxError {
-        StringBuilder sb = new StringBuilder();
-        for (char c : s.toCharArray()) {
-            if (c == 0) {
-                throw syntaxError(supportedRFC(), "Illegal character `0` found");
-            }
-            if (isReservedCharacter(c)) {
-                appendEncoded(sb, c);
-            } else {
-                sb.append(c);
-            }
+        if (s.indexOf(0) >= 0) {
+            throw syntaxError(supportedRFC(), "Illegal character `0` found");
         }
-        return sb.toString();
+        try {
+            return PercentEncoding.encode(s, NamespaceSpecificString::isReservedCharacter);
+        } catch (CharacterCodingException e) {
+            throw syntaxError(supportedRFC(),
+                    "Namespace Specific String contains an unpaired surrogate character that cannot be encoded as UTF-8");
+        }
     }
 
-    // Encode reserved character set (RFC 2141, 2.3) and explicitly excluded characters (RFC 2141, 2.4)
-    private boolean isReservedCharacter(char c) {
-        return (c > 0x80)
-                || ((c >= 0x01) && (c <= 0x20) || ((c >= 0x7F)) && (c <= 0xFF))
+    // Encode reserved character set (RFC 2141, 2.3) and explicitly excluded characters (RFC 2141, 2.4),
+    // as well as all non-ASCII characters (RFC 2141, 2.2; RFC 8141, 2.2)
+    private static boolean isReservedCharacter(int c) {
+        return (c <= 0x20) || (c >= 0x7F)
                 || c == '%' || c == '/' || c == '?' || c == '#' || c == '<' || c == '"' || c == '&' || c == '\\'
                 || c == '>' || c == '[' || c == ']' || c == '^' || c == '`' || c == '{' || c == '|'
                 || c == '}' || c == '~';
-    }
-
-    // http://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal/21178195#21178195
-    // http://www.utf8-chartable.de/
-    // http://www.ascii-code.com/
-    private void appendEncoded(StringBuilder sb, char c) {
-        for (byte b : String.valueOf(c).getBytes(UTF_8)) {
-            sb.append('%');
-            sb.append(toLowerCase(forDigit((b >> 4) & 0xF, 16)));
-            sb.append(toLowerCase(forDigit((b & 0xF), 16)));
-        }
     }
 
     /**

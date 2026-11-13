@@ -18,6 +18,8 @@
 package de.slub.urn;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.URI;
 
@@ -85,6 +87,32 @@ abstract class URNParserTest {
     public void Can_parse_URN_with_NSS_having_colons() throws URNSyntaxError {
         URN urn = getURNParser().parse("urn:foo:bar:baz");
         assertEquals("bar:baz", urn.namespaceSpecificString().toString());
+    }
+
+    @Test
+    public void Empty_NID_throws_URNSyntaxError() {
+        assertThrows(URNSyntaxError.class, () -> getURNParser().parse("urn::foo"));
+    }
+
+    @Test
+    public void Empty_NSS_throws_URNSyntaxError() {
+        assertThrows(URNSyntaxError.class, () -> getURNParser().parse("urn:foo:"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"ur", "rn", "UR", "Rn"})
+    public void NID_being_a_substring_of_the_scheme_is_parsed_correctly(String nid) throws URNSyntaxError {
+        final URN urn = getURNParser().parse("urn:" + nid + ":abc");
+        assertEquals(nid, urn.namespaceIdentifier().toString(), "Wrong NID");
+        assertEquals("abc", urn.namespaceSpecificString().toString(), "Wrong NSS");
+        assertEquals("urn:" + nid + ":abc", urn.toString(), "Wrong string representation");
+    }
+
+    @Test
+    public void NID_occurring_again_in_NSS_is_parsed_correctly() throws URNSyntaxError {
+        final URN urn = getURNParser().parse("urn:foo:foo:foo");
+        assertEquals("foo", urn.namespaceIdentifier().toString());
+        assertEquals("foo:foo", urn.namespaceSpecificString().toString());
     }
 
 }
