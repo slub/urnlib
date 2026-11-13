@@ -18,6 +18,8 @@
 package de.slub.urn;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.HashMap;
 import java.util.List;
@@ -255,11 +257,25 @@ public class RFC8141ParserTest extends URNParserTest {
         assertEquals(Optional.of("v?+r=1"), rqf.queryComponent().firstValue("k"));
     }
 
-    @Test
-    public void Invalid_characters_in_RQF_components_throw_URNSyntaxError() {
-        for (String urn : new String[]{"urn:ex:x?=a b", "urn:ex:x?+a<b", "urn:ex:x#f g", "urn:ex:x?=a%zz"}) {
-            assertThrows(URNSyntaxError.class, () -> getURNParser().parse(urn), urn);
-        }
+    @ParameterizedTest
+    @ValueSource(strings = {"urn:ex:x?=a b", "urn:ex:x?+a<b", "urn:ex:x#f g", "urn:ex:x?=a%zz"})
+    public void Invalid_characters_in_RQF_components_throw_URNSyntaxError(String urn) {
+        assertThrows(URNSyntaxError.class, () -> getURNParser().parse(urn));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"urn:ex:x?", "urn:ex:x?-a", "urn:ex:x??=a", "urn:ex:x?=a%", "urn:ex:x?+a%2", "urn:ex:x#f%",
+            "urn:ex:x#f%a"})
+    public void Malformed_RQF_components_throw_URNSyntaxError(String urn) {
+        assertThrows(URNSyntaxError.class, () -> getURNParser().parse(urn));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "urn:example:a:b:c", "urn:example:a%2fb", "urn:example:%c3%a4", "urn:example:1/406/47452/2",
+            "urn:rn:a/b?+r=1?=q=2#f", "urn:example:a?+r?=q#f", "urn:ex:x?+a?", "urn:ex:x?+a#f?+b"})
+    public void Parsing_and_serializing_normalised_URNs_round_trips(String urn) throws URNSyntaxError {
+        assertEquals(urn, getURNParser().parse(urn).toString());
     }
 
     @Test
