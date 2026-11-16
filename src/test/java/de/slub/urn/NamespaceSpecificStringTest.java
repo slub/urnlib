@@ -19,6 +19,8 @@ package de.slub.urn;
 
 import de.slub.urn.NamespaceSpecificString.Encoding;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static de.slub.urn.NamespaceSpecificString.Encoding.NOT_ENCODED;
 import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
@@ -60,6 +62,7 @@ abstract class NamespaceSpecificStringTest {
         final NamespaceSpecificString nss1 = newTestInstance(nss, URL_ENCODED);
         final NamespaceSpecificString nss2 = newTestInstance(nss, URL_ENCODED);
         assertEquals(nss1, nss2);
+        assertEquals(nss1.hashCode(), nss2.hashCode());
     }
 
     @Test
@@ -68,6 +71,7 @@ abstract class NamespaceSpecificStringTest {
         final NamespaceSpecificString nss1 = newTestInstance(nss, URL_ENCODED);
         final NamespaceSpecificString nss2 = newTestInstance(nss1);
         assertEquals(nss1, nss2);
+        assertEquals(nss1.hashCode(), nss2.hashCode());
     }
 
     @Test
@@ -108,6 +112,21 @@ abstract class NamespaceSpecificStringTest {
     public void Decodes_three_byte_UTF8_encoding() throws URNSyntaxError {
         final NamespaceSpecificString subject = newTestInstance("a123-%e0%a4%8b-456", URL_ENCODED);
         assertEquals("a123-\u090b-456", subject.unencoded(), "Expected decoded `DEVANAGARI LETTER VOCALIC R`");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "a+b", "a/b", "/ab", "ab/", "100%", "%2f", "a?b", "a#b", "a b", "a:b", "a=b&c", "~-._",
+            "\u00e4\u00f6\u00fc", "\u6f22\u5b57", "a\uD83D\uDE00b",
+            "+/%?# \u00e4\u6f22\uD83D\uDE00"})
+    public void Encoding_and_decoding_round_trips(String unencoded) throws URNSyntaxError {
+        final NamespaceSpecificString encoded = newTestInstance(unencoded, NOT_ENCODED);
+        assertEquals(unencoded, encoded.unencoded(), "Decoded NSS should equal original string");
+
+        final NamespaceSpecificString reparsed = newTestInstance(encoded.toString(), URL_ENCODED);
+        assertEquals(encoded, reparsed, "Re-parsed NSS should equal encoded NSS");
+        assertEquals(encoded.hashCode(), reparsed.hashCode(), "Re-parsed NSS should have the same hash code");
+        assertEquals(unencoded, reparsed.unencoded(), "Re-parsed NSS should decode to original string");
     }
 
     @Test

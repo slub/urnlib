@@ -41,6 +41,12 @@ public class RFC2141ParserTest extends URNParserTest {
         assertEquals("abc", urn.namespaceSpecificString().toString(), "Wrong NSS");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"urn:example:a:b:c", "urn:example:a%2fb", "urn:example:%c3%a4", "urn:example:a,b;c", "urn:rn:abc"})
+    public void Parsing_and_serializing_normalised_URNs_round_trips(String urn) throws URNSyntaxError {
+        assertEquals(urn, getURNParser().parse(urn).toString());
+    }
+
     @Override
     URNParser<URN_2141> getURNParser() {
         return URN.rfc2141();

@@ -49,6 +49,10 @@ public final class NID_RFC8141 extends NamespaceIdentifier {
     }
 
     /**
+     * Create a new {@code NID_RFC8141} instance that is an exact copy of the given instance.
+     *
+     * @param instanceForCopying Base instance for copying
+     * @throws IllegalArgumentException if parameter is null or empty
      * @see NamespaceIdentifier#NamespaceIdentifier(NamespaceIdentifier)
      */
     public NID_RFC8141(NamespaceIdentifier instanceForCopying) {

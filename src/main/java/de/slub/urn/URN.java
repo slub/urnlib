@@ -24,17 +24,23 @@ import java.util.Objects;
 /**
  * Represents the base for Uniform Resource Name (URN) implementations.
  * <p>
- * Every implementation has has a Namespace Identifier and Namespace Specific String component and supports a certain
+ * Every implementation has a Namespace Identifier and Namespace Specific String component and supports a certain
  * {@link RFC}. New instances can be created using an appropriate {@link URNParser} which can be obtained via the
  * {@code rfc2141()} or {@code rfc8141()} methods respectively.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>
- * @see <a href="https://tools.ietf.org/html/rfc8141">URN Syntax (superseeding RFC 2141)</a>
+ * @see <a href="https://tools.ietf.org/html/rfc8141">URN Syntax (superseding RFC 2141)</a>
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
  * @see <a href="http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml">Official IANA Registry of URN Namespaces</a>
  */
 public abstract class URN implements RFCSupport {
+
+    /**
+     * Constructor for subclasses.
+     */
+    protected URN() {
+    }
 
     /**
      * The URI scheme for URNs.

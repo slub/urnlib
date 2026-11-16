@@ -95,6 +95,7 @@ public abstract class URNTest {
         for (URN urn1 : equivalent) {
             for (URN urn2 : equivalent) {
                 assertEquals(urn1, urn2, message);
+                assertEquals(urn1.hashCode(), urn2.hashCode(), "Hashcode of equal URNs should be equal");
             }
         }
     }
@@ -110,6 +111,7 @@ public abstract class URNTest {
         }};
         for (String urn : equivalent) {
             assertEquals(getSample(urn), getSample(urn), message);
+            assertEquals(getSample(urn).hashCode(), getSample(urn).hashCode(), "Hashcode of equal URNs should be equal");
         }
     }
 
@@ -129,7 +131,10 @@ public abstract class URNTest {
     @Test
     final public void URNs_with_percent_encoding_but_different_case_are_equal_to_each_other() throws URNSyntaxError {
         final String message = "URNs with percent encoding should be equivalent each other";
-        assertEquals(getSample("urn:foo:a123%2C456"), getSample("URN:FOO:a123%2c456"), message);
+        final URN upperCase = getSample("urn:foo:a123%2C456");
+        final URN lowerCase = getSample("URN:FOO:a123%2c456");
+        assertEquals(upperCase, lowerCase, message);
+        assertEquals(upperCase.hashCode(), lowerCase.hashCode(), "Hashcode of equal URNs should be equal");
     }
 
     @Test

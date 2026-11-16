@@ -30,6 +30,12 @@ import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 public class RFC2141Parser implements URNParser<URN_2141> {
 
     /**
+     * Create a new parser for RFC 2141 URNs. Consider using {@link URN#rfc2141()} instead.
+     */
+    public RFC2141Parser() {
+    }
+
+    /**
      * @see URNParser#parse(String)
      */
     @Override
