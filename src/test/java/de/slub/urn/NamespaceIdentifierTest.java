@@ -90,6 +90,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance(nid);
         assertEquals(nid1, nid2);
+        assertEquals(nid1.hashCode(), nid2.hashCode());
     }
 
     @Test
@@ -98,6 +99,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         final NamespaceIdentifier nid1 = newTestInstance(nid.toUpperCase());
         final NamespaceIdentifier nid2 = newTestInstance(nid.toLowerCase());
         assertEquals(nid1, nid2);
+        assertEquals(nid1.hashCode(), nid2.hashCode());
     }
 
     @Test
@@ -106,6 +108,7 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         final NamespaceIdentifier nid1 = newTestInstance(nid);
         final NamespaceIdentifier nid2 = newTestInstance(nid1);
         assertEquals(nid1, nid2);
+        assertEquals(nid1.hashCode(), nid2.hashCode());
     }
 
     @Test
