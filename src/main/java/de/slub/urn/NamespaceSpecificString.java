@@ -25,6 +25,11 @@ import static de.slub.urn.URNSyntaxError.syntaxError;
  * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN).
  * <p>
  * {@code NamespaceSpecificString} instances are immutable and comparable by using {@code equals()}.
+ * <p>
+ * A URL encoded literal is kept as given, so that {@code toString()} returns it unchanged. Comparison follows
+ * RFC 8141, section 3: percent-encoded octets are compared case-insensitively and are never decoded. Percent-encoded
+ * octets do not have to form valid UTF-8, e.g. when a namespace carries binary data. Such a string can't be decoded,
+ * see {@link #unencoded()}.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
@@ -33,6 +38,8 @@ import static de.slub.urn.URNSyntaxError.syntaxError;
 abstract public class NamespaceSpecificString implements RFCSupport {
 
     private final String encoded;
+    private final String normalized;
+    // Null if the percent-encoded octets are not valid UTF-8
     private final String raw;
 
     /**
@@ -52,16 +59,20 @@ abstract public class NamespaceSpecificString implements RFCSupport {
                 throw syntaxError(supportedRFC(),
                         String.format("Not allowed characters in Namespace Specific String '%s'", nss));
             }
-            encoded = PercentEncoding.lowerCaseOctets(nss);
-            try {
-                raw = PercentEncoding.decode(encoded);
-            } catch (CharacterCodingException e) {
-                throw syntaxError(supportedRFC(),
-                        String.format("Percent-encoded octets in Namespace Specific String '%s' are not valid UTF-8", nss));
-            }
+            encoded = nss;
+            raw = decodeOrNull(nss);
         } else {
             encoded = encode(nss);
             raw = nss;
+        }
+        normalized = PercentEncoding.upperCaseOctets(encoded);
+    }
+
+    private static String decodeOrNull(String encoded) {
+        try {
+            return PercentEncoding.decode(encoded);
+        } catch (CharacterCodingException e) {
+            return null;
         }
     }
 
@@ -72,6 +83,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      */
     public NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
         this.encoded = instanceForCopying.encoded;
+        this.normalized = instanceForCopying.normalized;
         this.raw = instanceForCopying.raw;
     }
 
@@ -118,22 +130,39 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     /**
      * Return the decoded Namespace Specific String literal.
      * <p>
-     * Use {@link NamespaceSpecificString#toString()} to get an encoded string representation.
+     * Use {@link NamespaceSpecificString#toString()} to get an encoded string representation. Use
+     * {@link #isDecodable()} to check beforehand whether decoding is possible.
      *
      * @return Decoded Namespace Specific String literal
+     * @throws IllegalStateException if the percent-encoded octets are not valid UTF-8 and therefore cannot be decoded
+     *                               without loss
      */
     public String unencoded() {
+        if (raw == null) {
+            throw new IllegalStateException(String.format(
+                    "Percent-encoded octets in Namespace Specific String '%s' are not valid UTF-8", encoded));
+        }
         return this.raw;
     }
 
     /**
-     * Calculates hash code based on the URL-encoded string representation of this namespace specific string.
+     * Tell whether the percent-encoded octets of this Namespace Specific String are valid UTF-8, so that
+     * {@link #unencoded()} can decode it.
+     *
+     * @return True, if {@link #unencoded()} will not throw
+     */
+    public boolean isDecodable() {
+        return raw != null;
+    }
+
+    /**
+     * Calculates hash code based on the case-normalized URL-encoded representation of this namespace specific string.
      *
      * @return This namespace specific strings hash code
      */
     @Override
     public int hashCode() {
-        return encoded.hashCode();
+        return normalized.hashCode();
     }
 
     /**
@@ -141,16 +170,19 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      *
      * @param obj Object to check equality with
      * @return True, if the given object is a {@code NamespaceSpecificString} instance and is lexically equivalent to
-     * this instance.
+     * this instance, i.e. both are equal after upper-casing the hex digits of percent-encoded octets.
      */
     @Override
     public boolean equals(Object obj) {
         return obj instanceof NamespaceSpecificString
-                && this.encoded.equals(((NamespaceSpecificString) obj).encoded);
+                && this.normalized.equals(((NamespaceSpecificString) obj).normalized);
     }
 
     /**
      * Return the encoded Namespace Specific String literal.
+     * <p>
+     * A URL encoded literal is returned exactly as it was given, including the case of hex digits in percent-encoded
+     * octets.
      *
      * @return Encoded Namespace Specific String literal
      */

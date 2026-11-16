@@ -64,19 +64,20 @@ final class PercentEncoding {
     }
 
     /**
-     * Lower-case the hex digits of all percent-encoded octets.
+     * Upper-case the hex digits of all percent-encoded octets, as required for URN-equivalence by RFC 8141,
+     * section 3.
      *
      * @param s A string with well-formed percent-encoded octets
-     * @return The string with lower-cased percent-encoded octets
+     * @return The string with upper-cased percent-encoded octets
      */
-    static String lowerCaseOctets(String s) {
+    static String upperCaseOctets(String s) {
         final StringBuilder sb = new StringBuilder(s.length());
         for (int i = 0; i < s.length(); i++) {
             final char c = s.charAt(i);
             sb.append(c);
             if (c == '%' && i + 2 < s.length()) {
-                sb.append(Character.toLowerCase(s.charAt(i + 1)))
-                        .append(Character.toLowerCase(s.charAt(i + 2)));
+                sb.append(Character.toUpperCase(s.charAt(i + 1)))
+                        .append(Character.toUpperCase(s.charAt(i + 2)));
                 i += 2;
             }
         }

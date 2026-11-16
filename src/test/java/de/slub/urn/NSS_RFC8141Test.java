@@ -86,6 +86,6 @@ public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
     @Test
     public void All_pchar_characters_and_slash_are_allowed_in_URL_encoded_NSS() throws URNSyntaxError {
         final String nss = "azAZ09-._~!$&'()*+,;=:@/%2F";
-        assertEquals("azAZ09-._~!$&'()*+,;=:@/%2f", newTestInstance(nss, Encoding.URL_ENCODED).toString());
+        assertEquals(nss, newTestInstance(nss, Encoding.URL_ENCODED).toString());
     }
 }

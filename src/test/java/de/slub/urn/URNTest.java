@@ -170,4 +170,10 @@ public abstract class URNTest {
         }
     }
 
+    @Test
+    public void URN_with_percent_encoded_octets_round_trips_unchanged() throws URNSyntaxError {
+        final String literal = "urn:example:hash-%FFFF%c3%A4";
+        assertEquals(literal, getSample(literal).toString());
+    }
+
 }

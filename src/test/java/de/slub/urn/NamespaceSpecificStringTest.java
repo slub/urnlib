@@ -179,11 +179,58 @@ abstract class NamespaceSpecificStringTest {
         assertEquals(subject, newTestInstance(subject.unencoded(), NOT_ENCODED));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"%ff", "%FFFF", "a%c3", "%c3%28", "%e2%82", "%ed%a0%80"})
+    public void Percent_encoded_octets_that_are_not_UTF8_are_accepted(String nss) throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance(nss, URL_ENCODED);
+        assertEquals(nss, subject.toString());
+        assertFalse(subject.isDecodable());
+    }
+
     @Test
-    public void Malformed_UTF8_octets_throw_URNSyntaxError() {
-        for (String nss : new String[]{"%ff", "a%c3", "%c3%28", "%e2%82", "%ed%a0%80"}) {
-            assertThrows(URNSyntaxError.class, () -> newTestInstance(nss, URL_ENCODED), nss);
-        }
+    public void Decoding_octets_that_are_not_UTF8_throws_IllegalStateException() throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance("a%ff", URL_ENCODED);
+        assertThrows(IllegalStateException.class, subject::unencoded);
+    }
+
+    @Test
+    public void Copy_of_NamespaceSpecificString_that_is_not_UTF8_is_not_decodable() throws URNSyntaxError {
+        final NamespaceSpecificString copy = newTestInstance(newTestInstance("a%ff", URL_ENCODED));
+        assertEquals("a%ff", copy.toString());
+        assertFalse(copy.isDecodable());
+    }
+
+    @Test
+    public void UTF8_encoded_NamespaceSpecificString_is_decodable() throws URNSyntaxError {
+        assertTrue(newTestInstance("a%c3%84", URL_ENCODED).isDecodable());
+        assertTrue(newTestInstance("\u00c4", NOT_ENCODED).isDecodable());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"%FFFF", "%ffFF", "%Ff", "a%2Cb", "%C3%84", "%c3%84"})
+    public void URL_encoded_literal_round_trips_unchanged(String nss) throws URNSyntaxError {
+        assertEquals(nss, newTestInstance(nss, URL_ENCODED).toString());
+    }
+
+    @Test
+    public void Percent_encoded_octets_are_compared_case_insensitively() throws URNSyntaxError {
+        final NamespaceSpecificString lower = newTestInstance("FF%ff", URL_ENCODED);
+        final NamespaceSpecificString upper = newTestInstance("FF%FF", URL_ENCODED);
+        final NamespaceSpecificString mixed = newTestInstance("FF%fF", URL_ENCODED);
+        assertEquals(lower, upper);
+        assertEquals(lower, mixed);
+        assertEquals(lower.hashCode(), upper.hashCode());
+        assertEquals(lower.hashCode(), mixed.hashCode());
+    }
+
+    @Test
+    public void Literal_characters_are_compared_case_sensitively() throws URNSyntaxError {
+        assertNotEquals(newTestInstance("ff%ff", URL_ENCODED), newTestInstance("FF%ff", URL_ENCODED));
+    }
+
+    @Test
+    public void Percent_encoded_octets_are_not_decoded_for_comparison() throws URNSyntaxError {
+        assertNotEquals(newTestInstance("a%2cb", URL_ENCODED), newTestInstance("a,b", URL_ENCODED));
     }
 
     @Test
