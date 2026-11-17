@@ -136,24 +136,19 @@ public final class NSS_RFC4198 extends NamespaceSpecificString {
         if (!isDigits(dateId)) {
             throw syntaxError(RFC_4198, String.format("DateId '%s' must consist of digits only", dateId));
         }
-        switch (dateId.length()) {
-            case 1:
-            case 2:
-            case 3:
-                throw syntaxError(RFC_4198, String.format(
-                        "DateId '%s' uses a 1 to 3 digit form that is reserved for future use", dateId));
-            case 4:
-            case 6:
-            case 8:
-                try {
-                    toLocalDate(dateId);
-                } catch (DateTimeException e) {
-                    throw syntaxError(RFC_4198, String.format("DateId '%s' is not a valid calendar date", dateId));
-                }
-                return;
-            default:
-                throw syntaxError(RFC_4198, String.format(
-                        "DateId '%s' must have the form CCYY, CCYYMM or CCYYMMDD", dateId));
+        final int length = dateId.length();
+        if (length <= 3) {
+            throw syntaxError(RFC_4198, String.format(
+                    "DateId '%s' uses a 1 to 3 digit form that is reserved for future use", dateId));
+        }
+        if (length != 4 && length != 6 && length != 8) {
+            throw syntaxError(RFC_4198, String.format(
+                    "DateId '%s' must have the form CCYY, CCYYMM or CCYYMMDD", dateId));
+        }
+        try {
+            toLocalDate(dateId);
+        } catch (DateTimeException e) {
+            throw syntaxError(RFC_4198, String.format("DateId '%s' is not a valid calendar date", dateId));
         }
     }
 
