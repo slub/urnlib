@@ -5,7 +5,7 @@
 ![Maven Central Version](https://img.shields.io/maven-central/v/de.slub-dresden/urnlib)
 
 
-Java library for representing, parsing and encoding URNs as specified in [RFC 2141] and [RFC 8141].
+Java library for representing, parsing and encoding URNs as specified in [RFC 2141] and [RFC 8141]. It also supports the Federated Content URNs of the `fdc` namespace as specified in [RFC 4198].
 
 The initial URN RFC 2141 of May 1997 was superseded by RFC 8141 in April 2017. RFC 8141 added support for path characters and optional request, query and fragment parts. While URNs look very similar to URIs and are somewhat related, different equality rules apply for URNs in regard to URN character encoding rules. Also some syntactic rules about case-insensitivity are actually to be defined by the implementing system handling the URNs.
 
@@ -21,6 +21,7 @@ The library is compiled for Java 11.
 ```java
 import de.slub.urn.URN;
 import de.slub.urn.URNSyntaxError;
+import de.slub.urn.URN_4198;
 import de.slub.urn.URN_8141;
 
 import java.util.Optional;
@@ -39,6 +40,9 @@ class Demo {
         if (urn2.supports(RFC_8141)) {
             Optional<String> fragment = ((URN_8141) urn2).getRQFComponents().fragment();
         }
+
+        // Create a RFC 4198 compliant Federated Content URN, see below
+        URN_4198 urn3 = URN.rfc4198().parse("urn:fdc:example.net:200406:ivr:51089");
     }
 }
 ```
@@ -77,7 +81,19 @@ URN_4198 converted = URN_4198.from(URN.rfc8141().parse("urn:fdc:example.net:2004
 URN_4198 built = URN_4198.of("example.org", "20010527", "img089322-038");
 ```
 
-Resolution, query and fragment components of RFC 8141 are accepted.
+Resolution, query and fragment components of RFC 8141 are accepted and available via `getRQFComponents()`.
+
+Parsing, converting and building throw a `URNSyntaxError` if the URN does not follow RFC 4198:
+
+```java
+URN.rfc4198().parse("urn:example:example.net:2004:a");    // Namespace Identifier is not fdc
+URN.rfc4198().parse("urn:fdc:localhost:2004:a");          // ProviderId is not a domain name
+URN.rfc4198().parse("urn:fdc:example.net:20040231:a");    // DateId is not a calendar date
+URN.rfc4198().parse("urn:fdc:example.net:04:a");          // 1 to 3 digit DateIds are reserved
+URN.rfc4198().parse("urn:fdc:example.net:2004");          // ResourceId is missing
+```
+
+The DateId has the form `CCYY`, `CCYYMM` or `CCYYMMDD`. `date()` fills in `01` for a missing month or day. The ResourceId may contain colons, only the first two colons of the Namespace Specific String separate the fields.
 
 A `URN_8141` does not know the rules of the `fdc` namespace. So the answer to an equivalence check depends on which URN is asked, unless both are asked:
 
