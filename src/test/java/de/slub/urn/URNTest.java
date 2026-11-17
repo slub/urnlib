@@ -174,4 +174,134 @@ public abstract class URNTest {
         assertEquals(literal, getSample(literal).toString());
     }
 
+    @Test
+    public void Normal_form_has_lower_case_NID_and_upper_case_percent_encoded_octets() throws URNSyntaxError {
+        assertEquals("urn:example:AbC%FF%2C", getSample("URN:Example:AbC%ff%2c").normalize().toString());
+    }
+
+    @Test
+    public void Normal_form_is_equivalent_and_of_the_same_type() throws URNSyntaxError {
+        final URN subject = getSample("URN:Example:AbC%ff%2c");
+        assertTrue(subject.isEquivalentTo(subject.normalize()));
+        assertSame(subject.getClass(), subject.normalize().getClass());
+    }
+
+    @Test
+    public void Normal_form_is_only_equal_if_already_normalized() throws URNSyntaxError {
+        assertNotEquals(getSample("urn:Example:AbC%ff"), getSample("urn:Example:AbC%ff").normalize());
+        assertEquals(getSample("urn:example:AbC%FF"), getSample("urn:example:AbC%FF").normalize());
+    }
+
+    @Test
+    public void Normalizing_is_idempotent() throws URNSyntaxError {
+        final URN normalized = getSample("URN:Example:AbC%ff%2c").normalize();
+        assertEquals(normalized, normalized.normalize());
+    }
+
+    @Test
+    public void Equivalent_URNs_have_equal_normal_forms() throws URNSyntaxError {
+        final URN urn1 = getSample("URN:FOO:a123%2c456").normalize();
+        final URN urn2 = getSample("urn:foo:a123%2C456").normalize();
+        assertEquals(urn1, urn2);
+        assertEquals(urn1.hashCode(), urn2.hashCode());
+        assertEquals(urn1.toString(), urn2.toString());
+    }
+
+    @Test
+    public void Different_URNs_have_different_normal_forms() throws URNSyntaxError {
+        assertNotEquals(getSample("urn:foo:A123").normalize(), getSample("urn:foo:a123").normalize());
+    }
+
+    @Test
+    public void URNs_differing_in_scheme_or_NID_case_are_equivalent() throws URNSyntaxError {
+        // RFC 8141, 3.2, first example
+        final List<URN> equivalent = List.of(
+                getSample("urn:example:a123,z456"),
+                getSample("URN:example:a123,z456"),
+                getSample("urn:EXAMPLE:a123,z456"));
+        for (URN urn1 : equivalent) {
+            for (URN urn2 : equivalent) {
+                assertTrue(urn1.isEquivalentTo(urn2), urn1 + " vs. " + urn2);
+                assertTrue(URN.areEquivalent(urn1, urn2), urn1 + " vs. " + urn2);
+            }
+        }
+    }
+
+    @Test
+    public void URNs_with_percent_encoding_but_different_case_are_equivalent() throws URNSyntaxError {
+        // RFC 8141, 3.2, fourth example
+        final URN upperCase = getSample("urn:example:a123%2Cz456");
+        final URN lowerCase = getSample("URN:EXAMPLE:a123%2cz456");
+        assertTrue(upperCase.isEquivalentTo(lowerCase));
+        assertTrue(lowerCase.isEquivalentTo(upperCase));
+    }
+
+    @Test
+    public void URNs_with_percent_encoding_are_not_equivalent_to_URNs_without_encoding() throws URNSyntaxError {
+        // RFC 8141, 3.2, fourth example
+        assertFalse(getSample("urn:example:a123%2Cz456").isEquivalentTo(getSample("urn:example:a123,z456")));
+    }
+
+    @Test
+    public void URNs_with_different_NSS_case_are_not_equivalent() throws URNSyntaxError {
+        // RFC 8141, 3.2, fifth example
+        final URN reference = getSample("urn:example:a123,z456");
+        assertFalse(reference.isEquivalentTo(getSample("urn:example:A123,z456")));
+        assertFalse(reference.isEquivalentTo(getSample("urn:example:a123,Z456")));
+    }
+
+    @Test
+    public void URN_with_cyrillic_letter_is_not_equivalent_to_URN_with_latin_letter() throws URNSyntaxError {
+        // RFC 8141, 3.2, sixth example
+        assertFalse(getSample("urn:example:a123,z456").isEquivalentTo(getSample("urn:example:%D0%B0123,z456")));
+    }
+
+    @Test
+    public void URNs_with_different_NID_are_not_equivalent() throws URNSyntaxError {
+        assertFalse(getSample("urn:foo:a123").isEquivalentTo(getSample("urn:bar:a123")));
+    }
+
+    @Test
+    public void URN_is_not_equivalent_to_null() throws URNSyntaxError {
+        final URN urn = getSample("urn:foo:bar");
+        assertFalse(urn.isEquivalentTo(null));
+        assertFalse(URN.areEquivalent(urn, null));
+        assertFalse(URN.areEquivalent(null, urn));
+        assertFalse(URN.areEquivalent(null, null));
+    }
+
+    @Test
+    public void URN_is_equivalent_to_URN_of_other_type_with_same_string() throws URNSyntaxError {
+        final URN subject = getSample("urn:Example:AbC%ff");
+        for (URN other : List.of(
+                URN.rfc2141().parse("urn:Example:AbC%ff"),
+                URN.rfc8141().parse("urn:Example:AbC%ff"),
+                URN.rfc2141().parse("urn:example:AbC%FF"),
+                URN.rfc8141().parse("urn:example:AbC%FF"))) {
+            assertTrue(subject.isEquivalentTo(other), other.getClass().getSimpleName() + " " + other);
+            assertTrue(other.isEquivalentTo(subject), other.getClass().getSimpleName() + " " + other);
+            assertTrue(URN.areEquivalent(subject, other), other.getClass().getSimpleName() + " " + other);
+        }
+    }
+
+    @Test
+    public void Assigned_name_of_URN_without_further_components_is_equal() throws URNSyntaxError {
+        final URN subject = getSample("urn:Example:AbC%ff");
+        assertEquals(subject, subject.assignedName());
+        assertSame(subject.getClass(), subject.assignedName().getClass());
+    }
+
+    @Test
+    public void Assigned_name_is_not_normalized() throws URNSyntaxError {
+        assertEquals("urn:Example:AbC%ff", getSample("urn:Example:AbC%ff").assignedName().toString());
+    }
+
+    @Test
+    public void Normalized_assigned_name_serves_as_key_for_equivalent_URNs() throws URNSyntaxError {
+        final HashSet<URN> keys = new HashSet<>();
+        keys.add(getSample("urn:Example:a123%2c456").normalize().assignedName());
+        assertTrue(keys.contains(getSample("URN:EXAMPLE:a123%2C456").normalize().assignedName()));
+        assertFalse(keys.contains(getSample("urn:example:A123%2C456").normalize().assignedName()));
+    }
+
 }

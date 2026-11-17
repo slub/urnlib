@@ -91,4 +91,28 @@ public final class URN_2141 extends URN {
     public RFC supportedRFC() {
         return supportedRfc;
     }
+
+    /**
+     * Return this URN in its normal form according to the lexical equivalence rules of RFC 2141, section 5.
+     * <p>
+     * RFC 2141 does not say which case the normal form uses. As in RFC 8141, the Namespace Identifier is lower case
+     * and the hex digits of percent-encoded octets are upper case.
+     *
+     * @see URN#normalize()
+     */
+    @Override
+    public URN_2141 normalize() {
+        return new URN_2141(namespaceIdentifier.normalize(), namespaceSpecificString.normalize());
+    }
+
+    /**
+     * Return this URN, as RFC 2141 URNs have no components beyond Namespace Identifier and Namespace Specific String.
+     *
+     * @see URN#assignedName()
+     */
+    @Override
+    public URN_2141 assignedName() {
+        return this;
+    }
+
 }

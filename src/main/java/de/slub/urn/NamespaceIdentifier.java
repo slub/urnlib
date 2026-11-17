@@ -17,6 +17,8 @@
 
 package de.slub.urn;
 
+import java.util.Locale;
+
 import static de.slub.urn.URN.SCHEME;
 import static de.slub.urn.URNSyntaxError.*;
 
@@ -24,7 +26,8 @@ import static de.slub.urn.URNSyntaxError.*;
  * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN).
  * <p>
  * {@code NamespaceIdentifier} instances are immutable. The literal is kept as given, so that {@code toString()}
- * returns it unchanged, and {@code equals()} compares it exactly.
+ * returns it unchanged, and {@code equals()} compares it exactly. Use {@link #isEquivalentTo(NamespaceIdentifier)}
+ * for the case-insensitive comparison of the RFCs and {@link #normalize()} for the lower case form.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
@@ -123,6 +126,38 @@ abstract public class NamespaceIdentifier implements RFCSupport {
     @Override
     public boolean supports(RFC rfc) {
         return supportedRFC().equals(rfc);
+    }
+
+    /**
+     * Return this Namespace Identifier in its normal form, which is the lower case form.
+     * <p>
+     * A Namespace Identifier is {@linkplain #isEquivalentTo(NamespaceIdentifier) equivalent} to its normal form, but
+     * only {@linkplain #equals(Object) equal} to it if it already is in lower case.
+     *
+     * @return A Namespace Identifier of the same type in normal form
+     */
+    public abstract NamespaceIdentifier normalize();
+
+    /**
+     * Return the literal of the normal form, for use by implementations of {@link #normalize()}.
+     *
+     * @return The lower-cased Namespace Identifier literal
+     */
+    protected final String normalizedLiteral() {
+        return nid.toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * Tell whether another Namespace Identifier identifies the same namespace as this one.
+     * <p>
+     * Namespace Identifiers are case-insensitive (RFC 2141, section 5 and RFC 8141, section 3). Unlike
+     * {@link #equals(Object)}, this method ignores case and works across types.
+     *
+     * @param other The Namespace Identifier to compare to
+     * @return True, if the other Namespace Identifier is not null and differs in case at most
+     */
+    public final boolean isEquivalentTo(NamespaceIdentifier other) {
+        return other != null && nid.equalsIgnoreCase(other.nid);
     }
 
 }

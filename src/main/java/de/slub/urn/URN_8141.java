@@ -86,7 +86,7 @@ public final class URN_8141 extends URN {
      * <p>
      * Two RFC 8141 URNs are equal if their Namespace Identifiers, Namespace Specific Strings and r-, q- and
      * f-components are equal. Note that this is stricter than URN-equivalence as defined in RFC 8141, section 3,
-     * which ignores the r-, q- and f-components.
+     * which ignores the r-, q- and f-components. Use {@link #isEquivalentTo(URN)} for that.
      *
      * @param obj Object to check equality with
      * @return True, if the given object is a {@code URN_8141} with equal components.
@@ -130,6 +130,30 @@ public final class URN_8141 extends URN {
     @Override
     public RFC supportedRFC() {
         return supportedRfc;
+    }
+
+    /**
+     * Return this URN in its normal form according to the URN-equivalence rules of RFC 8141, section 3.
+     * <p>
+     * The resolution, query and fragment components are not part of URN-equivalence. They are kept unchanged.
+     *
+     * @see URN#normalize()
+     */
+    @Override
+    public URN_8141 normalize() {
+        return new URN_8141(namespaceIdentifier.normalize(), namespaceSpecificString.normalize(), rqfComponents);
+    }
+
+    /**
+     * Return this URN without its resolution, query and fragment components.
+     *
+     * @see URN#assignedName()
+     */
+    @Override
+    public URN_8141 assignedName() {
+        return rqfComponents.equals(RQF_RFC8141.NULL)
+                ? this
+                : new URN_8141(namespaceIdentifier, namespaceSpecificString, RQF_RFC8141.NULL);
     }
 
 }

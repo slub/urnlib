@@ -57,7 +57,34 @@ URN.rfc8141().parse("urn:example:a").equals(URN.rfc2141().parse("urn:example:a")
 
 The scheme is not a component: `URN:example:a` and `urn:example:a` are parsed into equal URNs, which are both serialized as `urn:example:a`.
 
-**Changed in 4.0.0:** up to version 3, `equals()` implemented the lexical equivalence of the RFCs. It ignored the case of the Namespace Identifier and of percent-encoded octets as well as r-, q- and f-components. Code relying on that, for example when using URNs as keys in a `HashMap`, has to be adapted.
+**Changed in 4.0.0:** up to version 3, `equals()` implemented the lexical equivalence of the RFCs. It ignored the case of the Namespace Identifier and of percent-encoded octets as well as r-, q- and f-components. Code relying on that, for example when using URNs as keys in a `HashMap`, has to use equivalence or normal forms as described below.
+
+### Equivalence
+
+Whether two URNs name the same thing is a different question, which [RFC 8141, section 3] calls URN-equivalence. It ignores the case of the scheme, of the Namespace Identifier and of the hex digits in percent-encoded octets, and it ignores r-, q- and f-components. Percent-encoded octets are never decoded. A namespace may add rules of its own.
+
+```java
+URN a = URN.rfc8141().parse("urn:example:a%2c");
+URN b = URN.rfc8141().parse("URN:EXAMPLE:a%2C?=q#f");
+
+a.equals(b);          // false
+a.isEquivalentTo(b);  // true
+```
+
+`isEquivalentTo()` applies the rules of the URN it is called on, and the other URN may be of any type. So a URN is always equivalent to a URN of another type with the same string. If one of the types knows additional rules of a namespace, the answer depends on which URN is asked. `URN.areEquivalent(a, b)` asks both.
+
+### Normalization
+
+`toString()` returns a parsed URN as it was given. `normalize()` returns the normal form according to the type of the URN, which is what equivalence compares. `assignedName()` drops everything but the Namespace Identifier and the Namespace Specific String.
+
+```java
+URN urn = URN.rfc8141().parse("URN:Example:a%2c?=q");
+urn.toString();                             // urn:Example:a%2c?=q
+urn.normalize().toString();                 // urn:example:a%2C?=q
+urn.normalize().assignedName().toString();  // urn:example:a%2C
+```
+
+Equivalent URNs of the same type have equal normalized assigned-names. Use `urn.normalize().assignedName()` as the key if a `HashMap` or `HashSet` is to treat equivalent URNs as the same.
 
 ## Where to find releases?
 The main branch of the repository contains the latest developments. Releases are tagged.
@@ -79,5 +106,6 @@ You can use the library (e.g. the JAR artifact) in any project, open source or p
 
 [RFC 2141]: https://tools.ietf.org/html/rfc2141
 [RFC 8141]: https://tools.ietf.org/html/rfc8141
+[RFC 8141, section 3]: https://tools.ietf.org/html/rfc8141#section-3
 [GitHub Releases download section]: https://github.com/slub/urnlib/releases
 [GNU Lesser General Public License, Version 3]: https://www.gnu.org/licenses/lgpl-3.0.html

@@ -280,4 +280,85 @@ abstract class NamespaceSpecificStringTest {
         assertThrows(URNSyntaxError.class, () -> newTestInstance("a\uD83Db", NOT_ENCODED));
         assertThrows(URNSyntaxError.class, () -> newTestInstance("a\uDE00", NOT_ENCODED));
     }
+
+    @Test
+    public void Normal_form_has_upper_case_percent_encoded_octets_only() throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance("abc%ff%c3%A4-Def%2c", URL_ENCODED);
+        assertEquals("abc%FF%C3%A4-Def%2C", subject.normalize().toString());
+    }
+
+    @Test
+    public void Normal_form_does_not_decode_percent_encoded_octets() throws URNSyntaxError {
+        assertEquals("%41%2C", newTestInstance("%41%2c", URL_ENCODED).normalize().toString());
+    }
+
+    @Test
+    public void Normal_form_is_equivalent_and_of_the_same_type() throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance("abc%ff", URL_ENCODED);
+        assertTrue(subject.isEquivalentTo(subject.normalize()));
+        assertSame(subject.getClass(), subject.normalize().getClass());
+    }
+
+    @Test
+    public void Normal_form_is_only_equal_if_already_normalized() throws URNSyntaxError {
+        assertNotEquals(newTestInstance("abc%ff", URL_ENCODED), newTestInstance("abc%ff", URL_ENCODED).normalize());
+        assertEquals(newTestInstance("abc%FF", URL_ENCODED), newTestInstance("abc%FF", URL_ENCODED).normalize());
+    }
+
+    @Test
+    public void Encoded_literal_is_already_in_normal_form() throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance("\u00c4/b", NOT_ENCODED);
+        assertEquals(subject, subject.normalize());
+    }
+
+    @Test
+    public void Percent_encoded_octets_differing_in_case_are_equivalent() throws URNSyntaxError {
+        final NamespaceSpecificString lower = newTestInstance("FF%ff", URL_ENCODED);
+        final NamespaceSpecificString upper = newTestInstance("FF%FF", URL_ENCODED);
+        final NamespaceSpecificString mixed = newTestInstance("FF%fF", URL_ENCODED);
+        assertTrue(lower.isEquivalentTo(upper));
+        assertTrue(upper.isEquivalentTo(lower));
+        assertTrue(lower.isEquivalentTo(mixed));
+    }
+
+    @Test
+    public void Literal_characters_differing_in_case_are_not_equivalent() throws URNSyntaxError {
+        assertFalse(newTestInstance("ff%ff", URL_ENCODED).isEquivalentTo(newTestInstance("FF%ff", URL_ENCODED)));
+    }
+
+    @Test
+    public void Percent_encoded_octets_are_not_decoded_for_equivalence() throws URNSyntaxError {
+        assertFalse(newTestInstance("a%2cb", URL_ENCODED).isEquivalentTo(newTestInstance("a,b", URL_ENCODED)));
+    }
+
+    @Test
+    public void NamespaceSpecificString_is_not_equivalent_to_null() throws URNSyntaxError {
+        assertFalse(newTestInstance("abc", URL_ENCODED).isEquivalentTo(null));
+    }
+
+    @Test
+    public void Equivalence_works_across_types() throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance("abc%ff", URL_ENCODED);
+        final NamespaceSpecificString rfc2141 = new NSS_RFC2141("abc%FF", URL_ENCODED);
+        final NamespaceSpecificString rfc8141 = new NSS_RFC8141("abc%FF", URL_ENCODED);
+        assertTrue(subject.isEquivalentTo(rfc2141));
+        assertTrue(subject.isEquivalentTo(rfc8141));
+        assertTrue(rfc2141.isEquivalentTo(subject));
+        assertTrue(rfc8141.isEquivalentTo(subject));
+        assertNotEquals(rfc2141, rfc8141);
+    }
+
+    @Test
+    public void Normalizing_is_idempotent() throws URNSyntaxError {
+        final NamespaceSpecificString normalized = newTestInstance("abc%ff", URL_ENCODED).normalize();
+        assertEquals(normalized.toString(), normalized.normalize().toString());
+    }
+
+    @Test
+    public void Normal_form_of_unencoded_string_can_still_be_decoded() throws URNSyntaxError {
+        final NamespaceSpecificString subject = newTestInstance("\u00c4/b", NOT_ENCODED);
+        assertEquals("%C3%84%2Fb", subject.normalize().toString());
+        assertEquals("\u00c4/b", subject.normalize().unencoded());
+    }
+
 }

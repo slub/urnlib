@@ -139,4 +139,41 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
         assertNotEquals("a-valid-nid", nid);
     }
 
+    @Test
+    public void Normal_form_is_lower_case() throws URNSyntaxError {
+        final NamespaceIdentifier subject = newTestInstance("A-Valid-NID");
+        assertEquals("a-valid-nid", subject.normalize().toString());
+    }
+
+    @Test
+    public void Normal_form_is_equivalent_and_of_the_same_type() throws URNSyntaxError {
+        final NamespaceIdentifier subject = newTestInstance("A-Valid-NID");
+        assertTrue(subject.isEquivalentTo(subject.normalize()));
+        assertSame(subject.getClass(), subject.normalize().getClass());
+    }
+
+    @Test
+    public void Normal_form_is_only_equal_if_already_normalized() throws URNSyntaxError {
+        assertNotEquals(newTestInstance("A-Valid-NID"), newTestInstance("A-Valid-NID").normalize());
+        assertEquals(newTestInstance("a-valid-nid"), newTestInstance("a-valid-nid").normalize());
+    }
+
+    @Test
+    public void NamespaceIdentifiers_differing_in_case_are_equivalent() throws URNSyntaxError {
+        final NamespaceIdentifier upper = newTestInstance("A-VALID-NID");
+        final NamespaceIdentifier lower = newTestInstance("a-valid-nid");
+        assertTrue(upper.isEquivalentTo(lower));
+        assertTrue(lower.isEquivalentTo(upper));
+    }
+
+    @Test
+    public void Different_NamespaceIdentifiers_are_not_equivalent() throws URNSyntaxError {
+        assertFalse(newTestInstance("a-valid-nid").isEquivalentTo(newTestInstance("another-nid")));
+    }
+
+    @Test
+    public void NamespaceIdentifier_is_not_equivalent_to_null() throws URNSyntaxError {
+        assertFalse(newTestInstance("a-valid-nid").isEquivalentTo(null));
+    }
+
 }

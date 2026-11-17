@@ -114,4 +114,16 @@ public final class NID_RFC8141 extends NamespaceIdentifier {
         return null;
     }
 
+    /**
+     * @see NamespaceIdentifier#normalize()
+     */
+    @Override
+    public NID_RFC8141 normalize() {
+        try {
+            return new NID_RFC8141(normalizedLiteral());
+        } catch (URNSyntaxError e) {
+            throw new IllegalStateException("Normal form of a valid Namespace Identifier is not valid", e);
+        }
+    }
+
 }

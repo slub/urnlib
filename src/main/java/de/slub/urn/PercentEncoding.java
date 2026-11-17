@@ -66,6 +66,27 @@ final class PercentEncoding {
     }
 
     /**
+     * Upper-case the hex digits of all percent-encoded octets, as required for URN-equivalence by RFC 8141,
+     * section 3.
+     *
+     * @param s A string with well-formed percent-encoded octets
+     * @return The string with upper-cased percent-encoded octets
+     */
+    static String upperCaseOctets(String s) {
+        final StringBuilder sb = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            final char c = s.charAt(i);
+            sb.append(c);
+            if (c == '%' && i + 2 < s.length()) {
+                sb.append(Character.toUpperCase(s.charAt(i + 1)))
+                        .append(Character.toUpperCase(s.charAt(i + 2)));
+                i += 2;
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
      * Decode all percent-encoded octets and interpret the resulting octet sequence as UTF-8.
      * <p>
      * Unlike {@link java.net.URLDecoder}, a {@code +} is not treated as a space and malformed UTF-8 is reported

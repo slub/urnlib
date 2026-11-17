@@ -73,4 +73,16 @@ public final class NSS_RFC8141 extends NamespaceSpecificString {
         return RFC.RFC_8141;
     }
 
+    /**
+     * @see NamespaceSpecificString#normalize()
+     */
+    @Override
+    public NSS_RFC8141 normalize() {
+        try {
+            return new NSS_RFC8141(normalizedLiteral(), Encoding.URL_ENCODED);
+        } catch (URNSyntaxError e) {
+            throw new IllegalStateException("Normal form of a valid Namespace Specific String is not valid", e);
+        }
+    }
+
 }

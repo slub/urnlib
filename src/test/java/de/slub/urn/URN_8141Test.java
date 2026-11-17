@@ -115,4 +115,53 @@ public class URN_8141Test extends URNTest {
         assertTrue(qps.containsKey("z") && qps.get("z").equals("c"));
     }
 
+    @Test
+    public void URNs_are_equivalent_despite_different_RQF_components() throws URNSyntaxError {
+        // RFC 8141, 3.2, second example
+        final List<URN> equivalent = List.of(
+                getSample("urn:example:a123,z456"),
+                getSample("urn:example:a123,z456?+abc"),
+                getSample("urn:example:a123,z456?=xyz"),
+                getSample("urn:example:a123,z456#789"));
+        for (URN urn1 : equivalent) {
+            for (URN urn2 : equivalent) {
+                assertTrue(urn1.isEquivalentTo(urn2), urn1 + " vs. " + urn2);
+            }
+        }
+    }
+
+    @Test
+    public void URNs_with_different_NSS_path_parts_are_not_equivalent_to_each_other() throws URNSyntaxError {
+        // RFC 8141, 3.2, third example
+        assertFalse(getSample("urn:example:a123,z456/foo").isEquivalentTo(getSample("urn:example:a123,z456/bar")));
+        assertFalse(getSample("urn:example:a123,z456/foo").isEquivalentTo(getSample("urn:example:a123,z456")));
+    }
+
+    @Test
+    public void Assigned_name_has_no_RQF_components() throws URNSyntaxError {
+        final URN_8141 assignedName = getSample("urn:Example:a%2c?+r?=q#f").assignedName();
+        assertEquals("urn:Example:a%2c", assignedName.toString());
+        assertEquals(RQF_RFC8141.NULL, assignedName.getRQFComponents());
+    }
+
+    @Test
+    public void Assigned_name_of_URN_with_empty_fragment_has_no_fragment() throws URNSyntaxError {
+        assertEquals("urn:example:a", getSample("urn:example:a#").assignedName().toString());
+    }
+
+    @Test
+    public void URNs_differing_in_RQF_components_have_equal_assigned_names() throws URNSyntaxError {
+        final URN_8141 urn1 = getSample("urn:example:a?+r");
+        final URN_8141 urn2 = getSample("urn:example:a#f");
+        assertNotEquals(urn1, urn2);
+        assertEquals(urn1.assignedName(), urn2.assignedName());
+        assertEquals(urn1.assignedName().hashCode(), urn2.assignedName().hashCode());
+    }
+
+    @Test
+    public void Normal_form_keeps_RQF_components_unchanged() throws URNSyntaxError {
+        assertEquals("urn:example:a%2C?+R%2c?=Q%2c#F%2c",
+                getSample("URN:EXAMPLE:a%2c?+R%2c?=Q%2c#F%2c").normalize().toString());
+    }
+
 }
