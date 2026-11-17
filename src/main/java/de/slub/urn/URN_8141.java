@@ -82,6 +82,33 @@ public final class URN_8141 extends URN {
     }
 
     /**
+     * Checks for equality with a given object.
+     * <p>
+     * Two RFC 8141 URNs are equal if their Namespace Identifiers, Namespace Specific Strings and r-, q- and
+     * f-components are equal. Note that this is stricter than URN-equivalence as defined in RFC 8141, section 3,
+     * which ignores the r-, q- and f-components.
+     *
+     * @param obj Object to check equality with
+     * @return True, if the given object is a {@code URN_8141} with equal components.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof URN_8141)
+                && super.equals(obj)
+                && rqfComponents.equals(((URN_8141) obj).rqfComponents);
+    }
+
+    /**
+     * Calculates hash code based on all components, consistent with {@link #equals(Object)}.
+     *
+     * @return Hash code of this URN
+     */
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + rqfComponents.hashCode();
+    }
+
+    /**
      * @see URN#namespaceIdentifier()
      */
     @Override

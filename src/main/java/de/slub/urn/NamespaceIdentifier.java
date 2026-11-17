@@ -17,13 +17,14 @@
 
 package de.slub.urn;
 
-import java.util.Locale;
-
 import static de.slub.urn.URN.SCHEME;
 import static de.slub.urn.URNSyntaxError.*;
 
 /**
  * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN).
+ * <p>
+ * {@code NamespaceIdentifier} instances are immutable. The literal is kept as given, so that {@code toString()}
+ * returns it unchanged, and {@code equals()} compares it exactly.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
@@ -80,26 +81,30 @@ abstract public class NamespaceIdentifier implements RFCSupport {
     abstract protected String validateNamespaceIdentifier(String nid);
 
     /**
-     * Calculates hash code based on the case-insensitive string representation of this namespace identifier.
+     * Calculates hash code based on the Namespace Identifier literal, consistent with {@link #equals(Object)}.
      *
      * @return The hash code for this namespace identifier instance.
      */
     @Override
     public int hashCode() {
-        // NIDs are ASCII-only and compared case-insensitively, so hash the lower-case form
-        return nid.toLowerCase(Locale.ROOT).hashCode();
+        return nid.hashCode();
     }
 
     /**
      * Checks for equality with a given object.
+     * <p>
+     * Two Namespace Identifiers are equal if they are of the same class and have the same literal. The comparison is
+     * case-sensitive, so {@code ISBN} and {@code isbn} are different objects although they identify the same
+     * namespace.
      *
      * @param obj Object to check equality with
-     * @return True, if the given object is a {@code NamespaceIdentifier} instance and is lexically equivalent to this instance.
+     * @return True, if the given object is of the same class and has the same literal as this instance.
      */
     @Override
     public boolean equals(Object obj) {
         return (obj instanceof NamespaceIdentifier)
-                && this.nid.equalsIgnoreCase(((NamespaceIdentifier) obj).nid);
+                && getClass() == obj.getClass()
+                && this.nid.equals(((NamespaceIdentifier) obj).nid);
     }
 
     /**

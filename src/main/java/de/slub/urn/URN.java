@@ -90,28 +90,37 @@ public abstract class URN implements RFCSupport {
     }
 
     /**
-     * Calculates hash code based on the string representation of this RQF instance.
+     * Calculates hash code based on the Namespace Identifier and the Namespace Specific String, consistent with
+     * {@link #equals(Object)}.
+     * <p>
+     * Subclasses with further components have to override this method together with {@link #equals(Object)}.
      *
-     * @return This namespace specific strings hash code
+     * @return Hash code of this URN
      */
     @Override
     public int hashCode() {
-        return Objects.hash(namespaceIdentifier(), namespaceSpecificString(), supportedRFC());
+        return Objects.hash(namespaceIdentifier(), namespaceSpecificString());
     }
 
     /**
      * Checks for equality with a given object.
+     * <p>
+     * Two URNs are equal if they are of the same class and all their components are equal. Components are compared
+     * exactly as given, so {@code urn:ISBN:1} and {@code urn:isbn:1} are different objects, and a URN is never equal
+     * to a URN of another class, even if both have the same string representation.
+     * <p>
+     * This implementation compares the Namespace Identifier and the Namespace Specific String. Subclasses with
+     * further components have to override this method and {@link #hashCode()} to include them.
      *
      * @param obj Object to check equality with
-     * @return True, if the given object is a {@code URN} instance and is lexically equivalent to
-     * this instance.
+     * @return True, if the given object is of the same class and has equal components.
      */
     @Override
     public boolean equals(Object obj) {
         return (obj instanceof URN)
+                && getClass() == obj.getClass()
                 && namespaceIdentifier().equals(((URN) obj).namespaceIdentifier())
-                && namespaceSpecificString().equals(((URN) obj).namespaceSpecificString())
-                && supportedRFC().equals(((URN) obj).supportedRFC());
+                && namespaceSpecificString().equals(((URN) obj).namespaceSpecificString());
     }
 
     /**

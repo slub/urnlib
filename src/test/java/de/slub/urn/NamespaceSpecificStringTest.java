@@ -132,7 +132,7 @@ abstract class NamespaceSpecificStringTest {
     @Test
     public void Unencoded_NamespaceSpecificString_get_encoded() throws URNSyntaxError {
         final String decodedNss = "ÄÜÖ[]&<>^`{|}";
-        final String encodedNss = "%c3%84%c3%9c%c3%96%5b%5d%26%3c%3e%5e%60%7b%7c%7d";
+        final String encodedNss = "%C3%84%C3%9C%C3%96%5B%5D%26%3C%3E%5E%60%7B%7C%7D";
         final NamespaceSpecificString subject = newTestInstance(decodedNss, NOT_ENCODED);
         assertEquals(encodedNss, subject.toString());
     }
@@ -213,14 +213,36 @@ abstract class NamespaceSpecificStringTest {
     }
 
     @Test
-    public void Percent_encoded_octets_are_compared_case_insensitively() throws URNSyntaxError {
+    public void Percent_encoded_octets_differing_in_case_are_not_equal() throws URNSyntaxError {
         final NamespaceSpecificString lower = newTestInstance("FF%ff", URL_ENCODED);
         final NamespaceSpecificString upper = newTestInstance("FF%FF", URL_ENCODED);
         final NamespaceSpecificString mixed = newTestInstance("FF%fF", URL_ENCODED);
-        assertEquals(lower, upper);
-        assertEquals(lower, mixed);
-        assertEquals(lower.hashCode(), upper.hashCode());
-        assertEquals(lower.hashCode(), mixed.hashCode());
+        assertNotEquals(lower, upper);
+        assertNotEquals(lower, mixed);
+        assertNotEquals(upper, mixed);
+    }
+
+    @Test
+    public void Identical_URL_encoded_literals_are_equal_and_have_same_hash_code() throws URNSyntaxError {
+        final NamespaceSpecificString nss1 = newTestInstance("FF%ff", URL_ENCODED);
+        final NamespaceSpecificString nss2 = newTestInstance("FF%ff", URL_ENCODED);
+        assertEquals(nss1, nss2);
+        assertEquals(nss1.hashCode(), nss2.hashCode());
+    }
+
+    @Test
+    public void Encoding_produces_the_same_literal_as_parsing_upper_case_octets() throws URNSyntaxError {
+        final NamespaceSpecificString encoded = newTestInstance("\u00c4", NOT_ENCODED);
+        final NamespaceSpecificString parsed = newTestInstance("%C3%84", URL_ENCODED);
+        assertEquals(parsed, encoded);
+        assertEquals(parsed.hashCode(), encoded.hashCode());
+    }
+
+    @Test
+    public void NamespaceSpecificString_is_not_equal_to_null_or_other_types() throws URNSyntaxError {
+        final NamespaceSpecificString nss = newTestInstance("abc", URL_ENCODED);
+        assertNotEquals(null, nss);
+        assertNotEquals("abc", nss);
     }
 
     @Test
@@ -243,7 +265,7 @@ abstract class NamespaceSpecificStringTest {
     @Test
     public void Supplementary_character_gets_encoded_as_four_UTF8_octets() throws URNSyntaxError {
         final NamespaceSpecificString subject = newTestInstance("a\uD83D\uDE00b", NOT_ENCODED);
-        assertEquals("a%f0%9f%98%80b", subject.toString());
+        assertEquals("a%F0%9F%98%80b", subject.toString());
     }
 
     @Test

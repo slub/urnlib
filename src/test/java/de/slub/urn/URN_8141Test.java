@@ -20,6 +20,7 @@ package de.slub.urn;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,21 +46,32 @@ public class URN_8141Test extends URNTest {
     }
 
     @Test
-    public void URNs_are_equivalent_despite_different_RQF_components() throws URNSyntaxError {
-        final String equalsMessage = "RQF components should be ignored when comparing URNs";
-        final String hashCodeMessage = "RQF components should be ignored when computing URN hashCodes";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<>() {{
-            add(getSample("urn:example:a123,z456"));
-            add(getSample("urn:example:a123,z456?+abc"));
-            add(getSample("urn:example:a123,z456?=xyz"));
-            add(getSample("urn:example:a123,z456#789"));
-        }};
-        for (URN urn1 : equivalent) {
-            for (URN urn2 : equivalent) {
-                assertEquals(urn1, urn2, equalsMessage);
-                assertEquals(urn1.hashCode(), urn2.hashCode(), hashCodeMessage);
+    public void URNs_with_different_RQF_components_are_not_equal() throws URNSyntaxError {
+        final List<String> urns = List.of(
+                "urn:example:a123,z456",
+                "urn:example:a123,z456?+abc",
+                "urn:example:a123,z456?=xyz",
+                "urn:example:a123,z456#789",
+                "urn:example:a123,z456#");
+        for (String urn1 : urns) {
+            for (String urn2 : urns) {
+                if (urn1.equals(urn2)) {
+                    assertEquals(getSample(urn1), getSample(urn2));
+                    assertEquals(getSample(urn1).hashCode(), getSample(urn2).hashCode());
+                } else {
+                    assertNotEquals(getSample(urn1), getSample(urn2), urn1 + " vs. " + urn2);
+                }
             }
         }
+    }
+
+    @Test
+    public void URN_8141_is_not_equal_to_URN_2141_with_same_string() throws URNSyntaxError {
+        final URN urn8141 = getSample("urn:example:a123,z456");
+        final URN urn2141 = URN.rfc2141().parse("urn:example:a123,z456");
+        assertEquals(urn2141.toString(), urn8141.toString());
+        assertNotEquals(urn8141, urn2141);
+        assertNotEquals(urn2141, urn8141);
     }
 
     @Test

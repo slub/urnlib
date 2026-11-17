@@ -94,12 +94,11 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     }
 
     @Test
-    public void NamespaceIdentifiers_equality_check_is_case_insensitive() throws URNSyntaxError {
+    public void NamespaceIdentifiers_differing_in_case_are_not_equal() throws URNSyntaxError {
         final String nid = "A-Valid-Nid";
         final NamespaceIdentifier nid1 = newTestInstance(nid.toUpperCase());
         final NamespaceIdentifier nid2 = newTestInstance(nid.toLowerCase());
-        assertEquals(nid1, nid2);
-        assertEquals(nid1.hashCode(), nid2.hashCode());
+        assertNotEquals(nid1, nid2);
     }
 
     @Test
@@ -134,11 +133,10 @@ abstract class NamespaceIdentifierTest<T extends NamespaceIdentifier> {
     }
 
     @Test
-    public void NamespaceIdentifiers_differing_in_case_have_same_hash_code() throws URNSyntaxError {
-        final String nid = "A-Valid-Nid";
-        final NamespaceIdentifier nid1 = newTestInstance(nid.toUpperCase());
-        final NamespaceIdentifier nid2 = newTestInstance(nid.toLowerCase());
-        assertEquals(nid1.hashCode(), nid2.hashCode());
+    public void NamespaceIdentifier_is_not_equal_to_null_or_other_types() throws URNSyntaxError {
+        final NamespaceIdentifier nid = newTestInstance("a-valid-nid");
+        assertNotEquals(null, nid);
+        assertNotEquals("a-valid-nid", nid);
     }
 
 }

@@ -26,10 +26,12 @@ import static de.slub.urn.URNSyntaxError.syntaxError;
  * <p>
  * {@code NamespaceSpecificString} instances are immutable and comparable by using {@code equals()}.
  * <p>
- * A URL encoded literal is kept as given, so that {@code toString()} returns it unchanged. Comparison follows
- * RFC 8141, section 3: percent-encoded octets are compared case-insensitively and are never decoded. Percent-encoded
- * octets do not have to form valid UTF-8, e.g. when a namespace carries binary data. Such a string can't be decoded,
- * see {@link #unencoded()}.
+ * A URL encoded literal is kept as given, so that {@code toString()} returns it unchanged, and {@code equals()}
+ * compares it exactly: {@code %2f} and {@code %2F} are different literals, and percent-encoded octets are never
+ * decoded for comparison. A literal that is not URL encoded is percent-encoded with upper-case hex digits.
+ * <p>
+ * Percent-encoded octets do not have to form valid UTF-8, e.g. when a namespace carries binary data. Such a string
+ * can't be decoded, see {@link #unencoded()}.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
@@ -38,7 +40,6 @@ import static de.slub.urn.URNSyntaxError.syntaxError;
 abstract public class NamespaceSpecificString implements RFCSupport {
 
     private final String encoded;
-    private final String normalized;
     // Null if the percent-encoded octets are not valid UTF-8
     private final String raw;
 
@@ -65,7 +66,6 @@ abstract public class NamespaceSpecificString implements RFCSupport {
             encoded = encode(nss);
             raw = nss;
         }
-        normalized = PercentEncoding.upperCaseOctets(encoded);
     }
 
     private static String decodeOrNull(String encoded) {
@@ -83,7 +83,6 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      */
     public NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
         this.encoded = instanceForCopying.encoded;
-        this.normalized = instanceForCopying.normalized;
         this.raw = instanceForCopying.raw;
     }
 
@@ -98,7 +97,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
 
     /**
-     * URL Encode all NSS reserved characters of a given string literal.
+     * URL Encode all NSS reserved characters of a given string literal, using upper-case hex digits.
      * <p>
      * Uses {@code isReservedCharacter()} to determine whether a character is reserved according to the RFC.
      *
@@ -156,26 +155,30 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     }
 
     /**
-     * Calculates hash code based on the case-normalized URL-encoded representation of this namespace specific string.
+     * Calculates hash code based on the encoded literal, consistent with {@link #equals(Object)}.
      *
      * @return This namespace specific strings hash code
      */
     @Override
     public int hashCode() {
-        return normalized.hashCode();
+        return encoded.hashCode();
     }
 
     /**
      * Checks for equality with a given object.
+     * <p>
+     * Two Namespace Specific Strings are equal if they are of the same class and have the same encoded literal, as
+     * returned by {@link #toString()}. The comparison is exact, including the case of hex digits in percent-encoded
+     * octets.
      *
      * @param obj Object to check equality with
-     * @return True, if the given object is a {@code NamespaceSpecificString} instance and is lexically equivalent to
-     * this instance, i.e. both are equal after upper-casing the hex digits of percent-encoded octets.
+     * @return True, if the given object is of the same class and has the same encoded literal as this instance.
      */
     @Override
     public boolean equals(Object obj) {
         return obj instanceof NamespaceSpecificString
-                && this.normalized.equals(((NamespaceSpecificString) obj).normalized);
+                && getClass() == obj.getClass()
+                && this.encoded.equals(((NamespaceSpecificString) obj).encoded);
     }
 
     /**

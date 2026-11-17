@@ -33,6 +33,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 final class PercentEncoding {
 
+    private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
+
     private PercentEncoding() {
     }
 
@@ -61,27 +63,6 @@ final class PercentEncoding {
             }
         }
         return true;
-    }
-
-    /**
-     * Upper-case the hex digits of all percent-encoded octets, as required for URN-equivalence by RFC 8141,
-     * section 3.
-     *
-     * @param s A string with well-formed percent-encoded octets
-     * @return The string with upper-cased percent-encoded octets
-     */
-    static String upperCaseOctets(String s) {
-        final StringBuilder sb = new StringBuilder(s.length());
-        for (int i = 0; i < s.length(); i++) {
-            final char c = s.charAt(i);
-            sb.append(c);
-            if (c == '%' && i + 2 < s.length()) {
-                sb.append(Character.toUpperCase(s.charAt(i + 1)))
-                        .append(Character.toUpperCase(s.charAt(i + 2)));
-                i += 2;
-            }
-        }
-        return sb.toString();
     }
 
     /**
@@ -117,6 +98,8 @@ final class PercentEncoding {
 
     /**
      * Percent-encode every code point matching the given predicate as a sequence of UTF-8 octets.
+     * <p>
+     * Hex digits are written in upper case, as RFC 3986, section 2.1 asks of URI producers.
      *
      * @param s            The string to encode
      * @param mustBeEncoded Predicate telling whether a code point has to be percent-encoded
@@ -134,8 +117,8 @@ final class PercentEncoding {
             if (mustBeEncoded.test(cp)) {
                 for (byte b : new String(Character.toChars(cp)).getBytes(UTF_8)) {
                     sb.append('%')
-                            .append(Character.forDigit((b >> 4) & 0xF, 16))
-                            .append(Character.forDigit(b & 0xF, 16));
+                            .append(HEX_DIGITS[(b >> 4) & 0xF])
+                            .append(HEX_DIGITS[b & 0xF]);
                 }
             } else {
                 sb.appendCodePoint(cp);

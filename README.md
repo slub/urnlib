@@ -43,6 +43,22 @@ class Demo {
 }
 ```
 
+### Equality
+
+`equals()` and `hashCode()` follow plain Java value semantics: two objects are equal if they are of the same class and all their components are equal, exactly as given. That holds for URNs and for their parts.
+
+```java
+URN.rfc8141().parse("urn:example:a").equals(URN.rfc8141().parse("urn:example:a"));      // true
+URN.rfc8141().parse("urn:example:a").equals(URN.rfc8141().parse("urn:EXAMPLE:a"));      // false, NID differs in case
+URN.rfc8141().parse("urn:example:%2f").equals(URN.rfc8141().parse("urn:example:%2F"));  // false, hex digits differ in case
+URN.rfc8141().parse("urn:example:a").equals(URN.rfc8141().parse("urn:example:a#f"));    // false, f-component differs
+URN.rfc8141().parse("urn:example:a").equals(URN.rfc2141().parse("urn:example:a"));      // false, different classes
+```
+
+The scheme is not a component: `URN:example:a` and `urn:example:a` are parsed into equal URNs, which are both serialized as `urn:example:a`.
+
+**Changed in 4.0.0:** up to version 3, `equals()` implemented the lexical equivalence of the RFCs. It ignored the case of the Namespace Identifier and of percent-encoded octets as well as r-, q- and f-components. Code relying on that, for example when using URNs as keys in a `HashMap`, has to be adapted.
+
 ## Where to find releases?
 The main branch of the repository contains the latest developments. Releases are tagged.
 There are two ways of getting releases of this library. Binaries are obtained through Maven dependencies. Sources via the [GitHub Releases download section].

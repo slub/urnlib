@@ -75,29 +75,29 @@ public abstract class URNTest {
     }
 
     @Test
-    final public void Lexical_equivalent_URNs_have_the_same_hash_code() throws URNSyntaxError {
+    final public void URNs_differing_only_in_scheme_case_are_equal() throws URNSyntaxError {
+        // The scheme is not a component of the URN and is always serialized in lower case
         final URN reference = getSample("urn:example:a123,z456");
-        for (URN urn : List.of(getSample("URN:example:a123,z456"), getSample("urn:EXAMPLE:a123,z456"))) {
-            assertEquals(reference, urn);
-            assertEquals(reference.hashCode(), urn.hashCode(), "Hashcode of equal URNs should be equal: " + urn);
-            assertTrue(new HashSet<>(List.of(reference)).contains(urn), "Equal URN should be found in HashSet: " + urn);
-        }
+        final URN urn = getSample("URN:example:a123,z456");
+        assertEquals(reference.toString(), urn.toString());
+        assertEquals(reference, urn);
+        assertEquals(reference.hashCode(), urn.hashCode(), "Hashcode of equal URNs should be equal");
+        assertTrue(new HashSet<>(List.of(reference)).contains(urn), "Equal URN should be found in HashSet");
     }
 
     @Test
-    final public void Lexical_equivalent_URNs_generate_equivalent_representations() throws URNSyntaxError {
-        final String message = "Lexical equivalent URNs should be equal";
-        final LinkedHashSet<URN> equivalent = new LinkedHashSet<>() {{
-            add(getSample("urn:example:a123,z456"));
-            add(getSample("URN:example:a123,z456"));
-            add(getSample("urn:EXAMPLE:a123,z456"));
-        }};
-        for (URN urn1 : equivalent) {
-            for (URN urn2 : equivalent) {
-                assertEquals(urn1, urn2, message);
-                assertEquals(urn1.hashCode(), urn2.hashCode(), "Hashcode of equal URNs should be equal");
-            }
-        }
+    final public void URNs_differing_in_NID_case_are_not_equal() throws URNSyntaxError {
+        final URN reference = getSample("urn:example:a123,z456");
+        final URN urn = getSample("urn:EXAMPLE:a123,z456");
+        assertNotEquals(reference, urn);
+        assertFalse(new HashSet<>(List.of(reference)).contains(urn), "Different URN should not be found in HashSet");
+    }
+
+    @Test
+    final public void URN_is_not_equal_to_null_or_other_types() throws URNSyntaxError {
+        final URN urn = getSample("urn:foo:bar");
+        assertNotEquals(null, urn);
+        assertNotEquals("urn:foo:bar", urn);
     }
 
     @Test
@@ -129,12 +129,10 @@ public abstract class URNTest {
     }
 
     @Test
-    final public void URNs_with_percent_encoding_but_different_case_are_equal_to_each_other() throws URNSyntaxError {
-        final String message = "URNs with percent encoding should be equivalent each other";
+    final public void URNs_with_percent_encoding_but_different_case_are_not_equal() throws URNSyntaxError {
         final URN upperCase = getSample("urn:foo:a123%2C456");
-        final URN lowerCase = getSample("URN:FOO:a123%2c456");
-        assertEquals(upperCase, lowerCase, message);
-        assertEquals(upperCase.hashCode(), lowerCase.hashCode(), "Hashcode of equal URNs should be equal");
+        final URN lowerCase = getSample("urn:foo:a123%2c456");
+        assertNotEquals(upperCase, lowerCase, "Percent-encoded octets should be compared exactly");
     }
 
     @Test
