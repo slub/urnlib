@@ -27,7 +27,14 @@ public enum RFC {
     /**
      * RFC 8141, Uniform Resource Names (April 2017), superseding RFC 2141.
      */
-    RFC_8141("https://tools.ietf.org/html/rfc8141");
+    RFC_8141("https://tools.ietf.org/html/rfc8141"),
+    /**
+     * RFC 4198, A Uniform Resource Name (URN) Namespace for Federated Content (November 2005).
+     * <p>
+     * This is not a URN syntax but defines the {@code fdc} namespace on top of one. It is supported by
+     * {@link URN_4198}.
+     */
+    RFC_4198("https://tools.ietf.org/html/rfc4198");
 
     private final String url;
 

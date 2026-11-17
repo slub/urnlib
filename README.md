@@ -43,35 +43,6 @@ class Demo {
 }
 ```
 
-### Equality
-
-`equals()` and `hashCode()` follow plain Java value semantics: two objects are equal if they are of the same class and all their components are equal, exactly as given. That holds for URNs and for their parts.
-
-```java
-URN.rfc8141().parse("urn:example:a").equals(URN.rfc8141().parse("urn:example:a"));      // true
-URN.rfc8141().parse("urn:example:a").equals(URN.rfc8141().parse("urn:EXAMPLE:a"));      // false, NID differs in case
-URN.rfc8141().parse("urn:example:%2f").equals(URN.rfc8141().parse("urn:example:%2F"));  // false, hex digits differ in case
-URN.rfc8141().parse("urn:example:a").equals(URN.rfc8141().parse("urn:example:a#f"));    // false, f-component differs
-URN.rfc8141().parse("urn:example:a").equals(URN.rfc2141().parse("urn:example:a"));      // false, different classes
-```
-
-The scheme is not a component: `URN:example:a` and `urn:example:a` are parsed into equal URNs, which are both serialized as `urn:example:a`.
-
-**Changed in 4.0.0:** up to version 3, `equals()` implemented the lexical equivalence of the RFCs. It ignored the case of the Namespace Identifier and of percent-encoded octets as well as r-, q- and f-components. Code relying on that, for example when using URNs as keys in a `HashMap`, has to use equivalence or normal forms as described below.
-
-### Equivalence
-
-Whether two URNs name the same thing is a different question, which [RFC 8141, section 3] calls URN-equivalence. It ignores the case of the scheme, of the Namespace Identifier and of the hex digits in percent-encoded octets, and it ignores r-, q- and f-components. Percent-encoded octets are never decoded. A namespace may add rules of its own.
-
-```java
-URN a = URN.rfc8141().parse("urn:example:a%2c");
-URN b = URN.rfc8141().parse("URN:EXAMPLE:a%2C?=q#f");
-
-a.equals(b);          // false
-a.isEquivalentTo(b);  // true
-```
-
-`isEquivalentTo()` applies the rules of the URN it is called on, and the other URN may be of any type. So a URN is always equivalent to a URN of another type with the same string. If one of the types knows additional rules of a namespace, the answer depends on which URN is asked. `URN.areEquivalent(a, b)` asks both.
 
 ### Normalization
 
@@ -82,9 +53,43 @@ URN urn = URN.rfc8141().parse("URN:Example:a%2c?=q");
 urn.toString();                             // urn:Example:a%2c?=q
 urn.normalize().toString();                 // urn:example:a%2C?=q
 urn.normalize().assignedName().toString();  // urn:example:a%2C
+
+URN.rfc4198().parse("urn:fdc:Example.COM:2002:%ff").normalize().toString();  // urn:fdc:example.com:2002:%FF
 ```
 
 Equivalent URNs of the same type have equal normalized assigned-names. Use `urn.normalize().assignedName()` as the key if a `HashMap` or `HashSet` is to treat equivalent URNs as the same.
+
+### Federated Content URNs (RFC 4198)
+
+[RFC 4198] registers the `fdc` namespace and structures its Namespace Specific String as `<ProviderId>:<DateId>:<ResourceId>`. `URN_4198` is a URN type of its own for this namespace. It validates the structure, gives access to the fields and knows the equivalence rule of the namespace: the case of the ProviderId does not matter.
+
+```java
+URN_4198 fdc = URN.rfc4198().parse("urn:fdc:example.net:200406:ivr:51089");
+fdc.namespaceSpecificString().providerId();  // "example.net"
+fdc.namespaceSpecificString().dateId();      // "200406"
+fdc.namespaceSpecificString().date();        // 2004-06-01
+fdc.namespaceSpecificString().resourceId();  // "ivr:51089"
+
+// Convert a URN of another type
+URN_4198 converted = URN_4198.from(URN.rfc8141().parse("urn:fdc:example.net:200406:ivr:51089"));
+
+// Build a new one, the ResourceId gets percent-encoded where needed
+URN_4198 built = URN_4198.of("example.org", "20010527", "img089322-038");
+```
+
+Resolution, query and fragment components of RFC 8141 are accepted.
+
+A `URN_8141` does not know the rules of the `fdc` namespace. So the answer to an equivalence check depends on which URN is asked, unless both are asked:
+
+```java
+URN_4198 fdc     = URN.rfc4198().parse("urn:fdc:Example.NET:200406:ivr:51089");
+URN_8141 generic = URN.rfc8141().parse("urn:fdc:example.net:200406:ivr:51089");
+
+fdc.equals(generic);               // false, different classes
+fdc.isEquivalentTo(generic);       // true, by the rules of RFC 4198
+generic.isEquivalentTo(fdc);       // false, by the general rules of RFC 8141
+URN.areEquivalent(generic, fdc);   // true
+```
 
 ## Where to find releases?
 The main branch of the repository contains the latest developments. Releases are tagged.
@@ -106,6 +111,6 @@ You can use the library (e.g. the JAR artifact) in any project, open source or p
 
 [RFC 2141]: https://tools.ietf.org/html/rfc2141
 [RFC 8141]: https://tools.ietf.org/html/rfc8141
-[RFC 8141, section 3]: https://tools.ietf.org/html/rfc8141#section-3
+[RFC 4198]: https://tools.ietf.org/html/rfc4198
 [GitHub Releases download section]: https://github.com/slub/urnlib/releases
 [GNU Lesser General Public License, Version 3]: https://www.gnu.org/licenses/lgpl-3.0.html

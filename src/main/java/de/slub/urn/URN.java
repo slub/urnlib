@@ -26,7 +26,8 @@ import java.util.Objects;
  * <p>
  * Every implementation has a Namespace Identifier and Namespace Specific String component and supports a certain
  * {@link RFC}. New instances can be created using an appropriate {@link URNParser} which can be obtained via the
- * {@code rfc2141()} or {@code rfc8141()} methods respectively.
+ * {@code rfc2141()} or {@code rfc8141()} methods respectively. URNs of a particular namespace can have a type of
+ * their own, e.g. {@link URN_4198} for Federated Content URNs.
  * <p>
  * URNs are immutable and keep their components as given. There are two ways to compare them:
  * <ul>
@@ -73,6 +74,15 @@ public abstract class URN implements RFCSupport {
      */
     public static URNParser<URN_8141> rfc8141() {
         return new RFC8141Parser();
+    }
+
+    /**
+     * Returns a parser to produce and parse Federated Content URNs ({@code urn:fdc:}) according to RFC 4198
+     *
+     * @return Parser instance
+     */
+    public static URNParser<URN_4198> rfc4198() {
+        return new RFC4198Parser();
     }
 
     /**
