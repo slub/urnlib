@@ -17,9 +17,11 @@
 package de.slub.urn;
 
 /**
- * Represents a supported RFC.
+ * Represents a supported URN syntax RFC.
+ * <p>
+ * The rules of a particular namespace are not listed here, see {@link Namespace#specification()}.
  */
-public enum RFC {
+public enum RFC implements Specification {
     /**
      * RFC 2141, URN Syntax (May 1997).
      */
@@ -27,14 +29,7 @@ public enum RFC {
     /**
      * RFC 8141, Uniform Resource Names (April 2017), superseding RFC 2141.
      */
-    RFC_8141("https://tools.ietf.org/html/rfc8141"),
-    /**
-     * RFC 4198, A Uniform Resource Name (URN) Namespace for Federated Content (November 2005).
-     * <p>
-     * This is not a URN syntax but defines the {@code fdc} namespace on top of one. It is supported by
-     * {@link URN_4198}.
-     */
-    RFC_4198("https://tools.ietf.org/html/rfc4198");
+    RFC_8141("https://tools.ietf.org/html/rfc8141");
 
     private final String url;
 
@@ -47,6 +42,7 @@ public enum RFC {
      *
      * @return URL string literal
      */
+    @Override
     public String url() {
         return url;
     }

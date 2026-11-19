@@ -72,7 +72,7 @@ public final class URN_2141 extends URN {
      * @see URN#namespaceIdentifier()
      */
     @Override
-    public NamespaceIdentifier namespaceIdentifier() {
+    public NID_RFC2141 namespaceIdentifier() {
         return namespaceIdentifier;
     }
 
@@ -80,7 +80,7 @@ public final class URN_2141 extends URN {
      * @see URN#namespaceSpecificString()
      */
     @Override
-    public NamespaceSpecificString namespaceSpecificString() {
+    public NSS_RFC2141 namespaceSpecificString() {
         return namespaceSpecificString;
     }
 

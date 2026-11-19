@@ -9,4 +9,5 @@
  */
 module urnlib {
     exports de.slub.urn;
+    exports de.slub.urn.fdc;
 }

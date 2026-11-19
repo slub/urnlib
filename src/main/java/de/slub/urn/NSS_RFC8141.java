@@ -61,7 +61,7 @@ public final class NSS_RFC8141 extends NamespaceSpecificString {
      * @return True, if the literal is valid according to the RFC 8141.
      */
     @Override
-    protected boolean isValidURLEncodedNamespaceSpecificString(String encoded) {
+    boolean isValidURLEncodedNamespaceSpecificString(String encoded) {
         // NSS = pchar *(pchar / "/")
         return !encoded.startsWith("/")
                 && PercentEncoding.isValid(encoded, c -> c == '/' || Parsing.isPchar(c), true);
