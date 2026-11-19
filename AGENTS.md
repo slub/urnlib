@@ -25,33 +25,33 @@ Set by the maintainer on 2026-11-19. Findings are measured against it.
   `URN.areEquivalent()` is the symmetric form. The difference is documented throughout.
 - **Percent-encoded octets are never decoded for comparison.** Normalization only changes case.
 - **No runtime dependencies.** The library targets Java 11.
-
-## Core finding
-
-The type hierarchy is organised by RFC (`URN_2141`, `URN_8141`, `NID_RFC…`, `NSS_RFC…`), but URNs vary by
-**namespace**. RFC 4198 defines a namespace, not a syntax, and had to be forced into the RFC axis: `URN_4198` and
-`NSS_RFC4198` duplicate large parts of their RFC 8141 counterparts. Every further namespace (`nbn`, `isbn`, `uuid`)
-would pay the same cost.
+- **The roots of the hierarchy are sealed.** `URN`, `NamespaceIdentifier` and `NamespaceSpecificString` have
+  package-private constructors and hooks (Java 11 has no `sealed`), and all leaves are `final`. `SealedHierarchyTest`
+  guards this. Code outside the package cannot add a URN type, so the Liskov finding on base constructors concerns
+  internal code only.
+- **Namespaces are definitions, not URN types.** `Namespace<T>` is the only extension point: a NID rule, an NSS rule
+  that yields a typed name, and an optional normal form. The library connects it to a `URN_8141` in the final
+  `NamespaceURN<T>` (`URN.in(namespace)`, `urn.as(namespace)`). The library validates the syntax before it asks the
+  namespace, and the literal always comes from the held `URN_8141`. The normal form of a namespace is applied on top
+  of the RFC normal form, so a namespace can add equivalences but never separate RFC-equivalent URNs (RFC 8141,
+  section 3.1). RFC 4198 is built this way in `de.slub.urn.fdc`, with public API only. `CustomNamespaceTest` checks
+  that a faulty namespace cannot yield an invalid URN.
+- **Errors name any specification.** `URNSyntaxError` refers to a `Specification`. `RFC` implements it for the
+  syntaxes and stays closed; a namespace supplies its own.
+- **Entry points follow `java.net.URI`.** `URN.parse`, `URN.create` (unchecked) and `URN.of` produce RFC 8141 URNs.
+  `URN.rfc2141()` and `URN.rfc8141()` remain for an explicit choice of syntax.
 
 ## Findings
 
 ### Open/closed
 
-- **The roots of the hierarchy are not sealed.** Only the leaves are `final`. `URN`, `NamespaceIdentifier` and
-  `NamespaceSpecificString` are public and abstract, with accessible constructors and abstract validation hooks, as
-  they were in v3.0.0. `ThirdPartyExtensionTest` shows the consequence: `CustomNSS` decides alone what a valid NSS is,
-  `CustomURN.toString()` can return any string, and all three custom types claim `RFC.RFC_2141`. A `URN` instance is
-  therefore not guaranteed to conform to an RFC. Java 11 has no `sealed`, so sealing means package-private
-  constructors. That breaks subclasses written against 3.x and removes `ThirdPartyExtensionTest`. With sealed roots,
-  the Liskov finding on base constructors and the Dependency inversion finding on package-private helpers concern
-  internal code only.
-- **RFC 4198 is a namespace inside the syntax hierarchy.** `URN_8141` and `NSS_RFC8141` are rightly `final`, so
-  `URN_4198` re-implements the RQF field, `equals`, `hashCode`, `toString` and `assignedName`, and `NSS_RFC4198` copies
-  the validity predicate of `NSS_RFC8141`. `URN.rfc4198()` puts a namespace next to the syntax factories. RFC 8141
-  lets a namespace definition constrain the NSS (section 2.2) and add rules for URN-equivalence that never make
-  equivalent URNs different (section 3.1). A type that holds a `URN_8141` instead of extending `URN` can express both.
-- **Namespace errors depend on the closed `RFC` enum.** `NSS_RFC4198` reports its errors with `RFC.RFC_4198`, so each
-  further namespace would add an enum constant. Namespace violations have no other way to name their specification.
+- **The contract of `Namespace.normalForm` is only partly enforced.** `NamespaceURN.normalize()` validates the result
+  and throws `IllegalStateException` if it is no valid URN of the namespace. `isEquivalentTo()` trusts it: a normal
+  form that throws, returns null or is not idempotent makes equivalence checks fail or give inconsistent answers.
+- **`NamespaceURN.equals()` depends on `Namespace.equals()`.** Two instances of the same namespace class yield
+  unequal URNs unless the class implements `equals()`. Javadoc and README say so, nothing enforces it.
+- **A `NamespaceURN` always follows RFC 8141.** `as(namespace)` parses a `URN_2141` again as RFC 8141. A namespace
+  cannot be connected to the RFC 2141 syntax.
 
 ### Correctness
 
@@ -63,37 +63,41 @@ would pay the same cost.
 ### Liskov
 
 - The base constructors of `NamespaceIdentifier` and `NamespaceSpecificString` call overridable methods
-  (`supportedRFC()`, the validation hook, `normalForm()`) before subclass fields exist. Only `normalForm` documents it.
-- `supports(RFC)` is exact equality. `URN_8141.supports(RFC_2141)` and `URN_4198.supports(RFC_8141)` are both false,
-  although the README calls RFC 8141 backward compatible and `URN_4198` follows RFC 8141 syntax.
+  (`supportedRFC()`, the validation hook) before subclass fields exist. This is not documented.
+- `supports(RFC)` is exact equality. `URN_8141.supports(RFC_2141)` is false, although the README calls RFC 8141
+  backward compatible.
 - Validation hooks differ: `validateNamespaceIdentifier` returns an error message or null,
-  `isValidURLEncodedNamespaceSpecificString` returns a boolean. `NSS_RFC4198` therefore validates its structure after
-  `super()`. `NID_RFC2141.validateNamespaceIdentifier` is widened to `public`.
+  `isValidURLEncodedNamespaceSpecificString` returns a boolean. `NID_RFC2141.validateNamespaceIdentifier` is widened
+  to `public`.
 
 ### Interface segregation
 
-- `URN_8141` and `URN_4198` both have `getRQFComponents()` but share no type. The README example needs
-  `supports(RFC_8141)` plus a downcast, and that check fails for `URN_4198`.
-- All three parsers implement `parse(URI)` as `parse(Parsing.literalOf(uri))`.
+- `URN_8141` and `NamespaceURN` both have `getRQFComponents()` but share no type. Code that holds a plain `URN`
+  needs `instanceof` checks for both to reach the r-, q- and f-components.
+- `RFC2141Parser` and `RFC8141Parser` both implement `parse(URI)` as `parse(Parsing.literalOf(uri))`.
 - `supports(RFC)` is implemented identically in `URN`, `NamespaceIdentifier` and `NamespaceSpecificString`.
 
 ### Dependency inversion
 
 - `URN` depends on the concrete parsers, which depend on the concrete URN types.
-- `Parsing`, `PercentEncoding` and `RQF_RFC8141.parse` are package-private. An extender cannot reuse percent-encoding
-  validation, `pchar` checks, splitting, or r/q/f parsing.
+- `Parsing` and `PercentEncoding` are package-private. A `Namespace` outside the package cannot reuse
+  percent-encoding validation or `pchar` checks. `de.slub.urn.fdc` gets by because the ResourceId of RFC 4198 has
+  exactly the character set of an RFC 2141 NSS, so it validates and encodes through `NSS_RFC2141`. A namespace with
+  another character set has to write its own checks.
 
 ### Usability
 
 - Three naming schemes: `URN_8141`, `NID_RFC8141`, `RFC8141Parser`. `getRQFComponents()` sits next to
   `namespaceIdentifier()` and `fragment()`. `URNSyntaxError` and `URNResolvingError` are checked exceptions.
   `ErrorTypes` is a plural enum name.
-- Every construction throws a checked exception, also for constants. There is no unchecked factory like
-  `URI.create`.
-- Building from parts is verbose. There is no `of(nid, nss)` and no `withFragment`/`withQuery`. The constructor of
+- Only `URN.create` is unchecked. The constructors of the NID and NSS types, `URN.of(String, String)` and the
+  parsers of `URN.in(namespace)` throw a checked exception, also for constants.
+- There is no `withFragment`/`withQuery`, and `URN.of` takes no r-, q- or f-components. The constructor of
   `RQF_RFC8141` takes an `Optional` parameter.
-- `URN_2141` and `URN_8141` return the base type from `namespaceIdentifier()` and `namespaceSpecificString()`, so
-  `NID_RFC8141.isFormal()` needs a cast. `URN_4198` narrows its NSS but not its NID.
-- No parse method detects the most specific type; the caller chooses the RFC up front.
-- `normalize()` repeats a `catch (URNSyntaxError) → IllegalStateException` block in five classes.
+- `URN.of(String, String)` takes the NSS URL encoded only. Building from an unencoded NSS needs
+  `new NSS_RFC8141(nss, NOT_ENCODED)`, which is subject to the Correctness finding.
+- No parse method detects the namespace of a URN. The caller chooses it up front with `URN.in(namespace)`; there is
+  no registry of namespaces.
+- `NamespaceURN<FederatedContentName>` is long to write, and `FederatedContent` offers no `parse` shortcut.
+- `normalize()` repeats a `catch (URNSyntaxError) → IllegalStateException` block in the four NID and NSS classes.
 - `URNResolvingError.failedUrn` is not final, and no constructor takes message, URN and cause together.
