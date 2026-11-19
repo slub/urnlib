@@ -110,10 +110,23 @@ abstract public class NamespaceSpecificString implements RFCSupport {
 
     /**
      * Create a new {@code NamespaceSpecificString} instance that is an exact copy of the given instance.
+     * <p>
+     * The literal and its normal form are taken over without validating or computing them again. So the given
+     * instance has to be of the same class as the new one, otherwise the copy could hold a literal that its own class
+     * does not accept, or a normal form that follows the rules of another class.
      *
      * @param instanceForCopying Base instance for copying
+     * @throws IllegalArgumentException if the parameter is null or of another class than the new instance
      */
     public NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
+        if (instanceForCopying == null) {
+            throw new IllegalArgumentException("Namespace Specific String cannot be null");
+        }
+        if (instanceForCopying.getClass() != getClass()) {
+            throw new IllegalArgumentException(String.format(
+                    "Cannot copy a Namespace Specific String of type %s into a %s",
+                    instanceForCopying.getClass().getSimpleName(), getClass().getSimpleName()));
+        }
         this.encoded = instanceForCopying.encoded;
         this.normalized = instanceForCopying.normalized;
         this.raw = instanceForCopying.raw;

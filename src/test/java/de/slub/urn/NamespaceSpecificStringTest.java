@@ -361,4 +361,9 @@ abstract class NamespaceSpecificStringTest {
         assertEquals("\u00c4/b", subject.normalize().unencoded());
     }
 
+    @Test
+    public void Copying_null_throws_exception() {
+        assertThrows(IllegalArgumentException.class, () -> newTestInstance((NamespaceSpecificString) null));
+    }
+
 }

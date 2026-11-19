@@ -95,4 +95,11 @@ public class NID_RFC8141Test extends NamespaceIdentifierTest<NID_RFC8141> {
         assertFalse(nid.isInformal());
     }
 
+    @Test
+    public void Copying_a_NamespaceIdentifier_of_another_type_throws_exception() throws URNSyntaxError {
+        // A single character is valid according to RFC 2141, but too short for RFC 8141
+        final NamespaceIdentifier rfc2141 = new NID_RFC2141("a");
+        assertThrows(IllegalArgumentException.class, () -> new NID_RFC8141(rfc2141));
+    }
+
 }

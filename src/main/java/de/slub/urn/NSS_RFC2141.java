@@ -49,6 +49,8 @@ public final class NSS_RFC2141 extends NamespaceSpecificString {
      * Create a new {@code NamespaceSpecificString} instance that is an exact copy of the given instance.
      *
      * @param instanceForCopying Base instance for copying
+     * @throws IllegalArgumentException if the parameter is null or not a {@code NSS_RFC2141}
+     * @see NamespaceSpecificString#NamespaceSpecificString(NamespaceSpecificString)
      */
     public NSS_RFC2141(NamespaceSpecificString instanceForCopying) {
         super(instanceForCopying);

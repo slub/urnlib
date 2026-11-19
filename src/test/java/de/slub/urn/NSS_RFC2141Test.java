@@ -52,4 +52,12 @@ public class NSS_RFC2141Test extends NamespaceSpecificStringTest {
         // RFC 2141, 2.4: octet 0 (0 hex) should NEVER be used, in either unencoded or %-encoded form
         assertThrows(URNSyntaxError.class, () -> newTestInstance("a%00b", Encoding.URL_ENCODED));
     }
+
+    @Test
+    public void Copying_a_NamespaceSpecificString_of_another_type_throws_exception() throws URNSyntaxError {
+        // Slash and tilde are valid according to RFC 8141, but not according to RFC 2141
+        final NamespaceSpecificString rfc8141 = new NSS_RFC8141("a/b~c", Encoding.URL_ENCODED);
+        assertThrows(IllegalArgumentException.class, () -> new NSS_RFC2141(rfc8141));
+    }
+
 }

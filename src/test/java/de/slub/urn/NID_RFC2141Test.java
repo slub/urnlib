@@ -62,4 +62,11 @@ public class NID_RFC2141Test extends NamespaceIdentifierTest<NID_RFC2141> {
     public void Namespace_identifier_of_32_characters_is_allowed() throws URNSyntaxError {
         newTestInstance("a" + "-".repeat(31));
     }
+
+    @Test
+    public void Copying_a_NamespaceIdentifier_of_another_type_throws_exception() throws URNSyntaxError {
+        final NamespaceIdentifier rfc8141 = new NID_RFC8141("valid-nid");
+        assertThrows(IllegalArgumentException.class, () -> new NID_RFC2141(rfc8141));
+    }
+
 }

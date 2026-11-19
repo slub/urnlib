@@ -64,13 +64,21 @@ abstract public class NamespaceIdentifier implements RFCSupport {
 
     /**
      * Create a new {@code NamespaceIdentifier} instance that is an exact copy of the given instance.
+     * <p>
+     * The literal is taken over without validating it again. So the given instance has to be of the same class as
+     * the new one, otherwise the copy could hold a literal that its own class does not accept.
      *
      * @param instanceForCopying Base instance for copying
-     * @throws IllegalArgumentException if parameter is null or empty
+     * @throws IllegalArgumentException if the parameter is null or of another class than the new instance
      */
     public NamespaceIdentifier(NamespaceIdentifier instanceForCopying) {
         if (instanceForCopying == null) {
             throw new IllegalArgumentException("Namespace identifier cannot be null");
+        }
+        if (instanceForCopying.getClass() != getClass()) {
+            throw new IllegalArgumentException(String.format(
+                    "Cannot copy a Namespace Identifier of type %s into a %s",
+                    instanceForCopying.getClass().getSimpleName(), getClass().getSimpleName()));
         }
         nid = instanceForCopying.nid;
     }

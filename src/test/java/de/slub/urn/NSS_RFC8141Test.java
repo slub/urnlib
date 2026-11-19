@@ -88,4 +88,12 @@ public class NSS_RFC8141Test extends NamespaceSpecificStringTest {
         final String nss = "azAZ09-._~!$&'()*+,;=:@/%2F";
         assertEquals(nss, newTestInstance(nss, Encoding.URL_ENCODED).toString());
     }
+
+    @Test
+    public void Copying_a_NamespaceSpecificString_of_another_type_throws_exception() throws URNSyntaxError {
+        // The copy would take over the normal form of RFC 4198, which lower-cases the ProviderId
+        final NamespaceSpecificString rfc4198 = new NSS_RFC4198("Example.NET:2004:a", Encoding.URL_ENCODED);
+        assertThrows(IllegalArgumentException.class, () -> new NSS_RFC8141(rfc4198));
+    }
+
 }
