@@ -104,7 +104,7 @@ public final class NID_RFC8141 extends NamespaceIdentifier {
      * @return Error message, if the given string violates the rules for valid namespace identifiers. Null, if not.
      */
     @Override
-    protected String validateNamespaceIdentifier(String nid) {
+    String validateNamespaceIdentifier(String nid) {
         if (nid.length() < 2) {
             return String.format("Namespace Identifier '%s' is too short.", nid);
         }

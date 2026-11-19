@@ -34,8 +34,11 @@ import static de.slub.urn.URNSyntaxError.syntaxError;
  * can't be decoded, see {@link #unencoded()}.
  * <p>
  * Equality is not URN-equivalence. To find out whether two Namespace Specific Strings are equivalent as defined by
- * RFC 8141, section 3 and the rules of a namespace, use {@link #isEquivalentTo(NamespaceSpecificString)}. To get the
+ * RFC 8141, section 3, use {@link #isEquivalentTo(NamespaceSpecificString)}. To get the
  * normal form that equivalence is based on, use {@link #normalize()}.
+ * <p>
+ * This class is not open for extension: it has no accessible constructor, so all of its subclasses are part of this
+ * library and conform to the RFC they report by {@link #supportedRFC()}.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
@@ -57,7 +60,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      * @throws URNSyntaxError Thrown if the given literal is not valid according to {@code
      *                        isValidURLEncodedNamespaceSpecificString()}
      */
-    public NamespaceSpecificString(String nss, Encoding encoding) throws URNSyntaxError {
+    NamespaceSpecificString(String nss, Encoding encoding) throws URNSyntaxError {
         if ((nss == null) || (nss.isEmpty())) {
             throw new IllegalArgumentException("Namespace Specific String part cannot be null or empty");
         }
@@ -75,28 +78,9 @@ abstract public class NamespaceSpecificString implements RFCSupport {
         normalized = normalForm(encoded);
     }
 
-    /**
-     * Compute the normal form of a URL encoded NSS literal.
-     * <p>
-     * The normal form defines URN-equivalence: two Namespace Specific Strings are equivalent if their normal forms
-     * are identical, see {@link #isEquivalentTo(NamespaceSpecificString)}. This implementation upper-cases the hex
-     * digits of percent-encoded octets, as defined by RFC 8141, section 3. Implementations for a particular namespace
-     * can override it to add the equivalence rules of that namespace, and should apply them on top of the result of
-     * this implementation.
-     * <p>
-     * This method is called while the instance is being constructed, and it is applied to the literals of other
-     * Namespace Specific Strings when checking for equivalence. So it must
-     * <ul>
-     *     <li>depend on its argument only, not on the state of the instance,</li>
-     *     <li>return the same result if applied to its own result,</li>
-     *     <li>accept any URL encoded NSS literal without throwing, including literals that are not valid for this
-     *     implementation.</li>
-     * </ul>
-     *
-     * @param encoded A URL encoded NSS literal
-     * @return The normal form of the literal
-     */
-    protected String normalForm(String encoded) {
+    // The normal form defines URN-equivalence: the hex digits of percent-encoded octets are upper case (RFC 8141,
+    // section 3). Rules of a particular namespace are applied on top of it, see Namespace#normalForm(String).
+    private static String normalForm(String encoded) {
         return PercentEncoding.upperCaseOctets(encoded);
     }
 
@@ -118,7 +102,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      * @param instanceForCopying Base instance for copying
      * @throws IllegalArgumentException if the parameter is null or of another class than the new instance
      */
-    public NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
+    NamespaceSpecificString(NamespaceSpecificString instanceForCopying) {
         if (instanceForCopying == null) {
             throw new IllegalArgumentException("Namespace Specific String cannot be null");
         }
@@ -140,7 +124,7 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      * @param encoded The URL encoded NSS literal
      * @return True, if the literal is valid according to the RFC.
      */
-    protected abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
+    abstract boolean isValidURLEncodedNamespaceSpecificString(String encoded);
 
     /**
      * URL Encode all NSS reserved characters of a given string literal, using upper-case hex digits.
@@ -201,9 +185,9 @@ abstract public class NamespaceSpecificString implements RFCSupport {
     }
 
     /**
-     * Return this Namespace Specific String in its normal form, as defined by {@link #normalForm(String)}.
+     * Return this Namespace Specific String in its normal form.
      * <p>
-     * Unless an implementation defines more, the hex digits of all percent-encoded octets are upper case (RFC 8141,
+     * The hex digits of all percent-encoded octets are upper case (RFC 8141,
      * section 3 and RFC 3986, section 6.2.2.1), percent-encoded octets are not decoded and literal characters keep
      * their case.
      * <p>
@@ -219,26 +203,25 @@ abstract public class NamespaceSpecificString implements RFCSupport {
      *
      * @return The URL encoded literal in normal form
      */
-    protected final String normalizedLiteral() {
+    final String normalizedLiteral() {
         return normalized;
     }
 
     /**
-     * Tell whether another Namespace Specific String is equivalent to this one, by the rules of this one.
+     * Tell whether another Namespace Specific String is equivalent to this one.
      * <p>
-     * The other literal is brought into the normal form of this implementation, see {@link #normalForm(String)}, and
-     * compared to the normal form of this instance. Unlike {@link #equals(Object)}, this works across types: the
-     * same literal is always equivalent to itself, no matter which classes represent it.
+     * Two Namespace Specific Strings are equivalent if their normal forms are identical, i.e. if they differ in the
+     * case of the hex digits of percent-encoded octets at most (RFC 8141, section 3). Unlike {@link #equals(Object)},
+     * this works across types: the same literal is always equivalent to itself, no matter which classes represent
+     * it.
      * <p>
-     * The relation is not symmetric if the two instances are of different types, because each type applies its own
-     * rules. Namespace rules may only add equivalences to those of RFC 8141, section 3, so a positive answer from
-     * either side is valid.
+     * The equivalence rules of a particular namespace are not applied here, see {@link URN#isEquivalentTo(URN)}.
      *
      * @param other The Namespace Specific String to compare to
-     * @return True, if the other Namespace Specific String is not null and equivalent by the rules of this instance
+     * @return True, if the other Namespace Specific String is not null and equivalent to this one
      */
     public final boolean isEquivalentTo(NamespaceSpecificString other) {
-        return other != null && normalized.equals(normalForm(other.encoded));
+        return other != null && normalized.equals(other.normalized);
     }
 
     /**

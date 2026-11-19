@@ -47,8 +47,10 @@ public class RFCTest {
     }
 
     @Test
-    public void RFC_4198_URL_is_specification_reference() {
-        assertEquals("https://tools.ietf.org/html/rfc4198", RFC.RFC_4198.url());
+    public void RFC_is_a_specification() {
+        Specification specification = RFC_8141;
+        assertEquals("RFC_8141", specification.name());
+        assertEquals("https://tools.ietf.org/html/rfc8141", specification.url());
     }
 
 }

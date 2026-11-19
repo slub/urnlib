@@ -28,6 +28,9 @@ import static de.slub.urn.URNSyntaxError.*;
  * {@code NamespaceIdentifier} instances are immutable. The literal is kept as given, so that {@code toString()}
  * returns it unchanged, and {@code equals()} compares it exactly. Use {@link #isEquivalentTo(NamespaceIdentifier)}
  * for the case-insensitive comparison of the RFCs and {@link #normalize()} for the lower case form.
+ * <p>
+ * This class is not open for extension: it has no accessible constructor, so all of its subclasses are part of this
+ * library and conform to the RFC they report by {@link #supportedRFC()}.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc1737">Functional Requirements for Uniform Resource Names</a>
@@ -45,7 +48,7 @@ abstract public class NamespaceIdentifier implements RFCSupport {
      *                                  {@code isValidNamespaceIdentifier()} method.
      * @throws IllegalArgumentException if the parameter is null or empty
      */
-    public NamespaceIdentifier(String nid) throws URNSyntaxError {
+    NamespaceIdentifier(String nid) throws URNSyntaxError {
         if ((nid == null) || (nid.isEmpty())) {
             throw new IllegalArgumentException("Namespace identifier part cannot be null or empty");
         }
@@ -71,7 +74,7 @@ abstract public class NamespaceIdentifier implements RFCSupport {
      * @param instanceForCopying Base instance for copying
      * @throws IllegalArgumentException if the parameter is null or of another class than the new instance
      */
-    public NamespaceIdentifier(NamespaceIdentifier instanceForCopying) {
+    NamespaceIdentifier(NamespaceIdentifier instanceForCopying) {
         if (instanceForCopying == null) {
             throw new IllegalArgumentException("Namespace identifier cannot be null");
         }
@@ -89,7 +92,7 @@ abstract public class NamespaceIdentifier implements RFCSupport {
      * @param nid Namespace identifier literal
      * @return Error message, if the given string violates the rules for valid namespace identifiers. Null, if not.
      */
-    abstract protected String validateNamespaceIdentifier(String nid);
+    abstract String validateNamespaceIdentifier(String nid);
 
     /**
      * Calculates hash code based on the Namespace Identifier literal, consistent with {@link #equals(Object)}.
@@ -151,7 +154,7 @@ abstract public class NamespaceIdentifier implements RFCSupport {
      *
      * @return The lower-cased Namespace Identifier literal
      */
-    protected final String normalizedLiteral() {
+    final String normalizedLiteral() {
         return nid.toLowerCase(Locale.ROOT);
     }
 

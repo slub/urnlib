@@ -17,6 +17,10 @@
 
 /**
  * Java library for representing, parsing and encoding URNs as specified in RFC 2141 and RFC 8141.
+ * <p>
+ * {@link de.slub.urn.URN} is the entry point for creating URNs. The URN types are not open for extension. The rules
+ * of a particular URN namespace are added by implementing {@link de.slub.urn.Namespace}, as
+ * {@link de.slub.urn.fdc.FederatedContent} does for RFC 4198.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>

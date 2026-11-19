@@ -20,9 +20,22 @@ package de.slub.urn;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class URNSyntaxErrorTest {
+
+    private static final Specification SOME_SPECIFICATION = new Specification() {
+        @Override
+        public String name() {
+            return "Some Specification";
+        }
+
+        @Override
+        public String url() {
+            return "https://example.org/spec";
+        }
+    };
 
     @Test
     public void GetMessage_returns_message_passed_when_constructed() {
@@ -44,6 +57,26 @@ public class URNSyntaxErrorTest {
     public void Stores_violated_RFC() {
         URNSyntaxError subject = URNSyntaxError.syntaxError(RFC.RFC_2141, "bla");
         assertEquals(RFC.RFC_2141, subject.getViolatedRfc());
+    }
+
+    @Test
+    public void Violated_RFC_is_violated_specification() {
+        URNSyntaxError subject = URNSyntaxError.syntaxError(RFC.RFC_2141, "bla");
+        assertEquals(RFC.RFC_2141, subject.getViolatedSpecification());
+    }
+
+    @Test
+    public void Stores_violated_specification_that_is_no_RFC() {
+        URNSyntaxError subject = URNSyntaxError.syntaxError(SOME_SPECIFICATION, "bla");
+        assertEquals(SOME_SPECIFICATION, subject.getViolatedSpecification());
+        assertNull(subject.getViolatedRfc());
+    }
+
+    @Test
+    public void ToString_includes_violated_specification_that_is_no_RFC() {
+        String str = URNSyntaxError.syntaxError(SOME_SPECIFICATION, "bla").toString();
+        assertTrue(str.contains("Some Specification"), str);
+        assertTrue(str.contains("https://example.org/spec"), str);
     }
 
     @Test

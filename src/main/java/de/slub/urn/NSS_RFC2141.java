@@ -63,7 +63,7 @@ public final class NSS_RFC2141 extends NamespaceSpecificString {
      * @return True, if the literal is valid according to the RFC 2141.
      */
     @Override
-    protected boolean isValidURLEncodedNamespaceSpecificString(String encoded) {
+    boolean isValidURLEncodedNamespaceSpecificString(String encoded) {
         // RFC 2141, 2.4: octet 0 should never be used, in either unencoded or %-encoded form
         return PercentEncoding.isValid(encoded, Parsing::isRfc2141NssLiteral, false);
     }

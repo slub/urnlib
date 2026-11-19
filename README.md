@@ -19,38 +19,44 @@ The library is compiled for Java 11.
 ## Usage
 
 ```java
+import de.slub.urn.NamespaceURN;
 import de.slub.urn.URN;
 import de.slub.urn.URNSyntaxError;
-import de.slub.urn.URN_4198;
+import de.slub.urn.URN_2141;
 import de.slub.urn.URN_8141;
+import de.slub.urn.fdc.FederatedContent;
+import de.slub.urn.fdc.FederatedContentName;
 
 import java.util.Optional;
 
-import static de.slub.urn.RFC.RFC_8141;
-
 class Demo {
-    public void foo() throws URNSyntaxError {
-        // Create a RFC 2141 compliant URN (not recommended)
-        URN urn1 = URN.rfc2141().parse("urn:example:1234");
+    // A constant: an invalid literal is a programming error and throws an IllegalArgumentException
+    static final URN_8141 EXAMPLE = URN.create("urn:example:foo/1234");
 
-        // Create a RFC 8141 compliant URN (recommended)
-        URN urn2 = URN.rfc8141().parse("urn:example:foo/1234?=cq=cz#bar");
+    public void foo(String input) throws URNSyntaxError {
+        // Parse a URN according to RFC 8141, the current URN syntax
+        URN_8141 urn1 = URN.parse(input);
+        Optional<String> fragment = urn1.getRQFComponents().fragment();
 
-        // Access fragment part of a supposedly RFC 8141 compliant URN
-        if (urn2.supports(RFC_8141)) {
-            Optional<String> fragment = ((URN_8141) urn2).getRQFComponents().fragment();
-        }
+        // Build a URN from its parts
+        URN_8141 urn2 = URN.of("example", "foo/1234");
 
-        // Create a RFC 4198 compliant Federated Content URN, see below
-        URN_4198 urn3 = URN.rfc4198().parse("urn:fdc:example.net:200406:ivr:51089");
+        // Parse a URN according to RFC 2141 explicitly (not recommended)
+        URN_2141 urn3 = URN.rfc2141().parse("urn:example:1234");
+
+        // Parse a URN of a particular namespace, here the Federated Content URNs of RFC 4198, see below
+        NamespaceURN<FederatedContentName> urn4 =
+                URN.in(FederatedContent.NAMESPACE).parse("urn:fdc:example.net:200406:ivr:51089");
     }
 }
 ```
 
+`URN.parse()`, `URN.create()` and `URN.of()` produce RFC 8141 URNs. `URN.rfc8141()` and `URN.rfc2141()` return a parser for an explicitly chosen syntax.
+
 
 ### Normalization
 
-`toString()` returns a parsed URN as it was given. `normalize()` returns the normal form according to the type of the URN, which is what equivalence compares. `assignedName()` drops everything but the Namespace Identifier and the Namespace Specific String.
+`toString()` returns a parsed URN as it was given. `normalize()` returns the normal form, which is what equivalence compares. A URN of a particular namespace applies the rules of the namespace on top of the general ones. `assignedName()` drops everything but the Namespace Identifier and the Namespace Specific String.
 
 ```java
 URN urn = URN.rfc8141().parse("URN:Example:a%2c?=q");
@@ -58,39 +64,47 @@ urn.toString();                             // urn:Example:a%2c?=q
 urn.normalize().toString();                 // urn:example:a%2C?=q
 urn.normalize().assignedName().toString();  // urn:example:a%2C
 
-URN.rfc4198().parse("urn:fdc:Example.COM:2002:%ff").normalize().toString();  // urn:fdc:example.com:2002:%FF
+URN.in(FederatedContent.NAMESPACE).parse("urn:fdc:Example.COM:2002:%ff").normalize().toString();  // urn:fdc:example.com:2002:%FF
 ```
 
 Equivalent URNs of the same type have equal normalized assigned-names. Use `urn.normalize().assignedName()` as the key if a `HashMap` or `HashSet` is to treat equivalent URNs as the same.
 
-### Federated Content URNs (RFC 4198)
+### Namespaces
 
-[RFC 4198] registers the `fdc` namespace and structures its Namespace Specific String as `<ProviderId>:<DateId>:<ResourceId>`. `URN_4198` is a URN type of its own for this namespace. It validates the structure, gives access to the fields and knows the equivalence rule of the namespace: the case of the ProviderId does not matter.
+The URN syntax leaves it to a namespace to constrain the Namespace Specific String and to declare more URNs equivalent than the general rules do. A `de.slub.urn.Namespace` defines such rules. `URN.in(namespace)` returns a parser for the URNs of a namespace and `urn.as(namespace)` converts a URN. Both yield a `NamespaceURN`. This is a URN according to RFC 8141 that is also valid in the namespace, gives access to the name the namespace has read from it and knows the equivalence rules of the namespace.
+
+#### Federated Content URNs (RFC 4198)
+
+[RFC 4198] registers the `fdc` namespace and structures its Namespace Specific String as `<ProviderId>:<DateId>:<ResourceId>`. `de.slub.urn.fdc.FederatedContent.NAMESPACE` validates the structure, gives access to the fields and knows the equivalence rule of the namespace: the case of the ProviderId does not matter.
 
 ```java
-URN_4198 fdc = URN.rfc4198().parse("urn:fdc:example.net:200406:ivr:51089");
-fdc.namespaceSpecificString().providerId();  // "example.net"
-fdc.namespaceSpecificString().dateId();      // "200406"
-fdc.namespaceSpecificString().date();        // 2004-06-01
-fdc.namespaceSpecificString().resourceId();  // "ivr:51089"
+NamespaceURN<FederatedContentName> fdc =
+        URN.in(FederatedContent.NAMESPACE).parse("urn:fdc:example.net:200406:ivr:51089");
+fdc.name().providerId();  // "example.net"
+fdc.name().dateId();      // "200406"
+fdc.name().date();        // 2004-06-01
+fdc.name().resourceId();  // "ivr:51089"
+fdc.urn();                // the underlying URN_8141
 
 // Convert a URN of another type
-URN_4198 converted = URN_4198.from(URN.rfc8141().parse("urn:fdc:example.net:200406:ivr:51089"));
+NamespaceURN<FederatedContentName> converted =
+        URN.parse("urn:fdc:example.net:200406:ivr:51089").as(FederatedContent.NAMESPACE);
 
 // Build a new one, the ResourceId gets percent-encoded where needed
-URN_4198 built = URN_4198.of("example.org", "20010527", "img089322-038");
+NamespaceURN<FederatedContentName> built = FederatedContent.of("example.org", "20010527", "img089322-038");
 ```
 
 Resolution, query and fragment components of RFC 8141 are accepted and available via `getRQFComponents()`.
 
-Parsing, converting and building throw a `URNSyntaxError` if the URN does not follow RFC 4198:
+Parsing, converting and building throw a `URNSyntaxError` if the URN does not follow RFC 4198. Its `getViolatedSpecification()` then is `FederatedContent.SPECIFICATION`:
 
 ```java
-URN.rfc4198().parse("urn:example:example.net:2004:a");    // Namespace Identifier is not fdc
-URN.rfc4198().parse("urn:fdc:localhost:2004:a");          // ProviderId is not a domain name
-URN.rfc4198().parse("urn:fdc:example.net:20040231:a");    // DateId is not a calendar date
-URN.rfc4198().parse("urn:fdc:example.net:04:a");          // 1 to 3 digit DateIds are reserved
-URN.rfc4198().parse("urn:fdc:example.net:2004");          // ResourceId is missing
+URNParser<NamespaceURN<FederatedContentName>> parser = URN.in(FederatedContent.NAMESPACE);
+parser.parse("urn:example:example.net:2004:a");    // Namespace Identifier is not fdc
+parser.parse("urn:fdc:localhost:2004:a");          // ProviderId is not a domain name
+parser.parse("urn:fdc:example.net:20040231:a");    // DateId is not a calendar date
+parser.parse("urn:fdc:example.net:04:a");          // 1 to 3 digit DateIds are reserved
+parser.parse("urn:fdc:example.net:2004");          // ResourceId is missing
 ```
 
 The DateId has the form `CCYY`, `CCYYMM` or `CCYYMMDD`. `date()` fills in `01` for a missing month or day. The ResourceId may contain colons, only the first two colons of the Namespace Specific String separate the fields.
@@ -98,14 +112,46 @@ The DateId has the form `CCYY`, `CCYYMM` or `CCYYMMDD`. `date()` fills in `01` f
 A `URN_8141` does not know the rules of the `fdc` namespace. So the answer to an equivalence check depends on which URN is asked, unless both are asked:
 
 ```java
-URN_4198 fdc     = URN.rfc4198().parse("urn:fdc:Example.NET:200406:ivr:51089");
-URN_8141 generic = URN.rfc8141().parse("urn:fdc:example.net:200406:ivr:51089");
+NamespaceURN<FederatedContentName> fdc =
+        URN.in(FederatedContent.NAMESPACE).parse("urn:fdc:Example.NET:200406:ivr:51089");
+URN_8141 generic = URN.parse("urn:fdc:example.net:200406:ivr:51089");
 
 fdc.equals(generic);               // false, different classes
 fdc.isEquivalentTo(generic);       // true, by the rules of RFC 4198
 generic.isEquivalentTo(fdc);       // false, by the general rules of RFC 8141
 URN.areEquivalent(generic, fdc);   // true
 ```
+
+#### Defining a namespace
+
+The URN types of the library cannot be extended. To support another namespace, implement `Namespace<T>`, where `T` is the type of the names of the namespace:
+
+```java
+// urn:ticket:<queue>-<number>, the queue is case-insensitive
+class Tickets implements Namespace<Integer> {
+    public boolean accepts(NamespaceIdentifier nid) {
+        return "ticket".equalsIgnoreCase(nid.toString());
+    }
+
+    public Integer read(NamespaceSpecificString nss) throws URNSyntaxError {
+        if (!nss.toString().matches("[A-Za-z]+-[0-9]+")) {
+            throw URNSyntaxError.syntaxError(specification(), "Not a ticket: " + nss);
+        }
+        return Integer.valueOf(nss.toString().split("-")[1]);
+    }
+
+    public String normalForm(String rfcNormalForm) {
+        return rfcNormalForm.toLowerCase(Locale.ROOT);
+    }
+
+    public Specification specification() { /* name and URL of the document that defines the namespace */ }
+}
+
+NamespaceURN<Integer> ticket = URN.in(new Tickets()).parse("urn:ticket:Support-42");
+ticket.name();  // 42
+```
+
+The library parses and validates a URN according to RFC 8141 before it asks the namespace. A namespace can therefore only reject URNs and add equivalences. It cannot make a URN valid that violates the syntax, and it cannot tell URNs apart that are equivalent by RFC 8141. Use one instance of a namespace, e.g. a constant: URNs of different instances are not equal unless the namespace implements `equals()`.
 
 ## Where to find releases?
 The main branch of the repository contains the latest developments. Releases are tagged.

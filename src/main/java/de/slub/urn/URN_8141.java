@@ -112,7 +112,7 @@ public final class URN_8141 extends URN {
      * @see URN#namespaceIdentifier()
      */
     @Override
-    public NamespaceIdentifier namespaceIdentifier() {
+    public NID_RFC8141 namespaceIdentifier() {
         return namespaceIdentifier;
     }
 
@@ -120,7 +120,7 @@ public final class URN_8141 extends URN {
      * @see URN#namespaceSpecificString()
      */
     @Override
-    public NamespaceSpecificString namespaceSpecificString() {
+    public NSS_RFC8141 namespaceSpecificString() {
         return namespaceSpecificString;
     }
 
@@ -142,6 +142,11 @@ public final class URN_8141 extends URN {
     @Override
     public URN_8141 normalize() {
         return new URN_8141(namespaceIdentifier.normalize(), namespaceSpecificString.normalize(), rqfComponents);
+    }
+
+    @Override
+    URN_8141 syntaxURN() {
+        return this;
     }
 
     /**
