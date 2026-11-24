@@ -12,8 +12,6 @@ The initial URN RFC 2141 of May 1997 was superseded by RFC 8141 in April 2017. R
 This library provides classes for representing, parsing and constructing a Uniform
 Resource Name (URN) and its parts Namespace Identifier (NID), Namespace Specific String (NSS) and optional Resolution, Query and Fragment components (RQF). If you don't need RFC 2141 URNs explicitly, always use RFC 8141 URNs because that is the current valid specification and RFC 8141 is backward compatible to RFC 2141.
 
-Further it defines an interface `de.slub.urn.URNResolver` for URN resolving implementations.
-
 The library is compiled for Java 11.
 
 ## Usage
