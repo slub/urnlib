@@ -22,6 +22,20 @@ package de.slub.urn;
  * <p>
  * It supports three different syntax errors and stores a reference to the specification that has been violated.
  * This is one of the URN syntax {@link RFC}s, or the specification of a {@link Namespace}.
+ * <ul>
+ *     <li>{@link ErrorTypes#RESERVED}: the Namespace Identifier is {@code urn}.</li>
+ *     <li>{@link ErrorTypes#LENGTH_ERROR}: the Namespace Identifier has more than 32 characters.</li>
+ *     <li>{@link ErrorTypes#SYNTAX_ERROR}: everything else, including violations of the rules of a namespace.</li>
+ * </ul>
+ * {@link #getError()} and {@link #getViolatedSpecification()} tell what went wrong, {@link #toString()} adds a
+ * reference to the specification to the message.
+ * <p>
+ * A {@link Namespace} reports a violation of its rules with
+ * {@link #syntaxError(Specification, String) syntaxError(specification(), message)}.
+ * <p>
+ * This is a checked exception, because the literal usually comes from outside the program. For literals in the
+ * source code, {@link URN#create(String)} throws an {@link IllegalArgumentException} instead. A literal that is
+ * {@code null} or empty is always reported by an {@link IllegalArgumentException}.
  *
  * @author Ralf Claussnitzer
  */

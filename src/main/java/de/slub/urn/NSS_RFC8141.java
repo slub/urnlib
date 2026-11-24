@@ -20,10 +20,22 @@ package de.slub.urn;
 /**
  * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN) according to RFC 8141.
  * <p>
- * The class takes care of all RFC8141 defined encoding and decoding in order to generate valid Namespace Specific
- * Strings.
+ * A valid URL encoded string (RFC 8141, section 2) is not empty, does not start with a slash and consists of
+ * <ul>
+ *     <li>ASCII letters and digits,</li>
+ *     <li>the characters <code>- . _ ~ ! $ &amp; ' ( ) * + , ; = : @ /</code>,</li>
+ *     <li>percent-encoded octets like {@code %2F}.</li>
+ * </ul>
+ * Compared to RFC 2141 (see {@link NSS_RFC2141}), the characters <code>/ ~ &amp;</code> may appear literally and
+ * {@code %00} is not rejected.
  * <p>
- * {@code NamespaceSpecificString} instances are immutable and comparable by using {@code equals()}.
+ * A string that is given as {@link NamespaceSpecificString.Encoding#NOT_ENCODED NOT_ENCODED} is percent-encoded by
+ * the constructor, as UTF-8. This encodes every character that RFC 2141 does not allow literally, so
+ * <code>/ ~ &amp;</code> get encoded as well. To keep them literal, percent-encode the string yourself and pass it
+ * as {@link NamespaceSpecificString.Encoding#URL_ENCODED URL_ENCODED}: {@code a/b} and {@code a%2Fb} are different
+ * names.
+ * <p>
+ * Instances are immutable. See {@link NamespaceSpecificString} for how equality differs from equivalence.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc8141">URN Syntax</a>

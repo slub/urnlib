@@ -42,10 +42,17 @@ abstract public class NamespaceIdentifier implements RFCSupport {
 
     /**
      * Creates a new {@code NamespaceIdentifier} instance.
+     * <p>
+     * The checks that both RFCs share are done here: the literal is not {@code urn} and has at most 32 characters.
+     * Everything else is left to {@link #validateNamespaceIdentifier(String)}.
+     * <p>
+     * Note for subclasses: this constructor calls {@link #validateNamespaceIdentifier(String)} and
+     * {@link #supportedRFC()} before the constructor of the subclass has run. Both must not use instance fields of
+     * the subclass, which are not initialized yet. Static fields are fine.
      *
      * @param nid The Namespace Identifier literal
-     * @throws URNSyntaxError           if the given value is <pre>null</pre>, empty or invalid according to the
-     *                                  {@code isValidNamespaceIdentifier()} method.
+     * @throws URNSyntaxError           if the given value is invalid according to
+     *                                  {@link #validateNamespaceIdentifier(String)}, reserved or too long
      * @throws IllegalArgumentException if the parameter is null or empty
      */
     NamespaceIdentifier(String nid) throws URNSyntaxError {

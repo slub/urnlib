@@ -54,11 +54,21 @@ abstract public class NamespaceSpecificString implements RFCSupport {
 
     /**
      * Creates a new {@code NamespaceSpecificString} instance.
+     * <p>
+     * A URL encoded literal is validated by {@link #isValidURLEncodedNamespaceSpecificString(String)} and kept as
+     * given. A literal that is not encoded is percent-encoded here, by the same rules for all subclasses, and not
+     * validated by the subclass.
+     * <p>
+     * Note for subclasses: this constructor calls {@link #isValidURLEncodedNamespaceSpecificString(String)} and
+     * {@link #supportedRFC()} before the constructor of the subclass has run. Both must not use instance fields of
+     * the subclass, which are not initialized yet. Static fields are fine.
      *
      * @param nss      The namespace specific string literal
      * @param encoding Telling whether the given literal is URL encoded or not
-     * @throws URNSyntaxError Thrown if the given literal is not valid according to {@code
-     *                        isValidURLEncodedNamespaceSpecificString()}
+     * @throws URNSyntaxError           Thrown if the given literal is not valid according to
+     *                                  {@link #isValidURLEncodedNamespaceSpecificString(String)}, or cannot be
+     *                                  encoded
+     * @throws IllegalArgumentException if the literal is null or empty
      */
     NamespaceSpecificString(String nss, Encoding encoding) throws URNSyntaxError {
         if ((nss == null) || (nss.isEmpty())) {

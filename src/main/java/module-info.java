@@ -1,5 +1,7 @@
 /**
  * Java library for representing, parsing and encoding URNs as specified in RFC 2141 and RFC 8141.
+ * <p>
+ * The documentation of the package {@code de.slub.urn} lists all types by their role and is the place to start.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>

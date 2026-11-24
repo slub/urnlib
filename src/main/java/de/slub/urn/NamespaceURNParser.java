@@ -22,6 +22,10 @@ import java.net.URI;
 /**
  * Implements a parser for the URNs of a {@link Namespace}: a literal is parsed according to RFC 8141 and then
  * validated against the rules of the namespace.
+ * <p>
+ * Returned by {@link URN#in(Namespace)}, which is why the class is not public. Parsing is delegated to
+ * {@link RFC8141Parser} and the connection to the namespace to {@code NamespaceURN.connect()}, the same method that
+ * {@link URN#as(Namespace)} uses. So both ways to obtain a {@link NamespaceURN} apply the same checks.
  */
 final class NamespaceURNParser<T> implements URNParser<NamespaceURN<T>> {
 

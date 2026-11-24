@@ -24,6 +24,17 @@ import static de.slub.urn.URNSyntaxError.syntaxError;
 /**
  * Shared lexical and grammar helpers for URN parsing, used by the RFC specific parsers and by the classes
  * representing URN components.
+ * <p>
+ * There are two groups of methods:
+ * <ul>
+ *     <li>{@code requireURNLiteral}, {@code literalOf} and the {@code split} methods cut a URN literal into the
+ *     literals of its parts. {@link RFC2141Parser} and {@link RFC8141Parser} use them and pass the parts on to the
+ *     constructors of the component classes, which validate them.</li>
+ *     <li>The {@code is} methods define the character classes of the RFCs. {@link NSS_RFC2141}, {@link NSS_RFC8141},
+ *     {@link RQComponent} and {@link RQF_RFC8141} use them together with {@link PercentEncoding} to validate a
+ *     literal.</li>
+ * </ul>
+ * The class is not public, so a {@link Namespace} outside of this package cannot use it.
  */
 final class Parsing {
 

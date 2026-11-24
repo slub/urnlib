@@ -22,10 +22,18 @@ import static de.slub.urn.RFC.RFC_2141;
 /**
  * Represents a Namespace Specific String (NSS) part of a Uniform Resource Identifier (URN) according to RFC 2141.
  * <p>
- * The class takes care of all RFC2141 defined encoding and decoding in order to generate valid Namespace Specific
- * Strings.
+ * A valid URL encoded string (RFC 2141, section 2.2) is not empty and consists of
+ * <ul>
+ *     <li>ASCII letters and digits,</li>
+ *     <li>the characters <code>( ) + , - . : = @ ; $ _ ! * '</code>,</li>
+ *     <li>percent-encoded octets like {@code %2F}, except for {@code %00}.</li>
+ * </ul>
+ * Every other character has to be percent-encoded. A string that is given as
+ * {@link NamespaceSpecificString.Encoding#NOT_ENCODED NOT_ENCODED} is encoded that way by the constructor, as UTF-8.
  * <p>
- * {@code NamespaceSpecificString} instances are immutable and comparable by using {@code equals()}.
+ * RFC 8141 allows more characters to appear literally, see {@link NSS_RFC8141}.
+ * <p>
+ * Instances are immutable. See {@link NamespaceSpecificString} for how equality differs from equivalence.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>

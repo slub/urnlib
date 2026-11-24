@@ -23,6 +23,11 @@ import static de.slub.urn.NamespaceSpecificString.Encoding.URL_ENCODED;
 
 /**
  * Implements a parser for URNs according to RFC 8141.
+ * <p>
+ * The literal has the form {@code urn:<NID>:<NSS>[?+<r-component>][?=<q-component>][#<f-component>]}, where the
+ * scheme {@code urn} is case-insensitive. The Namespace Specific String ends at the first {@code ?} or {@code #}.
+ * <p>
+ * The parser is stateless. Obtain it via {@link URN#rfc8141()}, or use {@link URN#parse(String)} right away.
  *
  * @author Ralf Claussnitzer
  * @see URN_8141

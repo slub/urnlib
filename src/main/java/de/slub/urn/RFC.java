@@ -19,6 +19,10 @@ package de.slub.urn;
 /**
  * Represents a supported URN syntax RFC.
  * <p>
+ * The list is closed on purpose. Each constant comes with its own types for URNs, Namespace Identifiers and
+ * Namespace Specific Strings, e.g. {@link URN_8141}, {@link NID_RFC8141} and {@link NSS_RFC8141}, and with a parser
+ * that is obtained from {@link URN}. Supporting another URN syntax takes a new version of this library.
+ * <p>
  * The rules of a particular namespace are not listed here, see {@link Namespace#specification()}.
  */
 public enum RFC implements Specification {

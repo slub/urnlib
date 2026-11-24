@@ -22,7 +22,14 @@ import java.net.URI;
 /**
  * Defines an interface for URN parsers.
  * <p>
- * It supports parsing URNs from string literals as well as parsing from URIs.
+ * It supports parsing URNs from string literals as well as parsing from URIs. A parser is obtained from {@link URN}:
+ * <ul>
+ *     <li>{@link URN#rfc8141()} for the current URN syntax,</li>
+ *     <li>{@link URN#rfc2141()} for the syntax it replaced,</li>
+ *     <li>{@link URN#in(Namespace)} for the URNs of a particular namespace.</li>
+ * </ul>
+ * A parser either returns a valid URN or throws. The returned URN keeps the literal as it was given, there is no
+ * normalization while parsing. The parsers of this library have no mutable state and can be shared between threads.
  *
  * @param <T> Type of URN the parser will produce
  * @author Ralf Claussnitzer

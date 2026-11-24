@@ -30,6 +30,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * <p>
  * Validation is implemented as a plain character loop instead of a regular expression, so that input of any
  * length can be checked without risking a {@link StackOverflowError}.
+ * <p>
+ * Used by {@link NamespaceSpecificString} and its subclasses to validate, encode, decode and normalize, and by
+ * {@link Parsing} to validate r-, q- and f-components. Which characters may appear literally is not decided here,
+ * the caller passes it in. Decoding is only for {@link NamespaceSpecificString#unencoded()}: comparisons work on the
+ * encoded form.
+ * <p>
+ * The class is not public, so a {@link Namespace} outside of this package cannot use it.
  */
 final class PercentEncoding {
 

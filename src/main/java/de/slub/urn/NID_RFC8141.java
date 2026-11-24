@@ -25,7 +25,18 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 /**
  * Represents a Namespace Identifier (NID) part of a Uniform Resource Identifier (URN) according to RFC 8141.
  * <p>
- * {@code NamespaceIdentifier} instances are immutable and comparable by using {@code equals()}.
+ * A valid identifier (RFC 8141, section 2.1)
+ * <ul>
+ *     <li>has 2 to 32 characters,</li>
+ *     <li>consists of ASCII letters, digits and hyphens,</li>
+ *     <li>neither starts nor ends with a hyphen,</li>
+ *     <li>is not {@code urn}, in any case.</li>
+ * </ul>
+ * Compared to RFC 2141 (see {@link NID_RFC2141}), an identifier needs a second character and must not end with a
+ * hyphen. Whether an identifier belongs to the formal or the informal namespaces of RFC 8141, section 5, is not
+ * validated, but can be asked with {@link #isFormal()} and {@link #isInformal()}.
+ * <p>
+ * Instances are immutable. See {@link NamespaceIdentifier} for how equality differs from equivalence.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc8141">URN Syntax</a>

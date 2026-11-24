@@ -20,9 +20,13 @@ package de.slub.urn;
 /**
  * Represents a Uniform Resource Name (URN) according to RFC 2141.
  * <p>
- * A new URN instance can be created via the constructor if provided with proper {@link NamespaceIdentifier} and
- * {@link NamespaceSpecificString} instances. For creating URNs from string literals or URIs, use a {@link URNParser}
- * for RFC 2141 which can be obtained via the {@code URN.rfc2141()} method.
+ * Such a URN consists of a {@link NID_RFC2141} and a {@link NSS_RFC2141} only: {@code urn:<NID>:<NSS>}. RFC 2141
+ * was replaced by RFC 8141, so use {@link URN_8141} unless URNs have to be validated against the older syntax.
+ * <p>
+ * To read a URN from a string literal or a URI, use the parser returned by {@link URN#rfc2141()}. The constructor
+ * builds a URN from its parts.
+ * <p>
+ * Instances are immutable. See {@link URN} for how equality differs from equivalence.
  *
  * @author Ralf Claussnitzer
  * @see <a href="https://tools.ietf.org/html/rfc2141">URN Syntax</a>
