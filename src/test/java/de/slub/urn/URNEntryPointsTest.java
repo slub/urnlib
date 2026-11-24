@@ -80,7 +80,7 @@ public class URNEntryPointsTest {
         assertThrows(URNSyntaxError.class, () -> URN.of("example", "a b"));
         assertThrows(URNSyntaxError.class, () -> URN.of("example", "a?=q"));
         assertThrows(IllegalArgumentException.class, () -> URN.of(null, "a"));
-        assertThrows(IllegalArgumentException.class, () -> URN.of("example", (String) null));
+        assertThrows(IllegalArgumentException.class, () -> URN.of("example", null));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class URNEntryPointsTest {
         URN_8141 urn = URN.of(new NID_RFC8141("example"), new NSS_RFC8141("a b", NOT_ENCODED));
         assertEquals("urn:example:a%20b", urn.toString());
         assertEquals(RQF_RFC8141.NULL, urn.getRQFComponents());
-        assertThrows(IllegalArgumentException.class, () -> URN.of((NID_RFC8141) null, new NSS_RFC8141("a", NOT_ENCODED)));
+        assertThrows(IllegalArgumentException.class, () -> URN.of(null, new NSS_RFC8141("a", NOT_ENCODED)));
     }
 
     @Test

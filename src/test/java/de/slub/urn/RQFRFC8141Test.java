@@ -68,7 +68,7 @@ public class RQFRFC8141Test {
     public void Passing_null_as_fragment_throws_exception() {
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, (String) null));
+                () -> new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, null));
         assertEquals("Fragment cannot be null, use the constructor without fragment if absent", e.getMessage());
     }
 

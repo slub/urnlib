@@ -101,7 +101,7 @@ public class URNSyntaxErrorTest {
     public void ToString_includes_violated_RFC_for_typed_errors() {
         String str = URNSyntaxError.syntaxError(RFC.RFC_8141, "bla").toString();
         assertTrue(str.contains("RFC_8141"), str);
-        assertTrue(str.contains(RFC.RFC_8141.url().toString()), str);
+        assertTrue(str.contains(RFC.RFC_8141.url()), str);
     }
 
 }

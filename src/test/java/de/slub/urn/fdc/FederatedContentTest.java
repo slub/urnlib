@@ -17,7 +17,6 @@
 
 package de.slub.urn.fdc;
 
-import de.slub.urn.NamespaceSpecificString;
 import de.slub.urn.NamespaceURN;
 import de.slub.urn.RFC;
 import de.slub.urn.URN;

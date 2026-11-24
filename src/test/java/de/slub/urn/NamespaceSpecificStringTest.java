@@ -363,7 +363,7 @@ abstract class NamespaceSpecificStringTest {
 
     @Test
     public void Copying_null_throws_exception() {
-        assertThrows(IllegalArgumentException.class, () -> newTestInstance((NamespaceSpecificString) null));
+        assertThrows(IllegalArgumentException.class, () -> newTestInstance(null));
     }
 
 }
