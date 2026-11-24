@@ -235,7 +235,7 @@ public class CustomNamespaceTest {
     public void Normal_form_of_namespace_that_is_no_valid_NSS_does_not_yield_a_URN() throws URNSyntaxError {
         for (String invalid : new String[]{"not valid", "a?b", "", "/a-1", null}) {
             NamespaceURN<Integer> urn = URN.in(anythingWithNormalForm(s -> invalid)).parse("urn:ticket:a-42");
-            assertThrows(IllegalStateException.class, urn::normalize, String.valueOf(invalid));
+            assertThrows(IllegalStateException.class, urn::normalize, invalid);
         }
     }
 
