@@ -80,6 +80,18 @@ public class RQComponentTest {
     }
 
     @Test
+    public void Contains_finds_parameters_by_exact_name_with_or_without_value() throws URNSyntaxError {
+        RQComponent c = RQComponent.parse("a=1&b&c=");
+        assertTrue(c.contains("a"));
+        assertTrue(c.contains("b"), "Parameter without value");
+        assertTrue(c.contains("c"), "Parameter with empty value");
+        assertFalse(c.contains("A"), "Names are case-sensitive");
+        assertFalse(c.contains("1"), "Values are not names");
+        assertFalse(c.contains("d"));
+        assertFalse(RQComponent.EMPTY.contains("a"));
+    }
+
+    @Test
     public void Parameter_order_is_kept() throws URNSyntaxError {
         RQComponent c = RQComponent.parse("zeta=1&alpha=2&mid=3");
         assertEquals(List.of("zeta", "alpha", "mid"), List.copyOf(c.names()));
