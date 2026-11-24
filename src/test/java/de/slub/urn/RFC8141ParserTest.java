@@ -277,8 +277,7 @@ public class RFC8141ParserTest extends URNParserTest {
                 new NSS_RFC8141("weather", NamespaceSpecificString.Encoding.URL_ENCODED),
                 new RQF_RFC8141(
                         RQComponent.EMPTY,
-                        RQComponent.builder().add("op", "map").add("lat", "39.56").build(),
-                        Optional.empty()));
+                        RQComponent.builder().add("op", "map").add("lat", "39.56").build()));
         URN_8141 parsed = getURNParser().parse(built.toString());
         assertEquals("urn:example:weather?=op=map&lat=39.56", built.toString());
         assertEquals(built.getRQFComponents(), parsed.getRQFComponents());

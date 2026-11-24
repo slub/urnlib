@@ -52,7 +52,7 @@ public class RQFRFC8141Test {
     public void Passing_null_as_resolutionComponent_throws_exception() {
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> new RQF_RFC8141(null, RQComponent.EMPTY, Optional.empty()));
+                () -> new RQF_RFC8141(null, RQComponent.EMPTY));
         assertEquals("Resolution component cannot be null", e.getMessage());
     }
 
@@ -60,7 +60,7 @@ public class RQFRFC8141Test {
     public void Passing_null_as_queryComponent_throws_exception() {
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> new RQF_RFC8141(RQComponent.EMPTY, null, Optional.empty()));
+                () -> new RQF_RFC8141(RQComponent.EMPTY, null));
         assertEquals("Query component cannot be null", e.getMessage());
     }
 
@@ -68,8 +68,8 @@ public class RQFRFC8141Test {
     public void Passing_null_as_fragment_throws_exception() {
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, null));
-        assertEquals("Fragment cannot be null, use Optional.empty() if absent", e.getMessage());
+                () -> new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, (String) null));
+        assertEquals("Fragment cannot be null, use the constructor without fragment if absent", e.getMessage());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class RQFRFC8141Test {
                 .add("queryParameters1", "bar1")
                 .build();
         String fragment = "fragment0";
-        RQF_RFC8141 urn = new RQF_RFC8141(resolutionComponent, queryComponent, Optional.of(fragment));
+        RQF_RFC8141 urn = new RQF_RFC8141(resolutionComponent, queryComponent, fragment);
         String expected = "?+resolutionParameter1=foo1&resolutionParameter0=foo0?=queryParameter0=bar0&queryParameters1=bar1#fragment0";
 
         String actual = urn.toString();
@@ -93,7 +93,7 @@ public class RQFRFC8141Test {
 
     @Test
     public void ToString_Without_Parameter_And_Fragment() throws URNSyntaxError {
-        RQF_RFC8141 urn = new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, Optional.empty());
+        RQF_RFC8141 urn = new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY);
         String expected = "";
 
         String actual = urn.toString();
@@ -103,7 +103,7 @@ public class RQFRFC8141Test {
 
     @Test
     public void Equal_instances_have_equal_hash_codes() throws URNSyntaxError {
-        RQF_RFC8141 r1 = new RQF_RFC8141(RQComponent.parse("a=1&b=2"), RQComponent.parse("q"), Optional.of("f"));
+        RQF_RFC8141 r1 = new RQF_RFC8141(RQComponent.parse("a=1&b=2"), RQComponent.parse("q"), "f");
         RQF_RFC8141 r2 = RQF_RFC8141.parse("?+a=1&b=2?=q#f");
         assertEquals(r1, r2);
         assertEquals(r1.hashCode(), r2.hashCode());
@@ -140,14 +140,14 @@ public class RQFRFC8141Test {
     @Test
     public void R_component_containing_q_component_delimiter_cannot_be_constructed() throws URNSyntaxError {
         RQComponent r = RQComponent.builder().add("a", "x?=y").build();
-        assertThrows(URNSyntaxError.class, () -> new RQF_RFC8141(r, RQComponent.EMPTY, Optional.empty()));
+        assertThrows(URNSyntaxError.class, () -> new RQF_RFC8141(r, RQComponent.EMPTY));
     }
 
     @Test
     public void Invalid_characters_in_fragment_throw_URNSyntaxError() {
         for (String fragment : new String[]{"f g", "f#g", "a<b", "%zz"}) {
             assertThrows(URNSyntaxError.class,
-                    () -> new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, Optional.of(fragment)), fragment);
+                    () -> new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, fragment), fragment);
         }
     }
 
@@ -160,7 +160,7 @@ public class RQFRFC8141Test {
 
     @Test
     public void Built_empty_fragment_is_serialized_with_number_sign() throws URNSyntaxError {
-        RQF_RFC8141 rqf = new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, Optional.of(""));
+        RQF_RFC8141 rqf = new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, "");
         assertEquals("#", rqf.toString());
         assertEquals(RQF_RFC8141.parse("#"), rqf);
     }
@@ -168,6 +168,13 @@ public class RQFRFC8141Test {
     @Test
     public void Empty_fragment_is_not_equal_to_absent_fragment() throws URNSyntaxError {
         assertNotEquals(RQF_RFC8141.NULL, RQF_RFC8141.parse("#"));
+    }
+
+    @Test
+    public void Constructor_without_fragment_yields_absent_fragment() throws URNSyntaxError {
+        RQF_RFC8141 rqf = new RQF_RFC8141(RQComponent.EMPTY, RQComponent.parse("q"));
+        assertEquals(Optional.empty(), rqf.fragment());
+        assertEquals("?=q", rqf.toString());
     }
 
     @Test

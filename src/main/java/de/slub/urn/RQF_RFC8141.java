@@ -46,20 +46,55 @@ public final class RQF_RFC8141 {
     private final String      stringRepresentation;
 
     /**
-     * Construct RQF components.
+     * Construct RQF components without an f-component.
      * <p>
-     * Empty r- and q-components are omitted from the string representation. A present f-component is always
-     * included, even if it is empty (RFC 3986 allows empty fragments), so {@code Optional.of("")} results in a
-     * trailing {@code #}.
+     * Empty r- and q-components are omitted from the string representation.
      *
      * @param resolutionComponent The r-component, use {@link RQComponent#EMPTY} if absent
      * @param queryComponent      The q-component, use {@link RQComponent#EMPTY} if absent
-     * @param fragment            The percent-encoded f-component, use {@link Optional#empty()} if absent
+     * @throws IllegalArgumentException if any of the parameters is null
+     * @throws URNSyntaxError           if the r-component contains {@code ?=}, which would end it prematurely
+     */
+    public RQF_RFC8141(RQComponent resolutionComponent, RQComponent queryComponent) throws URNSyntaxError {
+        assertValidComponents(resolutionComponent, queryComponent);
+        this.resolutionComponent = resolutionComponent;
+        this.queryComponent = queryComponent;
+        this.fragment = null;
+        this.stringRepresentation = initialToString();
+    }
+
+    /**
+     * Construct RQF components with an f-component.
+     * <p>
+     * Empty r- and q-components are omitted from the string representation. The f-component is always included,
+     * even if it is empty (RFC 3986 allows empty fragments), so an empty string results in a trailing {@code #}.
+     * Use {@link #RQF_RFC8141(RQComponent, RQComponent)} if there is no f-component.
+     *
+     * @param resolutionComponent The r-component, use {@link RQComponent#EMPTY} if absent
+     * @param queryComponent      The q-component, use {@link RQComponent#EMPTY} if absent
+     * @param fragment            The percent-encoded f-component, may be empty
      * @throws IllegalArgumentException if any of the parameters is null
      * @throws URNSyntaxError           if the r-component contains {@code ?=}, which would end it prematurely,
      *                                  or the fragment contains characters not allowed by RFC 3986
      */
-    public RQF_RFC8141(RQComponent resolutionComponent, RQComponent queryComponent, Optional<String> fragment)
+    public RQF_RFC8141(RQComponent resolutionComponent, RQComponent queryComponent, String fragment)
+            throws URNSyntaxError {
+        assertValidComponents(resolutionComponent, queryComponent);
+        if (fragment == null) {
+            throw new IllegalArgumentException(
+                    "Fragment cannot be null, use the constructor without fragment if absent");
+        }
+        // f-component = fragment = *( pchar / "/" / "?" ), see RFC 3986, 3.5
+        if (!Parsing.isValidRqfComponentContent(fragment)) {
+            throw syntaxError(RFC.RFC_8141, String.format("Not allowed characters in fragment `%s`", fragment));
+        }
+        this.resolutionComponent = resolutionComponent;
+        this.queryComponent = queryComponent;
+        this.fragment = fragment;
+        this.stringRepresentation = initialToString();
+    }
+
+    private static void assertValidComponents(RQComponent resolutionComponent, RQComponent queryComponent)
             throws URNSyntaxError {
         if (resolutionComponent == null) {
             throw new IllegalArgumentException("Resolution component cannot be null");
@@ -67,26 +102,15 @@ public final class RQF_RFC8141 {
         if (queryComponent == null) {
             throw new IllegalArgumentException("Query component cannot be null");
         }
-        if (fragment == null) {
-            throw new IllegalArgumentException("Fragment cannot be null, use Optional.empty() if absent");
-        }
         if (resolutionComponent.toString().contains("?=")) {
             throw syntaxError(RFC.RFC_8141, String.format(
                     "r-component `%s` must not contain `?=`, which would start the q-component", resolutionComponent));
         }
-        // f-component = fragment = *( pchar / "/" / "?" ), see RFC 3986, 3.5
-        if (fragment.isPresent() && !Parsing.isValidRqfComponentContent(fragment.get())) {
-            throw syntaxError(RFC.RFC_8141, String.format("Not allowed characters in fragment `%s`", fragment.get()));
-        }
-        this.resolutionComponent = resolutionComponent;
-        this.queryComponent = queryComponent;
-        this.fragment = fragment.orElse(null);
-        this.stringRepresentation = initialToString();
     }
 
     private static RQF_RFC8141 createNull() {
         try {
-            return new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY, Optional.empty());
+            return new RQF_RFC8141(RQComponent.EMPTY, RQComponent.EMPTY);
         } catch (URNSyntaxError e) {
             throw new IllegalStateException("Cannot create empty RQF components", e);
         }
@@ -111,10 +135,10 @@ public final class RQF_RFC8141 {
             return NULL;
         }
         String rest = rqf;
-        Optional<String> fragment = Optional.empty();
+        String fragment = null; // null if absent
         final int hash = rest.indexOf('#');
         if (hash >= 0) {
-            fragment = Optional.of(rest.substring(hash + 1));
+            fragment = rest.substring(hash + 1);
             rest = rest.substring(0, hash);
         }
         String rComponent = "";
@@ -135,7 +159,9 @@ public final class RQF_RFC8141 {
                     "Invalid optional components `%s`, expected order is `?+` r-component, `?=` q-component, " +
                             "`#` f-component", rqf));
         }
-        return new RQF_RFC8141(RQComponent.parse(rComponent), RQComponent.parse(qComponent), fragment);
+        final RQComponent r = RQComponent.parse(rComponent);
+        final RQComponent q = RQComponent.parse(qComponent);
+        return fragment == null ? new RQF_RFC8141(r, q) : new RQF_RFC8141(r, q, fragment);
     }
 
     // RFC 8141, 2: r-component = pchar *( pchar / "/" / "?" ), same for q-component
