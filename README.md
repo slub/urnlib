@@ -14,8 +14,6 @@ Resource Name (URN) and its parts Namespace Identifier (NID), Namespace Specific
 
 The library is compiled for Java 11.
 
-This README describes the main branch, which is the upcoming version 4. The API of the released version is described in the [README of version 3.0.0].
-
 - [Usage](#usage) shows how to parse, build and compare URNs.
 - [Development](#development) is for those who want to change the library.
 - The Javadoc of the package `de.slub.urn` lists all classes by their role.
@@ -214,7 +212,7 @@ The recommended way is by declaring a dependency, for example in your projects P
 <dependency>
   <groupId>de.slub-dresden</groupId>
   <artifactId>urnlib</artifactId>
-  <version>3.0.0</version>
+  <version>4.0.0</version>
 </dependency>
 ```
 ## Development
@@ -269,6 +267,5 @@ You can use the library (e.g. the JAR artifact) in any project, open source or p
 [RFC 2141]: https://tools.ietf.org/html/rfc2141
 [RFC 8141]: https://tools.ietf.org/html/rfc8141
 [RFC 4198]: https://tools.ietf.org/html/rfc4198
-[README of version 3.0.0]: https://github.com/slub/urnlib/blob/v3.0.0/README.md
 [GitHub Releases download section]: https://github.com/slub/urnlib/releases
 [GNU Lesser General Public License, Version 3]: https://www.gnu.org/licenses/lgpl-3.0.html
