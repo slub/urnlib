@@ -62,7 +62,7 @@ public final class RQComponent implements Iterable<RQComponent.Parameter> {
     private final String          stringRepresentation;
 
     private RQComponent(List<Parameter> parameters) {
-        this.parameters = Collections.unmodifiableList(new ArrayList<>(parameters));
+        this.parameters = List.copyOf(parameters);
         this.stringRepresentation = serialize(this.parameters);
     }
 

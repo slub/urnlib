@@ -79,7 +79,7 @@ public final class FederatedContent {
     /**
      * The namespace of Federated Content URNs.
      */
-    public static final Namespace<FederatedContentName> NAMESPACE = new Namespace<FederatedContentName>() {
+    public static final Namespace<FederatedContentName> NAMESPACE = new Namespace<>() {
         @Override
         public boolean accepts(NamespaceIdentifier nid) {
             return NID.equalsIgnoreCase(nid.toString());
